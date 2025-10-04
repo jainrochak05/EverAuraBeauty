@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Community Reviews - Everaura</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="assets/css/reviews.css">
+</head>
+<body class="dark-theme">
+
+    <header class="main-header">
+        <nav class="main-nav">
+            <button class="mobile-nav-toggle" aria-label="Open navigation"><span></span><span></span></button>
+            <a href="index.html" class="logo"></a>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="shop.html">Shop</a></li>
+                <li><a href="about.html">Our Story</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+            <div class="header-icons">
+                <a href="#" aria-label="Wishlist" onclick="event.preventDefault(); openWishlistModal();"><i class="fa-solid fa-heart"></i></a>
+                <a href="#" aria-label="Shopping Cart" onclick="event.preventDefault(); openCartModal();">
+                    <i class="fa-solid fa-bag-shopping"></i>
+                    <span id="cart-count" class="cart-count-badge">0</span>
+                </a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <!-- REDESIGNED: Cinematic Header -->
+        <section class="reviews-hero-section">
+            <div class="hero-image" style="background-image: url('https://res.cloudinary.com/dxzynrf5e/image/upload/v1759520287/Gemini_Generated_Image_19qsbe19qsbe19qs_rgg5rd.png');"></div>
+            <div class="hero-overlay"></div>
+            <div class="hero-content">
+                <h1>Stories Shared</h1>
+                <p>Hear from the community that makes Everaura special.</p>
+            </div>
+        </section>
+
+        <!-- REDESIGNED: Interactive Masonry Grid -->
+        <section class="reviews-page-section">
+            <div class="reviews-grid" id="all-reviews-list">
+                <!-- All approved reviews will be loaded here -->
+            </div>
+        </section>
+
+        <!-- NEW: Sticky "Add a Review" Button -->
+        <button class="sticky-add-review-btn" onclick="openTestimonialModal()" title="Leave a Review">
+            <i class="fa-solid fa-plus"></i>
+        </button>
+    </main>
+
+    <!-- This modal will be used to show the full review text on click -->
+    <div id="review-detail-modal" class="modal-overlay"></div>
+
+    <!-- This is the form for submitting a new review -->
+    <div id="testimonial-modal" class="modal-overlay">
+        <div class="cart-modal-content">
+            <button class="cart-modal-close" onclick="closeModal('testimonial-modal')">&times;</button>
+            <h3>Share Your Story</h3>
+            <form id="testimonial-form">
+                <div class="form-group">
+                    <label for="testimonial-name">Your Name</label>
+                    <input type="text" id="testimonial-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="testimonial-contact">Email or Phone (Optional)</label>
+                    <input type="text" id="testimonial-contact">
+                </div>
+                <div class="form-group">
+                    <label for="testimonial-summary">One-Liner Review</label>
+                    <input type="text" id="testimonial-summary" maxlength="150" required>
+                </div>
+                <div class="form-group">
+                    <label for="testimonial-full">Detailed Review (Optional)</label>
+                    <textarea id="testimonial-full" rows="4"></textarea>
+                </div>
+                <button type="submit" class="cta-button">Submit Testimonial</button>
+            </form>
+        </div>
+    </div>
+
+    <footer class="main-footer">
+        <div class="footer-content">
+            <div class="footer-logo"><a href="index.html" class="logo"></a></div>
+            <div class="footer-links">
+                <a href="shop.html">Shop</a>
+                <a href="about.html">Our Story</a>
+                <a href="contact.html">Contact</a>
+                <a href="terms.html">Terms & Conditions</a>
+            </div>
+            <div class="footer-social">
+                <a href="#" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                <a href="#" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+                <a href="#" aria-label="Whatsapp"><i class="fa-brands fa-whatsapp"></i></a>
+            </div>
+        </div>
+        <p class="footer-copyright">&copy; 2025 Everaura. All Rights Reserved.</p>
+        <a href="admin.html" class="admin-login-link">Admin</a>
+    </footer>
+    <!-- Other standard modals -->
+    <div id="cart-modal" class="modal-overlay">
+        <div class="cart-modal-content">
+            <button class="cart-modal-close" onclick="closeModal('cart-modal')">&times;</button>
+            <h3>Your Cart</h3>
+            
+            <div id="cart-items">
+                <!-- JS will populate cart items here -->
+            </div>
+    
+            <!-- Coupon Section -->
+            <div class="coupon-area">
+                <input type="text" id="coupon-code-input" placeholder="Enter coupon code" />
+                <button class="apply-coupon-btn" onclick="applyCoupon()">Apply</button>
+            </div>
+    
+            <!-- Applied coupon display -->
+            <div id="applied-coupon" class="coupon-applied" style="display: none;">
+                <span id="applied-coupon-code"></span>
+                <button class="remove-coupon-btn" onclick="removeCoupon()">Remove</button>
+            </div>
+    
+            <!-- Cart totals -->
+            <div id="cart-totals">
+                <p>Subtotal: <span id="cart-subtotal">0</span></p>
+                <p>Total after coupon: <span id="cart-total">0</span></p>
+            </div>
+    
+            <button class="checkout-btn" onclick="proceedToCheckout()">Proceed to Checkout</button>
+        </div>
+    </div>
+    <div id="wishlist-modal" class="modal-overlay"></div>
+    <div id="toast-container"></div>
+    
+    <script src="assets/js/app.js"></script>
+
+</body>
+</html>

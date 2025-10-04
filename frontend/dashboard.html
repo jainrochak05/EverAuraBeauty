@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Everaura</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/admin.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="assets/css/main.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+</head>
+<body class="admin-body">
+
+    <header class="dashboard-header">
+        <a href="index.html" class="logo">
+        </a>
+        <div class="dashboard-header-title">Everaura Dashboard</div>
+        <button class="admin-logout-btn" onclick="logout()">Logout <i class="fa-solid fa-right-from-bracket"></i></button>
+    </header>
+
+    <main class="dashboard-main">
+        <div class="dashboard-actions">
+            <h1>Product Management</h1>
+            <button class="admin-button" onclick="showAddProductModal()">+ Add New Product</button>
+        </div>
+        
+        <div class="product-management-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Image</th>
+                        <th>Name</th>
+                        <th>Price</th>
+                        <th>Category</th>
+                        <th>Trending</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="product-table-body">
+                    </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="dashboard-actions" style="margin-top: 4rem;">
+        <h1>Testimonial Approval</h1>
+    </div>
+    <div class="product-management-table">
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Summary</th>
+                    <th>Full Review</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="pending-testimonials-body">
+                </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="dashboard-actions" style="margin-top: 4rem;">
+    <h1>Coupon Management</h1>
+</div>
+<div class="coupon-management-container">
+    <div class="coupon-form-box">
+        <h3>Create New Coupon</h3>
+        <form id="coupon-form">
+            <div class="form-group">
+                <label for="coupon-code">Coupon Code</label>
+                <input type="text" id="coupon-code" placeholder="e.g., SAVE10" required>
+            </div>
+            <div class="form-group">
+                <label for="coupon-discount">Discount (%)</label>
+                <input type="number" id="coupon-discount" placeholder="e.g., 10" min="1" max="100" required>
+            </div>
+            <button type="submit" class="admin-button">Create Coupon</button>
+        </form>
+    </div>
+    <div class="coupon-list-box">
+        <h3>Active Coupons</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Code</th>
+                    <th>Discount</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="coupon-table-body">
+                </tbody>
+        </table>
+    </div>
+</div>
+    </main>
+    <footer class="main-footer">
+        <div class="footer-content">
+            <div class="footer-logo"><a href="index.html" class="logo"></a></div>
+            <div class="footer-links">
+                <a href="shop.html">Shop</a>
+                <a href="about.html">Our Story</a>
+                <a href="contact.html">Contact</a>
+                <a href="terms.html">Terms & Conditions</a>
+            </div>
+            <div class="footer-social">
+                <a href="#" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                <a href="#" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+                <a href="#" aria-label="Whatsapp"><i class="fa-brands fa-whatsapp"></i></a>
+            </div>
+        </div>
+        <p class="footer-copyright">&copy; 2025 Everaura. All Rights Reserved.</p>
+        
+    </footer>
+
+
+    <div id="product-modal" class="modal-overlay">
+        </div>
+    
+    <script src="assets/js/dashboard.js"></script>
+</body>
+</html>

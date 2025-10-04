@@ -1,0 +1,134 @@
+/* === Everaura Contact Page Styles === */
+
+.contact-header {
+    height: 40vh;
+    min-height: 300px;
+    background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1596700202183-a4c132832863?q=80&w=2070') no-repeat center center/cover;
+}
+
+.contact-header .section-title {
+    margin: 0;
+    color: var(--light-color);
+}
+
+.contact-section {
+    display: grid;
+    grid-template-columns: 2fr 1fr; /* Form takes 2/3, info takes 1/3 */
+    gap: 3rem;
+    padding: 6rem 5%;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.contact-form-container,
+.contact-info-container {
+    background: var(--card-bg-color);
+    padding: 2.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+}
+
+.contact-form-container h2,
+.contact-info-container h2 {
+    font-size: 2.5rem;
+    margin-bottom: 2rem;
+    color: var(--accent-color);
+}
+
+.contact-form-container .form-group {
+    margin-bottom: 1.5rem;
+}
+
+.contact-form-container label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #aaa;
+    font-size: 0.9rem;
+}
+
+.contact-form-container input,
+.contact-form-container textarea {
+    width: 100%;
+    padding: 12px;
+    background-color: #333;
+    border: 1px solid #555;
+    color: var(--text-color);
+    border-radius: 4px;
+    font-family: var(--primary-font);
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.contact-form-container input:focus,
+.contact-form-container textarea:focus {
+    outline: none;
+    border-color: var(--accent-color);
+}
+
+.contact-form-container textarea {
+    resize: vertical;
+}
+
+.contact-form-container .cta-button {
+    width: 100%;
+    margin-top: 1rem;
+}
+
+.contact-info-container p {
+    color: #ccc;
+    line-height: 1.8;
+    margin-bottom: 2rem;
+}
+
+.contact-details {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    margin-bottom: 2.5rem;
+}
+
+.contact-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.contact-item a {
+    color: #ccc;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.contact-item a:hover {
+    color: var(--accent-color);
+}
+
+.contact-item i {
+    color: var(--accent-color);
+    font-size: 1.2rem;
+}
+
+.contact-social {
+    display: flex;
+    gap: 1.5rem;
+    border-top: 1px solid var(--border-color);
+    padding-top: 2rem;
+}
+
+.contact-social a {
+    color: #aaa;
+    font-size: 1.5rem;
+    transition: color 0.3s ease;
+}
+
+.contact-social a:hover {
+    color: var(--accent-color);
+}
+
+/* Responsive adjustments for contact page */
+@media (max-width: 992px) {
+    .contact-section {
+        grid-template-columns: 1fr;
+        gap: 3rem;
+    }
+}

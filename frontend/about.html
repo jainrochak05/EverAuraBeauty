@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Our Story - Everaura</title>
+        <link rel="stylesheet" href="assets/css/main.css">
+        
+        <link rel="stylesheet" href="assets/css/about.css">
+    </head>
+<body class="dark-theme">
+
+    <header class="main-header">
+        <nav class="main-nav">
+            <button class="mobile-nav-toggle" aria-label="Open navigation"><span></span><span></span></button>
+            <a href="index.html" class="logo"></a>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="shop.html">Shop</a></li>
+                <li><a href="about.html">Our Story</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+            <div class="header-icons">
+                <a href="#" aria-label="Wishlist" onclick="event.preventDefault(); openWishlistModal();"><i class="fa-solid fa-heart"></i></a>
+                <a href="#" aria-label="Shopping Cart" onclick="event.preventDefault(); openCartModal();">
+                    <i class="fa-solid fa-bag-shopping"></i>
+                    <span id="cart-count" class="cart-count-badge">0</span>
+                </a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="page-header about-header">
+            <div class="hero-content">
+                <h1 class="section-title">Our Story</h1>
+            </div>
+        </section>
+
+        <section class="about-section">
+            <div class="about-image craftsmanship">
+                
+            </div>
+            <div class="about-text">
+                <h2>Where Elegance Meets Emotion</h2>
+                <p>At Everaura, we specialize in handcrafted jewellery that speaks your story. Our mission is to create timeless pieces that blend heritage, trend, and personalization for every woman who celebrates her uniqueness. From oxidized treasures to anti-tarnish Kundan sets, each design is made with passion and precision for every age and occasion.</p>
+                <p>We believe that every piece of jewelry should be more than an accessory; it should be an extension of your identity, a marker of your memories, and a celebration of your journey.</p>
+                <p class="highlight-text">Join us in redefining tradition with a modern touch. Because at Everaura, every piece tells a story — yours.</p>
+            </div>
+        </section>
+
+        <section class="about-section founder-section">
+            <div class="about-text">
+                <h2>Meet The Founder</h2>
+                <p class="motivational-text">
+                    "Vibha Wadhwani was born on <strong>10th December in Bilaspur, Chhattisgarh</strong> — 
+                    a place where traditions run deep and every detail tells a story. 
+                    From her earliest years, she felt a pull towards art, culture, 
+                    and the silent power carried in heirlooms passed through generations."
+                </p>
+            
+                <p class="motivational-text">
+                    "For Vibha, jewelry was never just ornamentation — 
+                    it was <em>emotion woven into metal</em>, 
+                    <em>hustle etched into design</em>, 
+                    and a <em>mirror of one’s inner shine</em>. 
+                    A woman of resilience and relentless passion, 
+                    she poured her heart into transforming this vision into reality."
+                </p>
+            
+                <p class="motivational-text">
+                    "That vision became <strong>Everaura</strong>: 
+                    not simply a brand, but a sanctuary for women who seek pieces that 
+                    resonate with their journeys, their strength, and their quiet elegance. 
+                    Vibha’s spirit — equal parts dreamer and doer — continues to guide Everaura, 
+                    ensuring every creation carries a fragment of story, soul, and timeless artistry."
+                </p>
+            
+                <p class="founder-signature">— Vibha Wadhwani <br> Founder @ EverAura</p>
+            </div>
+            <div class="about-image founder-image">
+                
+            </div>
+        </section>
+    </main>
+
+    <footer class="main-footer">
+        <div class="footer-content">
+            <div class="footer-logo"><a href="index.html" class="logo"></a></div>
+            <div class="footer-links">
+                <a href="shop.html">Shop</a>
+                <a href="about.html">Our Story</a>
+                <a href="contact.html">Contact</a>
+                <a href="terms.html">Terms & Conditions</a>
+            </div>
+            <div class="footer-social">
+                <a href="#" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                <a href="#" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+                <a href="#" aria-label="Whatsapp"><i class="fa-brands fa-whatsapp"></i></a>
+            </div>
+        </div>
+        <p class="footer-copyright">&copy; 2025 Everaura. All Rights Reserved.</p>
+        <a href="admin.html" class="admin-login-link">Admin</a>
+    </footer>
+
+    <div id="cart-modal" class="modal-overlay">
+        <div class="cart-modal-content">
+            <button class="cart-modal-close" onclick="closeModal('cart-modal')">&times;</button>
+            <h3>Your Cart</h3>
+            
+            <div id="cart-items">
+                <!-- JS will populate cart items here -->
+            </div>
+    
+            <!-- Coupon Section -->
+            <div class="coupon-area">
+                <input type="text" id="coupon-code-input" placeholder="Enter coupon code" />
+                <button class="apply-coupon-btn" onclick="applyCoupon()">Apply</button>
+            </div>
+    
+            <!-- Applied coupon display -->
+            <div id="applied-coupon" class="coupon-applied" style="display: none;">
+                <span id="applied-coupon-code"></span>
+                <button class="remove-coupon-btn" onclick="removeCoupon()">Remove</button>
+            </div>
+    
+            <!-- Cart totals -->
+            <div id="cart-totals">
+                <p>Subtotal: <span id="cart-subtotal">0</span></p>
+                <p>Total after coupon: <span id="cart-total">0</span></p>
+            </div>
+    
+            <button class="checkout-btn" onclick="proceedToCheckout()">Proceed to Checkout</button>
+        </div>
+    </div>
+    <div id="wishlist-modal" class="modal-overlay"></div>
+    <div id="toast-container"></div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script src="assets/js/app.js"></script>
+</body>
+</html>

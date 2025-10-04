@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - Everaura</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    
+    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="assets/css/contact.css">
+</head>
+<body class="dark-theme">
+
+    <header class="main-header">
+        <nav class="main-nav">
+            <button class="mobile-nav-toggle" aria-label="Open navigation"><span></span><span></span></button>
+            <a href="index.html" class="logo"></a>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="shop.html">Shop</a></li>
+                <li><a href="about.html">Our Story</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+            <div class="header-icons">
+                <a href="#" aria-label="Wishlist" onclick="event.preventDefault(); openWishlistModal();"><i class="fa-solid fa-heart"></i></a>
+                <a href="#" aria-label="Shopping Cart" onclick="event.preventDefault(); openCartModal();">
+                    <i class="fa-solid fa-bag-shopping"></i>
+                    <span id="cart-count" class="cart-count-badge">0</span>
+                </a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="page-header contact-header">
+            <div class="hero-content">
+                <h1 class="section-title">Get In Touch</h1>
+            </div>
+        </section>
+
+        <section class="contact-section">
+            <div class="contact-form-container">
+                <h2>Send Us a Message</h2>
+                <form id="contact-form" onsubmit="event.preventDefault(); alert('Thank you for your message!');">
+                    <div class="form-group">
+                        <label for="name">Your Name</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Your Email</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="subject">Subject</label>
+                        <input type="text" id="subject" name="subject" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="message">Message</label>
+                        <textarea id="message" name="message" rows="6" required></textarea>
+                    </div>
+                    <button type="submit" class="cta-button">Send Message</button>
+                </form>
+            </div>
+            <div class="contact-info-container">
+                <h2>Contact Information</h2>
+                <p>Have a question or a special request? We'd love to hear from you. Reach out to us directly or through our social channels.</p>
+                <div class="contact-details">
+                    <div class="contact-item">
+                        <i class="fa-solid fa-envelope"></i>
+                        <a href="mailto:EVERAURA.BEAUTYNSTYLE@GMAIL.COM">EVERAURA.BEAUTYNSTYLE@GMAIL.COM</a>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fa-solid fa-phone"></i>
+                        <a href="tel:+919425545594">+91 94255 45594</a>
+                    </div>
+                </div>
+                <div class="contact-social">
+                    <a href="https://www.instagram.com/_ever_aura_/" target="_blank" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="https://www.facebook.com/profile.php?id=61577357500639" target="_blank" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+                    <a href="https://chat.whatsapp.com/Lg0BfM6EaJf7FYlLS7le8r" target="_blank" aria-label="Whatsapp"><i class="fa-brands fa-whatsapp"></i></a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="main-footer">
+        <div class="footer-content">
+            <div class="footer-logo"><<a href="index.html" class="logo"></a></div>
+            <div class="footer-links">
+                <a href="shop.html">Shop</a>
+                <a href="about.html">Our Story</a>
+                <a href="contact.html">Contact</a>
+                <a href="#">Terms & Conditions</a>
+            </div>
+            <div class="footer-social">
+                <a href="https://www.instagram.com/_ever_aura_/" target="_blank" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                <a href="https://www.facebook.com/profile.php?id=61577357500639" target="_blank" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+                <a href="https://chat.whatsapp.com/Lg0BfM6EaJf7FYlLS7le8r" target="_blank" aria-label="Whatsapp"><i class="fa-brands fa-whatsapp"></i></a>
+            </div>
+        </div>
+        <p class="footer-copyright">&copy; 2025 Everaura. All Rights Reserved.</p>
+        <a href="admin.html" class="admin-login-link">Admin</a>
+    </footer>
+
+    <div id="cart-modal" class="modal-overlay">
+        <div class="cart-modal-content">
+            <button class="cart-modal-close" onclick="closeModal('cart-modal')">&times;</button>
+            <h3>Your Cart</h3>
+            
+            <div id="cart-items">
+                <!-- JS will populate cart items here -->
+            </div>
+    
+            <!-- Coupon Section -->
+            <div class="coupon-area">
+                <input type="text" id="coupon-code-input" placeholder="Enter coupon code" />
+                <button class="apply-coupon-btn" onclick="applyCoupon()">Apply</button>
+            </div>
+    
+            <!-- Applied coupon display -->
+            <div id="applied-coupon" class="coupon-applied" style="display: none;">
+                <span id="applied-coupon-code"></span>
+                <button class="remove-coupon-btn" onclick="removeCoupon()">Remove</button>
+            </div>
+    
+            <!-- Cart totals -->
+            <div id="cart-totals">
+                <p>Subtotal: <span id="cart-subtotal">0</span></p>
+                <p>Total after coupon: <span id="cart-total">0</span></p>
+            </div>
+    
+            <button class="checkout-btn" onclick="proceedToCheckout()">Proceed to Checkout</button>
+        </div>
+    </div>
+    <div id="wishlist-modal" class="modal-overlay"></div>
+    <div id="toast-container"></div>
+    <script src="assets/js/app.js"></script>
+</body>
+</html>

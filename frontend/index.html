@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Everaura - Exquisite Designer Jewelry</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/main.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
+</head>
+<body class="dark-theme">
+
+    <header class="main-header">
+        <nav class="main-nav">
+            <button class="mobile-nav-toggle" aria-label="Open navigation">
+                <span></span>
+                <span></span>
+            </button>
+            <a href="index.html" class="logo">
+                
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="shop.html">Shop</a></li>
+                <li><a href="about.html">Our Story</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+            <div class="header-icons">
+                <a href="#" aria-label="Wishlist" onclick="event.preventDefault(); openWishlistModal();"><i class="fa-solid fa-heart"></i></a>
+                <a href="#" aria-label="Shopping Cart" onclick="event.preventDefault(); openCartModal();">
+                    <i class="fa-solid fa-bag-shopping"></i>
+                    <span id="cart-count" class="cart-count-badge">0</span>
+                </a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero-section">
+            <div class="hero-content">
+                <span class="hero-subtitle">Define Your Grace</span>
+                <h1>Artistry in Every Detail</h1>
+                <p>Explore our curated collection of handcrafted jewelry, designed to endure.</p>
+                <a href="shop.html" class="cta-button">Discover The Collection</a>
+            </div>
+        </section>
+
+        <section class="category-section">
+            <h2 class="section-title">Shop by Category</h2>
+            <div class="category-grid">
+                <div class="category-grid">
+                    <a href="shop.html?category=Necklaces" class="category-card necklaces">
+                        <div class="category-card-overlay"><h3>Necklaces</h3></div>
+                    </a>
+                    <a href="shop.html?category=Rings" class="category-card rings">
+                        <div class="category-card-overlay"><h3>Rings</h3></div>
+                    </a>
+                    <a href="shop.html?category=Bangles/Bracelets" class="category-card bracelets">
+                        <div class="category-card-overlay"><h3>Bracelets</h3></div>
+                    </a>
+                    <a href="shop.html?category=Earrings" class="category-card earrings">
+                        <div class="category-card-overlay"><h3>Earrings</h3></div>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <section class="featured-products">
+            <h2 class="section-title">Featured Collection</h2>
+            <div class="featured-carousel-container">
+                <div class="swiper featured-swiper">
+                    <div class="swiper-wrapper" id="trending-product-list">
+                        </div>
+                </div>
+                <div class="swiper-button-next"></div>
+                <div class="swiper-button-prev"></div>
+            </div>
+        </section>
+
+        <section class="manifesto-section">
+            <p>"Jewelry is a way of keeping memories alive."</p>
+            <h2>Timeless by Design</h2>
+        </section>
+        
+
+     <!-- UPDATED: Testimonial Carousel Section -->
+      <!-- CORRECTED: Testimonial Section with Functional Buttons -->
+<section class="testimonial-section">
+    <h2 class="section-title">Words from Our Community</h2>
+    <div class="swiper testimonial-swiper">
+        <div class="swiper-wrapper" id="testimonial-list">
+            <!-- Testimonials will be loaded here by app.js -->
+        </div>
+        <div class="swiper-pagination"></div>
+    </div>
+    <div class="testimonial-actions">
+        <button class="cta-button-outline" onclick="openTestimonialModal()">Leave a Review</button>
+        <!-- This is now a button that navigates on click -->
+        <button class="cta-button" onclick="window.location.href='reviews.html'">Read All Reviews</button>
+    </div>
+</section>
+<div id="testimonial-modal" class="modal-overlay">
+    <div class="cart-modal-content">
+        <button class="cart-modal-close" onclick="closeModal('testimonial-modal')">&times;</button>
+        <h3>Share Your Story</h3>
+        <form id="testimonial-form">
+            <div class="form-group">
+                <label for="testimonial-name">Your Name</label>
+                <input type="text" id="testimonial-name" required>
+            </div>
+            <div class="form-group">
+                <label for="testimonial-contact">Email or Phone (Optional)</label>
+                <input type="text" id="testimonial-contact">
+            </div>
+            <div class="form-group">
+                <label for="testimonial-summary">One-Liner Review</label>
+                <input type="text" id="testimonial-summary" maxlength="150" required>
+            </div>
+            <div class="form-group">
+                <label for="testimonial-full">Detailed Review (Optional)</label>
+                <textarea id="testimonial-full" rows="4"></textarea>
+            </div>
+            <button type="submit" class="cta-button">Submit Testimonial</button>
+        </form>
+    </div>
+</div>
+
+<section class="final-cta-section">
+    <div class="final-cta-content">
+        <h2>Find Your Signature Piece</h2>
+        <p>Our full collection awaits. Discover the quality and craftsmanship that defines Everaura.</p>
+        <a href="shop.html" class="cta-button">Shop All Jewelry</a>
+    </div>
+</section>
+    </main>
+
+    <footer class="main-footer">
+        <div class="footer-content">
+            <div class="footer-logo"><a href="index.html" class="logo"></a></div>
+            <div class="footer-links">
+                <a href="shop.html">Shop</a>
+                <a href="about.html">Our Story</a>
+                <a href="contact.html">Contact</a>
+                <a href="terms.html">Terms & Conditions</a>
+            </div>
+            <div class="footer-social">
+                <a href="#" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                <a href="#" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+                <a href="#" aria-label="Whatsapp"><i class="fa-brands fa-whatsapp"></i></a>
+            </div>
+        </div>
+        <p class="footer-copyright">&copy; 2025 Everaura. All Rights Reserved.</p>
+        <a href="admin.html" class="admin-login-link">Admin</a>
+    </footer>
+
+    <div id="cart-modal" class="modal-overlay">
+        <div class="cart-modal-content">
+            <button class="cart-modal-close" onclick="closeModal('cart-modal')">&times;</button>
+            <h3>Your Cart</h3>
+            
+            <div id="cart-items">
+                <!-- JS will populate cart items here -->
+            </div>
+    
+            <!-- Coupon Section -->
+            <div class="coupon-area">
+                <input type="text" id="coupon-code-input" placeholder="Enter coupon code" />
+                <button class="apply-coupon-btn" onclick="applyCoupon()">Apply</button>
+            </div>
+    
+            <!-- Applied coupon display -->
+            <div id="applied-coupon" class="coupon-applied" style="display: none;">
+                <span id="applied-coupon-code"></span>
+                <button class="remove-coupon-btn" onclick="removeCoupon()">Remove</button>
+            </div>
+    
+            <!-- Cart totals -->
+            <div id="cart-totals">
+                <p>Subtotal: <span id="cart-subtotal">0</span></p>
+                <p>Total after coupon: <span id="cart-total">0</span></p>
+            </div>
+    
+            <button class="checkout-btn" onclick="proceedToCheckout()">Proceed to Checkout</button>
+        </div>
+    </div>
+    <div id="wishlist-modal" class="modal-overlay"></div>
+    <div id="toast-container"></div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script src="assets/js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,175 @@
+/* === Everaura Admin Theme - V3 (Simple, Dark & Responsive) === */
+
+:root {
+    --admin-bg-color: #121212;
+    --admin-text-color: #EAEAEA;
+    --admin-accent-color: #E8C8FF;
+    --admin-border-color: rgba(255, 255, 255, 0.1);
+    --admin-card-bg: #1D1D1D;
+    --primary-font: 'Inter', sans-serif;
+    --heading-font: 'Cormorant Garamond', serif;
+}
+
+body.admin-body {
+    background-color: var(--admin-bg-color);
+    color: var(--admin-text-color);
+    font-family: var(--primary-font);
+    margin: 0;
+}
+
+/* --- 1. Simple Login Page --- */
+.admin-login-container { display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+.login-box { background: var(--admin-card-bg); border: 1px solid var(--admin-border-color); padding: 3rem; border-radius: 8px; text-align: center; width: 100%; max-width: 400px; }
+.login-box .admin-logo {
+    max-height: 50px;
+    width: auto;
+    filter: brightness(0) invert(1);
+    margin-bottom: 2rem;
+    background-image: url('https://res.cloudinary.com/dxzynrf5e/image/upload/v1759516687/logo_olhfmy.png'); /* Add your logo URL here */
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+.login-box h2 { font-family: var(--heading-font); font-weight: 400; font-size: 2rem; margin-bottom: 2rem; }
+.login-box .form-group { text-align: left; margin-bottom: 1.5rem; }
+.login-box input { width: 100%; padding: 12px; background-color: #2a2a2a; border: 1px solid #444; color: var(--admin-text-color); border-radius: 4px; }
+.admin-button { width: 100%; padding: 14px; border-radius: 8px; background: var(--admin-accent-color); color: #121212; font-weight: bold; border: none; cursor: pointer; transition: all 0.3s ease; }
+.admin-button:hover { opacity: 0.9; }
+
+/* --- 2. Simple Dashboard Layout --- */
+.dashboard-header {
+    background: #181818;
+    padding: 1rem 2rem;
+    border-bottom: 1px solid var(--admin-border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.dashboard-header .admin-logo { max-height: 35px; }
+.dashboard-header-title { font-family: var(--heading-font); font-size: 1.5rem; }
+.admin-logout-btn { color: #aaa; background: none; border: 1px solid #444; padding: 8px 15px; border-radius: 5px; cursor: pointer; transition: all 0.3s ease; }
+.admin-logout-btn:hover { border-color: #e74c3c; color: #e74c3c; }
+
+.dashboard-main { padding: 2rem; }
+.dashboard-actions { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem; }
+.dashboard-actions h1 { font-size: 2.5rem; margin: 0; }
+
+/* --- 3. Product Table (Desktop View) --- */
+.product-management-table { overflow-x: auto; background-color: var(--admin-card-bg); border: 1px solid var(--admin-border-color); border-radius: 8px; }
+table { width: 100%; border-collapse: collapse; }
+th, td { padding: 1rem 1.5rem; border-bottom: 1px solid var(--admin-border-color); text-align: left; vertical-align: middle; }
+tbody tr:last-child td { border-bottom: none; }
+thead { background-color: #2a2a2a; }
+thead th { color: #aaa; font-size: 0.8rem; text-transform: uppercase; }
+.table-product-image { width: 50px; height: 50px; object-fit: cover; border-radius: 4px; }
+td.action-buttons { display: flex; gap: 10px; }
+td.action-buttons button { background: none; border: 1px solid #444; color: #aaa; width: 35px; height: 35px; border-radius: 5px; cursor: pointer; transition: all 0.3s ease; }
+td.action-buttons .edit-btn:hover { border-color: #3498db; color: #3498db; }
+td.action-buttons .delete-btn:hover { border-color: #e74c3c; color: #e74c3c; }
+
+/* --- 4. RESPONSIVE STYLES (The Fix) --- */
+@media (max-width: 768px) {
+    /* Transform the table into a list of cards on mobile */
+    .product-management-table table, .product-management-table thead, .product-management-table tbody, .product-management-table th, .product-management-table td, .product-management-table tr { 
+        display: block; 
+    }
+    .product-management-table thead tr { 
+        position: absolute; 
+        top: -9999px; 
+        left: -9999px; 
+    }
+    .product-management-table tr { 
+        border: 1px solid var(--admin-border-color); 
+        border-radius: 8px; 
+        margin-bottom: 1rem; 
+        background: var(--admin-card-bg); 
+    }
+    .product-management-table td { 
+        border: none; 
+        border-bottom: 1px solid var(--admin-border-color); 
+        position: relative; 
+        padding-left: 50%; 
+        text-align: right; 
+        min-height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+    }
+    .product-management-table td:before { 
+        position: absolute; 
+        top: 50%; 
+        left: 1rem; 
+        transform: translateY(-50%); 
+        width: 45%; 
+        padding-right: 10px; 
+        white-space: nowrap; 
+        text-align: left; 
+        font-weight: bold; 
+        color: #aaa; 
+        content: attr(data-label); 
+    }
+    .product-management-table td:last-child { 
+        border-bottom: 0; 
+    }
+    td.action-buttons { 
+        justify-content: flex-end; 
+    }
+    .table-product-image { 
+        display: block; 
+        margin-left: auto; 
+    }
+}
+
+/* --- 5. MODAL STYLES (Fixes the pop-up issue) --- */
+.modal-overlay { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.6); backdrop-filter: blur(5px); justify-content: center; align-items: center; }
+.cart-modal-content { background-color: #181818; color: var(--admin-text-color); border: 1px solid var(--admin-border-color); width: 90%; max-width: 600px; border-radius: 8px; position: relative; padding: 30px; }
+#product-modal .cart-modal-content { animation: fadeIn 0.3s ease-in-out; }
+#product-modal .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+#product-modal .form-group { margin-bottom: 1rem; }
+#product-modal label { display: block; margin-bottom: 0.5rem; font-size: 0.9rem; color: #aaa; }
+#product-modal input, #product-modal select { padding: 12px; background-color: #333; border: 1px solid #555; color: var(--admin-text-color); border-radius: 4px; width: 100%; }
+#product-modal .cta-button { margin-top: 1rem; }
+.cart-modal-close { position: absolute; top: 10px; right: 20px; font-size: 28px; border: none; background: none; cursor: pointer; color: #aaa; }
+@keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+
+/* --- New styles for admin dashboard --- */
+#pending-testimonials-body .action-buttons button.approve-btn:hover { border-color: #2ecc71; color: #2ecc71; }
+#pending-testimonials-body .action-buttons button.delete-btn:hover { border-color: #e74c3c; color: #e74c3c; }
+
+.logo {
+    display: block;
+    width: 150px;   /* control logo size */
+    height: 40px;
+    background: url("https://res.cloudinary.com/dxzynrf5e/image/upload/v1759516687/logo_olhfmy.png") 
+                no-repeat center center;
+    background-size: contain; /* makes sure it scales nicely */
+  }
+
+  /* --- 12. COUPON MANAGEMENT STYLES --- */
+.coupon-management-container {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 2rem;
+    align-items: flex-start;
+}
+.coupon-form-box, .coupon-list-box {
+    background: var(--admin-card-bg);
+    border: 1px solid var(--admin-border-color);
+    border-radius: 12px;
+    padding: 2rem;
+}
+.coupon-form-box h3, .coupon-list-box h3 {
+    font-family: var(--heading-font);
+    font-size: 1.5rem;
+    margin-top: 0;
+    margin-bottom: 1.5rem;
+    color: var(--admin-accent-color);
+}
+.coupon-management-container table {
+    margin-top: 0;
+}
+@media (max-width: 992px) {
+    .coupon-management-container {
+        grid-template-columns: 1fr;
+    }
+}

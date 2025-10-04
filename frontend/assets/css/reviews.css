@@ -1,0 +1,191 @@
+/* === Everaura Reviews Page Redesign === */
+
+/* --- 1. Cinematic Header --- */
+.reviews-hero-section {
+    height: 60vh;
+    min-height: 400px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    border-bottom: 1px solid var(--border-color);
+}
+
+/* --- 2. Interactive Masonry Grid --- */
+.reviews-page-section {
+    padding: 6rem 5%;
+}
+.reviews-grid {
+    column-count: 3; /* 3 columns on desktop */
+    column-gap: 1.5rem;
+}
+.review-card {
+    display: inline-block;
+    width: 100%;
+    margin-bottom: 1.5rem;
+    break-inside: avoid;
+    padding: 2rem;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.review-card:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+/* Alternating Colors */
+.review-card:nth-child(odd) {
+    background-color: var(--card-bg-color);
+}
+.review-card:nth-child(even) {
+    background-color: #222222; /* A slightly different dark shade */
+}
+
+.review-card .summary {
+    font-family: var(--heading-font);
+    font-size: 1.4rem;
+    font-style: italic;
+    margin-bottom: 1.5rem;
+}
+.review-card .name {
+    font-weight: bold;
+    color: var(--secondary-accent-color);
+    text-align: right;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+}
+
+/* --- 3. Full Review Pop-up Modal --- */
+#review-detail-modal .review-content {
+    background: var(--card-bg-color);
+    padding: 3rem;
+    border-radius: 8px;
+    max-width: 700px;
+    width: 90%;
+    border: 1px solid var(--border-color);
+    animation: fadeIn 0.3s ease;
+    position: relative;
+    text-align: left;
+}
+#review-detail-modal .summary {
+    font-family: var(--heading-font);
+    font-size: 2rem;
+    font-style: italic;
+    color: var(--accent-color);
+    margin-bottom: 2rem;
+    text-align: center;
+}
+#review-detail-modal .full-review {
+    color: #ccc;
+    line-height: 1.8;
+    margin-bottom: 2rem;
+}
+#review-detail-modal .name {
+    font-weight: bold;
+    color: var(--secondary-accent-color);
+    text-align: right;
+    font-size: 1rem;
+    text-transform: uppercase;
+}
+
+/* --- 4. Sticky Add Review Button --- */
+.sticky-add-review-btn {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    width: 60px;
+    height: 60px;
+    background-color: var(--accent-color);
+    color: var(--background-color);
+    border: none;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.4);
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    z-index: 100;
+}
+.sticky-add-review-btn:hover {
+    transform: scale(1.1);
+}
+
+/* --- 5. Responsive Adjustments --- */
+@media (max-width: 992px) {
+    .reviews-grid { column-count: 2; }
+}
+@media (max-width: 576px) {
+    .reviews-grid { column-count: 1; }
+    .reviews-hero-section h1 { font-size: 3rem; }
+    .sticky-add-review-btn { width: 50px; height: 50px; font-size: 1.2rem; bottom: 1rem; right: 1rem; }
+}
+
+.reviews-hero-section {
+    position: relative;
+    height: 60vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background-attachment: fixed; /* parallax effect */
+}
+
+.hero-image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('https://yourwebsite.com/path-to-image.jpg'); /* Use generated image */
+    background-size: cover;
+    background-position: center;
+    z-index: 1;
+    transform: scale(1.1); /* slight zoom for depth */
+}
+
+.hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.3);
+    z-index: 2;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 3;
+    text-align: center;
+    color: #fff;
+}
+
+.hero-content h1 {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+    letter-spacing: 1px;
+}
+
+.hero-content p {
+    font-size: 1.2rem;
+    max-width: 600px;
+    margin: 0 auto;
+}
+.reviews-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+}
+.review-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.review-card:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
