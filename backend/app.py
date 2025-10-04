@@ -14,12 +14,12 @@ load_dotenv()
 app = Flask(__name__)
 
 # --- SECURITY & CORS ---
-app.secret_key = os.getenv("SECRET_KEY", "fallback-secret-key")
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
 FRONTEND_URL = os.getenv("FRONTEND_URL", "*")  # Set your frontend domain in production
 CORS(app, origins=[FRONTEND_URL])
 
 # --- DATABASE ---
-app.config["MONGO_URI"] = os.getenv("MONGO_URI")
+app.config['MONGO_URI'] = os.environ.get('MONGO_URI')
 mongo = PyMongo(app)
 
 products_collection = mongo.db.products
@@ -33,10 +33,11 @@ testimonials_collection.create_index("status")
 
 
 # --- CLOUDINARY CONFIG ---
+
 cloudinary.config(
-    cloud_name=os.getenv("CLOUDINARY_CLOUD_NAME"),
-    api_key=os.getenv("CLOUDINARY_API_KEY"),
-    api_secret=os.getenv("CLOUDINARY_API_SECRET")
+    cloud_name=os.environ.get('CLOUDINARY_CLOUD_NAME'),
+    api_key=os.environ.get('CLOUDINARY_API_KEY'),
+    api_secret=os.environ.get('CLOUDINARY_API_SECRET')
 )
 
 # --- LOGGING ---
