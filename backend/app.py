@@ -28,9 +28,15 @@ testimonials_collection = mongo.db.testimonials
 coupons_collection = mongo.db.coupons
 
 # --- CREATE INDEXES ---
-coupons_collection.create_index("code", unique=True)
-products_collection.create_index("category")
-testimonials_collection.create_index("status")
+# Note: In a serverless environment, this will run on every cold start.
+# For production, it's often better to create indexes directly in your DB console.
+try:
+    coupons_collection.create_index("code", unique=True)
+    products_collection.create_index("category")
+    testimonials_collection.create_index("status")
+except Exception as e:
+    logging.warning(f"Could not create indexes, may already exist: {e}")
+
 
 # --- CLOUDINARY CONFIG ---
 cloudinary.config(
@@ -60,6 +66,13 @@ def serialize_doc(doc):
     return doc
 
 # --- ROUTES ---
+
+# --- Root Route (NEW) ---
+@app.route('/', methods=['GET'])
+def index():
+    """Provides a welcome message for the root URL."""
+    return jsonify({"message": "Welcome to the Ever-Aura API. Use the /api endpoints to interact."}), 200
+
 
 # --- Verses ---
 @app.route('/api/verses', methods=['GET'])
