@@ -4,4 +4,4 @@ flask-pymongo
 pymongo[srv]
 python-dotenv
 cloudinary
-bson
+gunicorn
