@@ -1,4 +1,4 @@
-const API_URL = 'https://everaura.vercel.app/api';
+const API_URL = 'https://ever-aura-beauty.vercel.app/api';
 
 document.addEventListener('DOMContentLoaded', () => {
     if (document.getElementById('login-form')) {
