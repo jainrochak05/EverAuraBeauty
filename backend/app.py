@@ -16,7 +16,27 @@ app = Flask(__name__)
 # --- SECURITY & CORS ---
 app.secret_key = os.getenv("SECRET_KEY", "fallback-secret-key")
 FRONTEND_URL = os.getenv("FRONTEND_URL", "https://jainrochak05.github.io")
-CORS(app, origins=[FRONTEND_URL], supports_credentials=True)
+CORS(
+    app,
+    resources={r"/api/*": {"origins": [FRONTEND_URL]}},
+    supports_credentials=True,
+    methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+)
+
+
+@app.before_request
+def handle_options():
+    if request.method == "OPTIONS":
+        response = app.make_default_options_response()
+        headers = response.headers
+
+        headers["Access-Control-Allow-Origin"] = FRONTEND_URL
+        headers["Access-Control-Allow-Methods"] = "GET,POST,PUT,DELETE,OPTIONS"
+        headers["Access-Control-Allow-Headers"] = request.headers.get(
+            "Access-Control-Request-Headers", ""
+        )
+        return response
+
 
 # --- DATABASE ---
 app.config["MONGO_URI"] = os.getenv("MONGO_URI")
