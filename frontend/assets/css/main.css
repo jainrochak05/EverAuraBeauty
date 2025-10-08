@@ -25,16 +25,16 @@ h1, h2, h3 { font-family: var(--heading-font); font-weight: 400; }
                 no-repeat center center;
     background-size: contain; /* makes sure it scales nicely */
   }
-.nav-links { display: flex; list-style: none; gap: 2.5rem; }
+.nav-links { display: flex; list-style: none; gap: 1.5rem; }
 .nav-links a { text-decoration: none; color: var(--text-color); font-size: 1rem; transition: color 0.3s ease; }
 .nav-links a:hover { color: var(--secondary-accent-color); }
 .header-icons { display: flex; gap: 1.5rem; align-items: center; }
 .header-icons a { color: var(--text-color); font-size: 1.1rem; position: relative; }
 .cart-count-badge { position: absolute; top: -5px; right: -8px; background-color: var(--accent-color); color: #000; border-radius: 50%; padding: 1px 5px; font-size: 9px; font-weight: bold; }
 .mobile-nav-toggle { display: none; background: none; border: none; cursor: pointer; z-index: 1001; }
-.mobile-nav-toggle span { display: block; width: 25px; height: 2px; background: var(--text-color); margin: 5px 0; transition: all 0.3s ease; }
-.mobile-nav-toggle.active span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
-.mobile-nav-toggle.active span:nth-child(2) { transform: rotate(-45deg) translate(5px, -5px); }
+.mobile-nav-toggle span { display: block; width: 20px; height: 2px; background: var(--text-color); margin: 5px 0; transition: all 0.3s ease; }
+.mobile-nav-toggle.active span:nth-child(1) { transform: rotate(45deg) translate(5px, 0px); }
+.mobile-nav-toggle.active span:nth-child(2) { transform: rotate(-45deg) translate(0px, 5px); }
 
 /* --- 3. HERO SECTION --- */
 .hero-section { padding-top: 100px; height: 90vh; display: flex; align-items: center; justify-content: center; text-align: center; color: var(--text-color); position: relative; background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), url("https://res.cloudinary.com/dxzynrf5e/image/upload/v1759516688/hero_yxhtyg.png") no-repeat center center/cover; }
@@ -166,7 +166,7 @@ h1, h2, h3 { font-family: var(--heading-font); font-weight: 400; }
 
 @media (max-width: 768px) {
     .main-nav { justify-content: space-between; }
-    .nav-links { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background: var(--background-color); flex-direction: column; justify-content: center; align-items: center; transform: translateX(-100%); transition: transform 0.4s ease-in-out; padding-top: 60px; }
+    .nav-links { position: fixed; top: 0; left: 0; width: 60%; height: 100vh; background: var(--background-color); flex-direction: column; justify-content: center; align-items: center; transform: translateX(-100%); transition: transform 0.4s ease-in-out; padding-top: 10px; }
     .nav-links.active { transform: translateX(0); }
     .mobile-nav-toggle { display: block; z-index: 1001; }
     .hero-content h1 { font-size: 12vw; }
