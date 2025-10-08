@@ -106,3 +106,34 @@
     height: 750px;
     border-radius: 8px;
   }
+
+
+  /* === ABOUT PAGE MOBILE === */
+@media (max-width: 768px) {
+    .about-header {
+        height: 30vh;
+        min-height: 250px;
+    }
+    
+    .about-section {
+        padding: 3rem 5%;
+        gap: 2rem;
+    }
+    
+    .about-text h2 {
+        font-size: 2rem !important;
+    }
+    
+    .about-text p {
+        font-size: 1rem;
+    }
+    
+    .about-text .highlight-text {
+        font-size: 1.1rem;
+    }
+    
+    .about-image.craftsmanship,
+    .about-image.founder-image {
+        height: 400px;
+    }
+  }

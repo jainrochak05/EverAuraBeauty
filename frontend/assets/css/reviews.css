@@ -189,3 +189,29 @@
     transform: translateY(-5px) scale(1.02);
     box-shadow: 0 10px 30px rgba(0,0,0,0.3);
 }
+
+
+
+/* === REVIEWS PAGE MOBILE === */
+@media (max-width: 768px) {
+    .reviews-hero-section {
+        height: 40vh;
+        min-height: 300px;
+    }
+    
+    .reviews-hero-section h1 {
+        font-size: 2rem !important;
+    }
+    
+    .reviews-page-section {
+        padding: 3rem 5%;
+    }
+    
+    .review-card {
+        padding: 1.5rem;
+    }
+    
+    .review-card .summary {
+        font-size: 1.2rem;
+    }
+  }

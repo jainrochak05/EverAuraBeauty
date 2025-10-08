@@ -132,3 +132,27 @@
         gap: 3rem;
     }
 }
+
+
+
+/* === CONTACT PAGE MOBILE === */
+@media (max-width: 768px) {
+    .contact-header {
+        height: 30vh;
+        min-height: 250px;
+    }
+    
+    .contact-section {
+        padding: 3rem 5%;
+    }
+    
+    .contact-form-container h2,
+    .contact-info-container h2 {
+        font-size: 2rem;
+    }
+    
+    .contact-form-container,
+    .contact-info-container {
+        padding: 1.5rem;
+    }
+  }

@@ -173,3 +173,21 @@ td.action-buttons .delete-btn:hover { border-color: #e74c3c; color: #e74c3c; }
         grid-template-columns: 1fr;
     }
 }
+
+
+/* === FIX FOR COUPON SECTION IN ADMIN === */
+@media (max-width: 768px) {
+    .coupon-management-container {
+        grid-template-columns: 1fr !important;
+        gap: 1.5rem;
+    }
+    
+    .coupon-form-box, .coupon-list-box {
+        padding: 1.5rem;
+    }
+    
+    .coupon-form-box h3, .coupon-list-box h3 {
+        font-size: 1.3rem;
+    }
+  }
+  
