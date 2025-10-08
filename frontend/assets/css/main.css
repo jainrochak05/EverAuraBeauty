@@ -1264,4 +1264,311 @@ h1, h2, h3 { font-family: var(--heading-font); font-weight: 400; }
 
 
 
+/* ============================================
+   MOBILE RESPONSIVENESS FIXES - MAIN.CSS ONLY
+   Add this at the end of main.css
+   ============================================ */
 
+/* === MOBILE-SPECIFIC FIXES === */
+@media (max-width: 768px) {
+    
+  /* 1. HERO SECTION - Reduce size and padding */
+  .hero-section {
+      height: 70vh;
+      padding: 2rem 5%;
+  }
+  
+  .hero-content h1 {
+      font-size: 2.5rem !important;
+      line-height: 1.2;
+      margin-bottom: 1rem;
+  }
+  
+  .hero-content p {
+      font-size: 0.95rem;
+      max-width: 90%;
+      margin: 0 auto 1.5rem auto;
+  }
+  
+  .hero-subtitle {
+      font-size: 0.85rem;
+  }
+  
+  /* 2. SECTION TITLES - Reduce size */
+  .section-title {
+      font-size: 1.8rem !important;
+      margin-bottom: 2rem;
+  }
+  
+  /* 3. CATEGORY SECTION */
+  .category-section {
+      padding: 3rem 5%;
+  }
+  
+  .category-grid {
+      grid-template-columns: 1fr !important;
+      gap: 1rem;
+  }
+  
+  .category-card {
+      height: 250px;
+  }
+  
+  .category-card-overlay h3 {
+      font-size: 1.2rem;
+  }
+  
+  /* 4. FEATURED PRODUCTS - DON'T HIDE */
+  .featured-products {
+      padding: 3rem 5%;
+      display: block !important;
+      visibility: visible !important;
+  }
+  
+  .featured-carousel-container {
+      padding: 0 10px;
+      display: block !important;
+  }
+  
+  .featured-swiper {
+      display: block !important;
+      visibility: visible !important;
+  }
+  
+  /* Make sure swiper slides show on mobile */
+  .featured-swiper .swiper-wrapper {
+      display: flex !important;
+  }
+  
+  .featured-swiper .swiper-slide {
+      display: block !important;
+      width: 100% !important;
+  }
+  
+  /* 5. PRODUCT CARDS - Fix proportions */
+  .product-card {
+      margin: 0 auto;
+      max-width: 100%;
+      display: flex !important;
+      flex-direction: column !important;
+  }
+  
+  .product-image {
+      height: 280px !important;
+      display: block !important;
+  }
+  
+  .product-info {
+      padding: 1rem;
+      display: flex !important;
+      flex-direction: column !important;
+  }
+  
+  .product-info h3 {
+      font-size: 1.1rem;
+      margin-bottom: 0.5rem;
+  }
+  
+  .product-info .price {
+      font-size: 1rem;
+  }
+  
+  .add-to-cart-btn, .whatsapp-btn {
+      padding: 8px 16px;
+      font-size: 0.9rem;
+      display: block !important;
+  }
+  
+  /* 6. MANIFESTO SECTION */
+  .manifesto-section {
+      padding: 4rem 5%;
+  }
+  
+  .manifesto-section p {
+      font-size: 1.1rem !important;
+  }
+  
+  .manifesto-section h2 {
+      font-size: 2rem !important;
+  }
+  
+  /* 7. TESTIMONIAL SECTION - DON'T HIDE */
+  .testimonial-section {
+      padding: 3rem 5%;
+      display: block !important;
+      visibility: visible !important;
+  }
+  
+  .testimonial-swiper {
+      display: block !important;
+      visibility: visible !important;
+  }
+  
+  .testimonial-swiper .swiper-wrapper {
+      display: flex !important;
+  }
+  
+  .testimonial-swiper .swiper-slide {
+      display: block !important;
+  }
+  
+  .testimonial-slide {
+      padding: 1.5rem;
+      display: block !important;
+  }
+  
+  .testimonial-slide .summary {
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+  }
+  
+  .testimonial-slide .name {
+      font-size: 0.85rem;
+  }
+  
+  .testimonial-actions {
+      flex-direction: column;
+      gap: 0.8rem;
+      margin-top: 2rem;
+      display: flex !important;
+  }
+  
+  .cta-button, .cta-button-outline {
+      width: 100%;
+      text-align: center;
+      padding: 10px 20px;
+      font-size: 0.9rem;
+  }
+  
+  /* 8. FINAL CTA SECTION */
+  .final-cta-section {
+      padding: 5rem 5%;
+  }
+  
+  .final-cta-content h2 {
+      font-size: 2rem !important;
+  }
+  
+  .final-cta-content p {
+      font-size: 1rem;
+  }
+  
+  /* 9. FOOTER - CENTERED NOT LEFT ALIGNED */
+  .main-footer {
+      padding: 2rem 5% 1rem;
+      width: 100%;
+  }
+  
+  .footer-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center !important; /* CENTER everything */
+      justify-content: center !important;
+      text-align: center !important; /* Center text */
+      gap: 1.5rem;
+      width: 100%;
+      margin: 0 auto;
+  }
+  
+  .footer-logo {
+      width: 100%;
+      text-align: center;
+      display: flex;
+      justify-content: center;
+  }
+  
+  .footer-logo .logo {
+      width: 120px;
+      height: 32px;
+      margin: 0 auto;
+  }
+  
+  .footer-links {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+      width: 100%;
+      align-items: center;
+      text-align: center;
+  }
+  
+  .footer-links a {
+      font-size: 0.95rem;
+  }
+  
+  .footer-social {
+      display: flex;
+      gap: 1.2rem;
+      justify-content: center;
+      width: 100%;
+  }
+  
+  .footer-social a {
+      font-size: 1.1rem;
+  }
+  
+  .footer-copyright {
+      font-size: 0.85rem;
+      margin-top: 1.5rem;
+      text-align: center;
+      width: 100%;
+  }
+  
+  .admin-login-link {
+      text-align: center;
+      width: 100%;
+  }
+  
+  /* 10. NAVIGATION - FIX CART & WISHLIST VISIBILITY */
+  .main-header {
+      padding: 0.8rem 5%;
+  }
+  
+  .main-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+  }
+  
+  .header-icons {
+      display: flex !important;
+      gap: 1.2rem;
+      align-items: center;
+      visibility: visible !important;
+      opacity: 1 !important;
+      z-index: 1002;
+  }
+  
+  .header-icons a {
+      display: flex !important;
+      font-size: 1.1rem;
+      color: var(--text-color);
+      position: relative;
+  }
+  
+  .header-icons a i {
+      display: block !important;
+      visibility: visible !important;
+  }
+  
+  .cart-count-badge {
+      display: block !important;
+      font-size: 8px;
+      padding: 1px 4px;
+  }
+  
+  /* Make sure mobile menu doesn't cover icons */
+  .mobile-nav-toggle {
+      z-index: 1001;
+      order: -1; /* Moves hamburger to the left */
+  }
+  
+  .logo {
+      order: 0; /* Logo in middle */
+  }
+  
+  .header-icons {
+      order: 1; /* Icons on the right */
+  }
+}

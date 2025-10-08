@@ -42,6 +42,25 @@
         </section>
 
         <section class="contact-section">
+            <div class="contact-info-container">
+                <h2>Contact Information</h2>
+                <p>Have a question or a special request? We'd love to hear from you. Reach out to us directly or through our social channels.</p>
+                <div class="contact-details">
+                    <div class="contact-item">
+                        <i class="fa-solid fa-envelope"></i>
+                        <a href="mailto:EVERAURA.BEAUTYNSTYLE@GMAIL.COM">EVERAURA.BEAUTYNSTYLE@GMAIL.COM</a>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fa-solid fa-phone"></i>
+                        <a href="tel:+919425545594">+91 94255 45594</a>
+                    </div>
+                </div>
+                <div class="contact-social">
+                    <a href="https://www.instagram.com/_ever_aura_/" target="_blank" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="https://www.facebook.com/profile.php?id=61577357500639" target="_blank" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+                    <a href="https://chat.whatsapp.com/Lg0BfM6EaJf7FYlLS7le8r" target="_blank" aria-label="Whatsapp"><i class="fa-brands fa-whatsapp"></i></a>
+                </div>
+            </div>
             <div class="contact-form-container">
                 <h2>Send Us a Message</h2>
                 <form id="contact-form" onsubmit="event.preventDefault(); alert('Thank you for your message!');">
@@ -64,31 +83,12 @@
                     <button type="submit" class="cta-button">Send Message</button>
                 </form>
             </div>
-            <div class="contact-info-container">
-                <h2>Contact Information</h2>
-                <p>Have a question or a special request? We'd love to hear from you. Reach out to us directly or through our social channels.</p>
-                <div class="contact-details">
-                    <div class="contact-item">
-                        <i class="fa-solid fa-envelope"></i>
-                        <a href="mailto:EVERAURA.BEAUTYNSTYLE@GMAIL.COM">EVERAURA.BEAUTYNSTYLE@GMAIL.COM</a>
-                    </div>
-                    <div class="contact-item">
-                        <i class="fa-solid fa-phone"></i>
-                        <a href="tel:+919425545594">+91 94255 45594</a>
-                    </div>
-                </div>
-                <div class="contact-social">
-                    <a href="https://www.instagram.com/_ever_aura_/" target="_blank" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
-                    <a href="https://www.facebook.com/profile.php?id=61577357500639" target="_blank" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
-                    <a href="https://chat.whatsapp.com/Lg0BfM6EaJf7FYlLS7le8r" target="_blank" aria-label="Whatsapp"><i class="fa-brands fa-whatsapp"></i></a>
-                </div>
-            </div>
         </section>
     </main>
 
     <footer class="main-footer">
         <div class="footer-content">
-            <div class="footer-logo"><<a href="index.html" class="logo"></a></div>
+            <div class="footer-logo"><a href="index.html" class="logo"></a></div>
             <div class="footer-links">
                 <a href="shop.html">Shop</a>
                 <a href="about.html">Our Story</a>
@@ -105,36 +105,7 @@
         <a href="admin.html" class="admin-login-link">Admin</a>
     </footer>
 
-    <div id="cart-modal" class="modal-overlay">
-        <div class="cart-modal-content">
-            <button class="cart-modal-close" onclick="closeModal('cart-modal')">&times;</button>
-            <h3>Your Cart</h3>
-            
-            <div id="cart-items">
-                <!-- JS will populate cart items here -->
-            </div>
-    
-            <!-- Coupon Section -->
-            <div class="coupon-area">
-                <input type="text" id="coupon-code-input" placeholder="Enter coupon code" />
-                <button class="apply-coupon-btn" onclick="applyCoupon()">Apply</button>
-            </div>
-    
-            <!-- Applied coupon display -->
-            <div id="applied-coupon" class="coupon-applied" style="display: none;">
-                <span id="applied-coupon-code"></span>
-                <button class="remove-coupon-btn" onclick="removeCoupon()">Remove</button>
-            </div>
-    
-            <!-- Cart totals -->
-            <div id="cart-totals">
-                <p>Subtotal: <span id="cart-subtotal">0</span></p>
-                <p>Total after coupon: <span id="cart-total">0</span></p>
-            </div>
-    
-            <button class="checkout-btn" onclick="proceedToCheckout()">Proceed to Checkout</button>
-        </div>
-    </div>
+    <div id="cart-modal" class="modal-overlay"></div>
     <div id="wishlist-modal" class="modal-overlay"></div>
     <div id="toast-container"></div>
     <script src="assets/js/app.js"></script>

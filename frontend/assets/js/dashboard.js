@@ -102,23 +102,70 @@ async function loadProductsIntoTable(){const e=document.getElementById("product-
                     </td>
                 </tr>
             `})}catch(t){console.error("Failed to load products:",t),e.innerHTML='<tr><td colspan="6">Error loading products. Is the backend server running?</td></tr>'}}
-function createProductForm(e={}){const t=!!e._id,o=t?`Edit Product (ID: ${e.id})`:"Add New Product";return`
-        <div class="cart-modal-content">
-            <button class="cart-modal-close" onclick="closeProductModal()">&times;</button>
-            <h3>${o}</h3>
-            <form id="product-form" onsubmit="event.preventDefault(); handleFormSubmit('${e._id||""}')">
+
+
+// A redesigned function to generate a much cleaner form
+function createProductForm(product = {}) {
+    const isEdit = !!product._id;
+    const title = isEdit ? `Edit Product (ID: ${product.id})` : "Add New Product";
+
+    // This HTML structure is cleaner and uses classes for better styling
+    return `
+        <div class="modal-content">
+            <button class="modal-close-btn" onclick="closeProductModal()">&times;</button>
+            <h3>${title}</h3>
+            <form id="product-form" onsubmit="event.preventDefault(); handleFormSubmit('${product._id || ''}')">
                 <div class="form-grid">
-                    <div class="form-group"><label for="product-id">Product ID</label><input type="number" id="product-id" value="${e.id||""}" ${t?"disabled":""} required></div>
-                    <div class="form-group"><label for="product-name">Name</label><input type="text" id="product-name" value="${e.name||""}" required></div>
-                    <div class="form-group"><label for="product-price">Price</label><input type="number" id="product-price" value="${e.price||""}" step="0.01" required></div>
-                    <div class="form-group"><label for="product-category">Main Category</label><select id="product-category" required><option value="Necklaces" ${"Necklaces"===e.category?"selected":""}>Necklaces</option><option value="Earrings" ${"Earrings"===e.category?"selected":""}>Earrings</option><option value="Bangles/Bracelets" ${"Bangles/Bracelets"===e.category?"selected":""}>Bangles/Bracelets</option></select></div>
-                    <div class="form-group"><label for="product-tarnish">Tarnish Type</label><select id="product-tarnish" required><option value="y" ${"y"===e.isAntiTarnish?"selected":""}>Anti-Tarnish</option><option value="n" ${!e.isAntiTarnish||"n"===e.isAntiTarnish?"selected":""}>Tarnish</option></select></div>
-                    <div class="form-group"><label style="display:flex; align-items:center; gap:10px;"><input type="checkbox" id="product-trending" ${"y"===e.isTrending?"checked":""}> Is Trending?</label></div>
+                    <div class="form-group">
+                        <label for="product-id">Product ID</label>
+                        <input type="number" id="product-id" value="${product.id || ''}" ${isEdit ? 'disabled' : ''} required>
+                    </div>
+                    <div class="form-group">
+                        <label for="product-name">Name</label>
+                        <input type="text" id="product-name" value="${product.name || ''}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="product-price">Price</label>
+                        <input type="number" id="product-price" value="${product.price || ''}" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="product-category">Main Category</label>
+                        <select id="product-category" required>
+                            <option value="Necklaces" ${product.category === 'Necklaces' ? 'selected' : ''}>Necklaces</option>
+                            <option value="Earrings" ${product.category === 'Earrings' ? 'selected' : ''}>Earrings</option>
+                            <option value="Rings" ${product.category === 'Rings' ? 'selected' : ''}>Rings</option>
+                            <option value="Bangles/Bracelets" ${product.category === 'Bangles/Bracelets' ? 'selected' : ''}>Bangles/Bracelets</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="product-tarnish">Tarnish Type</label>
+                        <select id="product-tarnish" required>
+                            <option value="y" ${product.isAntiTarnish === 'y' ? 'selected' : ''}>Anti-Tarnish</option>
+                            <option value="n" ${!product.isAntiTarnish || product.isAntiTarnish === 'n' ? 'selected' : ''}>Tarnish</option>
+                        </select>
+                    </div>
+                     <div class="form-group form-group-checkbox">
+                        <input type="checkbox" id="product-trending" ${product.isTrending === 'y' ? 'checked' : ''}>
+                        <label for="product-trending">Is Trending?</label>
+                    </div>
                 </div>
-                ${t?"":'<div class="form-group"><label for="product-image">Product Image (Primary)</label><input type="file" id="product-image" name="image" accept="image/*" required></div>'}
-                <button type="submit" class="cta-button admin-button">${t?"Save Changes":"Add Product"}</button>
+                
+                ${!isEdit ? `
+                <div class="form-group">
+                    <label for="product-image">Product Image (Primary)</label>
+                    <input type="file" id="product-image" name="image" accept="image/*" required>
+                </div>` : ''}
+                
+                <button type="submit" class="cta-button admin-button">${isEdit ? "Save Changes" : "Add Product"}</button>
             </form>
-        </div>`}
+        </div>`;
+}
+
+
+
+
+
+
 async function showEditProductModal(e){const t=await fetch(`${API_URL}/products`),o=await t.json(),a=o.find(t=>t._id===e);if(!a)return void alert("Product not found!");const d=document.getElementById("product-modal");d.innerHTML=createProductForm(a),d.style.display="flex"}
 function showAddProductModal(){const e=document.getElementById("product-modal");e.innerHTML=createProductForm(),e.style.display="flex"}function closeProductModal(){document.getElementById("product-modal").style.display="none"}async function handleFormSubmit(e){const t=!!e,o=t?`${API_URL}/products/${e}`:`${API_URL}/products`,a=t?"PUT":"POST";let d,n;if(t)n={"Content-Type":"application/json"},d=JSON.stringify({name:document.getElementById("product-name").value,price:parseFloat(document.getElementById("product-price").value),category:document.getElementById("product-category").value,isAntiTarnish:document.getElementById("product-tarnish").value,isTrending:document.getElementById("product-trending").checked?"y":"n"});else{n={},d=new FormData;d.append("id",document.getElementById("product-id").value),d.append("name",document.getElementById("product-name").value),d.append("price",document.getElementById("product-price").value),d.append("category",document.getElementById("product-category").value),d.append("isAntiTarnish",document.getElementById("product-tarnish").value),d.append("isTrending",document.getElementById("product-trending").checked?"y":"n"),d.append("images",document.getElementById("product-image").files[0])}try{const e=await fetch(o,{method:a,headers:n,body:d});if(!e.ok){const t=await e.json();throw new Error(t.error||`Failed to ${t?"update":"add"} product`)}loadProductsIntoTable(),closeProductModal(),alert(`Product ${t?"updated":"added"} successfully!`)}catch(e){console.error("Error:",e),alert(`Failed to save product: ${e.message}`)}}async function deleteProduct(e){if(confirm("Are you sure you want to permanently delete this product?"))try{const t=await fetch(`${API_URL}/products/${e}`,{method:"DELETE"});if(!t.ok)throw new Error("Failed to delete product");loadProductsIntoTable(),alert("Product deleted successfully.")}catch(e){console.error("Error:",e),alert("Failed to delete product. See console for details.")}}
 document.addEventListener("DOMContentLoaded", () => {
