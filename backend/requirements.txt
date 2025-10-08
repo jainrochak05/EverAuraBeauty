@@ -1,7 +1,6 @@
 Flask
 flask-cors
 flask-pymongo
-pymongo[srv]
 python-dotenv
 cloudinary
-gunicorn
+pymongo

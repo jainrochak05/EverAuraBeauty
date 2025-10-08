@@ -15,8 +15,8 @@ app = Flask(__name__)
 
 # --- SECURITY & CORS ---
 app.secret_key = os.getenv("SECRET_KEY", "fallback-secret-key")
-FRONTEND_URL = os.getenv("FRONTEND_URL", "*")  # Set your frontend domain in production
-CORS(app, origins=[FRONTEND_URL])
+FRONTEND_URL = os.getenv("FRONTEND_URL", "https://jainrochak05.github.io")
+CORS(app, origins=[FRONTEND_URL], supports_credentials=True)
 
 # --- DATABASE ---
 app.config["MONGO_URI"] = os.getenv("MONGO_URI")
@@ -51,6 +51,17 @@ def serialize_doc(doc):
 
 
 # --- ROUTES ---
+
+@app.route('/')
+def index():
+    return jsonify({
+        "status": "Backend live on Vercel ✅",
+        "allowed_origin": FRONTEND_URL
+    })
+
+
+
+
 
 # --- Coupons ---
 @app.route('/api/coupons', methods=['POST'])
@@ -263,4 +274,5 @@ def health_check():
 
 # --- RUN APP ---
 # Use Gunicorn or uWSGI in production, not the built-in server
+
 
