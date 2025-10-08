@@ -37,12 +37,14 @@ body.admin-body {
     padding: 3rem; border-radius: 12px; text-align: center;
     width: 100%; max-width: 400px; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
 }
-.login-box .logo {
-    display: block; width: 150px; height: 40px;
+.login-box .admin-logo {
+    display: block;
+    width: 150px;
+    height: 40px;
     background: url("https://res.cloudinary.com/dxzynrf5e/image/upload/v1759516687/logo_olhfmy.png") no-repeat center center;
-    background-size: contain; filter: brightness(0) invert(1);
-    margin: 0 auto 2rem auto;
-}
+    background-size: contain;
+    
+    margin: 0 auto 2rem}
 .login-box h2 { font-family: var(--heading-font); font-weight: 700; font-size: 2rem; margin-bottom: 2rem; }
 .login-box .form-group { text-align: left; margin-bottom: 1.5rem; }
 .login-box input {
