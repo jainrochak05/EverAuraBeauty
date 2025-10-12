@@ -15,10 +15,10 @@ app = Flask(__name__)
 
 # --- SECURITY & CORS ---
 app.secret_key = os.getenv("SECRET_KEY", "fallback-secret-key")
-FRONTEND_URL = os.getenv("FRONTEND_URL", "*")
+FRONTEND_URL = os.getenv("FRONTEND_URL")
 CORS(
     app,
-    resources={r"/api/*": {"origins": [FRONTEND_URL]}},
+    resources={r"/api/*": {"origins": os.getenv("FRONTEND_URL")}},
     supports_credentials=True,
     methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"]
 )
@@ -30,7 +30,7 @@ def handle_options():
         response = app.make_default_options_response()
         headers = response.headers
 
-        headers["Access-Control-Allow-Origin"] = FRONTEND_URL
+        headers["Access-Control-Allow-Origin"] = os.getenv("FRONTEND_URL")
         headers["Access-Control-Allow-Methods"] = "GET,POST,PUT,DELETE,OPTIONS"
         headers["Access-Control-Allow-Headers"] = request.headers.get(
             "Access-Control-Request-Headers", ""
