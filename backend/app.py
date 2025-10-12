@@ -15,7 +15,7 @@ app = Flask(__name__)
 
 # --- SECURITY & CORS ---
 app.secret_key = os.getenv("SECRET_KEY", "fallback-secret-key")
-FRONTEND_URL = os.getenv("FRONTEND_URL", "https://jainrochak05.github.io")
+FRONTEND_URL = os.getenv("FRONTEND_URL", "*")
 CORS(
     app,
     resources={r"/api/*": {"origins": [FRONTEND_URL]}},
