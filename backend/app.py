@@ -69,6 +69,54 @@ def serialize_doc(doc):
         doc["_id"] = str(doc["_id"])
     return doc
 
+def generate_rsn(category, gender, type_, material):
+    # Mapping for category digit
+    category_map = {
+        "Earrings": "1",
+        "Bangles/Bracelets": "2",
+        "Necklace": "3",
+        "Rings": "4"
+    }
+    # Mapping for gender digit
+    gender_map = {
+        "Her": "0",
+        "Him": "1"
+    }
+    # type_ and material are expected as integers (0 or 1 etc.)
+    # Material mapping for clarity (not needed for generation, but for validation)
+    material_map = {
+        0: "0",
+        1: "1",
+        2: "2",
+        3: "3",
+        4: "4"
+    }
+
+    cat_digit = category_map.get(category, "0")
+    gender_digit = gender_map.get(gender, "0")
+    type_digit = str(type_) if type_ in [0,1] else "0"
+    material_digit = material_map.get(material, "0")
+
+    # Find last used article number for this combination (category + type)
+    prefix = cat_digit + type_digit
+    # Query for products with rsn starting with prefix
+    last_product = products_collection.find(
+        {"rsn": {"$regex": f"^{prefix}"}}
+    ).sort("rsn", -1).limit(1)
+    last_number = 0
+    for prod in last_product:
+        rsn_str = prod.get("rsn", "")
+        if len(rsn_str) == 6:
+            try:
+                last_number = int(rsn_str[-4:])
+            except:
+                last_number = 0
+    next_number = last_number + 1
+    next_number_str = str(next_number).zfill(4)
+
+    rsn = cat_digit + gender_digit + type_digit + material_digit + next_number_str
+    return rsn
+
 
 # --- ROUTES ---
 
@@ -171,13 +219,42 @@ def add_product():
         upload_result = cloudinary.uploader.upload(file_to_upload, folder="everaura_products")
         image_url = upload_result.get("secure_url")
 
+        # Extract form fields
+        id_val = int(request.form.get('id'))
+        name = request.form.get('name')
+        price = float(request.form.get('price'))
+        category = request.form.get('category')
+        gender = request.form.get('gender')
+        type_str = request.form.get('type')
+        material_str = request.form.get('material')
+        rsn = request.form.get('rsn')
+        description = request.form.get('description')
+
+        # Convert type and material to integers if possible
+        try:
+            type_int = int(type_str)
+        except:
+            type_int = 0
+        try:
+            material_int = int(material_str)
+        except:
+            material_int = 0
+
+        # Generate RSN if not provided or empty
+        if not rsn or rsn.strip() == "":
+            rsn = generate_rsn(category, gender, type_int, material_int)
+
         new_product = {
-            "id": int(request.form.get('id')),
-            "name": request.form.get('name'),
-            "price": float(request.form.get('price')),
-            "category": request.form.get('category'),
+            "id": id_val,
+            "name": name,
+            "price": price,
+            "category": category,
+            "gender": gender,
+            "type": type_int,
+            "material": material_int,
+            "rsn": rsn,
+            "description": description,
             "isTrending": request.form.get('isTrending'),
-            "isAntiTarnish": request.form.get('isAntiTarnish'),
             "images": [image_url]
         }
         result = products_collection.insert_one(new_product)
@@ -239,6 +316,29 @@ def add_testimonial():
         return jsonify({"error": "Internal server error"}), 500
 
 
+# --- New: Get all testimonials (approved and pending) ---
+@app.route('/api/testimonials', methods=['GET'])
+def get_all_testimonials():
+    try:
+        testimonials = testimonials_collection.find()
+        result = []
+        for t in testimonials:
+            # Only include selected fields
+            obj = {
+                "_id": str(t.get("_id")),
+                "name": t.get("name"),
+                "summary": t.get("summary"),
+                "full_review": t.get("full_review"),
+                "status": t.get("status"),
+                "submitted_at": t.get("submitted_at"),
+            }
+            result.append(obj)
+        return jsonify(result)
+    except Exception as e:
+        logger.error("Failed to fetch all testimonials", exc_info=True)
+        return jsonify({"error": "Internal server error"}), 500
+
+
 @app.route('/api/testimonials/approved', methods=['GET'])
 def get_approved_testimonials():
     try:
@@ -294,5 +394,3 @@ def health_check():
 
 # --- RUN APP ---
 # Use Gunicorn or uWSGI in production, not the built-in server
-
-
