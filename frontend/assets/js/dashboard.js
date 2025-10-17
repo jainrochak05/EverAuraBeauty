@@ -214,7 +214,11 @@ async function loadProductsIntoTable() {
     const o = await t.json();
     (e.innerHTML = ""),
       o
-        .sort((e, t) => e.id - t.id)
+        .sort((a, b) => {
+          // Sort by RSN (as string, since it's unique and numeric-like)
+          if (a.rsn && b.rsn) return a.rsn.localeCompare(b.rsn);
+          return 0;
+        })
         .forEach((t) => {
           const o =
             t.images && t.images.length > 0
@@ -225,6 +229,7 @@ async function loadProductsIntoTable() {
                     <td data-label="Image"><img src="${o}" alt="${
             t.name
           }" class="table-product-image"></td>
+                    <td data-label="RSN">${t.rsn || "N/A"}</td>
                     <td data-label="Name">${t.name}</td>
                     <td data-label="Price">₹${t.price.toFixed(2)}</td>
                     <td data-label="Category">${t.category || "N/A"}</td>
@@ -252,7 +257,12 @@ async function loadProductsIntoTable() {
 // A redesigned function to generate a much cleaner form
 function createProductForm(product = {}) {
   const isEdit = !!product._id;
-  const title = isEdit ? `Edit Product (ID: ${product.id})` : "Add New Product";
+  const title = isEdit
+    ? `Edit Product (RSN: ${product.rsn || "N/A"})`
+    : "Add New Product";
+
+  // Default gender for new product is "0" (Her)
+  const genderValue = typeof product.gender !== "undefined" ? product.gender : "0";
 
   // This HTML structure is cleaner and uses classes for better styling
   return `
@@ -263,12 +273,6 @@ function createProductForm(product = {}) {
               product._id || ""
             }')">
                 <div class="form-grid">
-                    <div class="form-group">
-                        <label for="product-id">Product ID</label>
-                        <input type="number" id="product-id" value="${
-                          product.id || ""
-                        }" ${isEdit ? "disabled" : ""} required>
-                    </div>
                     <div class="form-group">
                         <label for="product-name">Name</label>
                         <input type="text" id="product-name" value="${
@@ -298,6 +302,13 @@ function createProductForm(product = {}) {
                                 ? "selected"
                                 : ""
                             }>Bangles/Bracelets</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="product-gender">Gender</label>
+                        <select id="product-gender" onchange="updateRSNPreview();">
+                          <option value="0" ${genderValue === "0" ? "selected" : ""}>Her</option>
+                          <option value="1" ${genderValue === "1" ? "selected" : ""}>Him</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -455,12 +466,11 @@ async function generateRSN(category, gender, type, material) {
 
 function updateRSNPreview() {
   const category = document.getElementById("product-category").value;
-  // Gender is not in form, assume Her (0) by default for preview
-  const gender = "0";
+  // Get gender from form
+  const genderSelect = document.getElementById("product-gender");
+  const gender = genderSelect ? genderSelect.value : "0";
   const tarnishValue = document.getElementById("product-tarnish").value;
   // type: 0=Anti Tarnish, 1=Jewelry
-  // From instructions, 3rd digit = Type (0=Anti Tarnish, 1=Jewelry)
-  // Let’s define type as 0 if tarnish is "y" (Anti Tarnish), else 1 (Jewelry)
   const type = tarnishValue === "y" ? "0" : "1";
 
   let material = "0"; // default to Anti Tarnish
@@ -506,15 +516,16 @@ function showAddProductModal() {
 function closeProductModal() {
   document.getElementById("product-modal").style.display = "none";
 }
-async function handleFormSubmit(e) {
-  const t = !!e,
-    o = t ? `${API_URL}/products/${e}` : `${API_URL}/products`,
-    a = t ? "PUT" : "POST";
-  let d, n;
+async function handleFormSubmit(editId) {
+  const isEdit = !!editId;
+  const url = isEdit ? `${API_URL}/products/${editId}` : `${API_URL}/products`;
+  const method = isEdit ? "PUT" : "POST";
+  let body, headers;
   // Get form values
   const category = document.getElementById("product-category").value;
-  // Gender is not in form, assume "0" (Her) for now
-  const gender = "0";
+  // Read gender from the dropdown
+  const genderSelect = document.getElementById("product-gender");
+  const gender = genderSelect ? genderSelect.value : "0";
   const tarnishValue = document.getElementById("product-tarnish").value;
   const type = tarnishValue === "y" ? "0" : "1";
   let material = "0";
@@ -525,47 +536,47 @@ async function handleFormSubmit(e) {
       material = materialSelect.value;
     }
   }
-  // Generate RSN
+  // Generate RSN (always used as product ID)
   const rsn = await generateRSN(category, gender, type, material);
 
-  if (t) {
-    n = { "Content-Type": "application/json" };
-    d = JSON.stringify({
+  if (isEdit) {
+    headers = { "Content-Type": "application/json" };
+    body = JSON.stringify({
       name: document.getElementById("product-name").value,
       price: parseFloat(document.getElementById("product-price").value),
       category: category,
       isAntiTarnish: tarnishValue,
-      isTrending: document.getElementById("product-trending").checked
-        ? "y"
-        : "n",
+      isTrending: document.getElementById("product-trending").checked ? "y" : "n",
       rsn: rsn,
-      material: material
+      material: material,
+      gender: gender
     });
   } else {
-    n = {};
-    d = new FormData();
-    d.append("id", document.getElementById("product-id").value);
-    d.append("name", document.getElementById("product-name").value);
-    d.append("price", document.getElementById("product-price").value);
-    d.append("category", category);
-    d.append("isAntiTarnish", tarnishValue);
-    d.append(
+    headers = {};
+    body = new FormData();
+    // Do NOT append a numeric product-id (removed)
+    body.append("name", document.getElementById("product-name").value);
+    body.append("price", document.getElementById("product-price").value);
+    body.append("category", category);
+    body.append("isAntiTarnish", tarnishValue);
+    body.append(
       "isTrending",
       document.getElementById("product-trending").checked ? "y" : "n"
     );
-    d.append("images", document.getElementById("product-image").files[0]);
-    d.append("rsn", rsn);
-    d.append("material", material);
+    body.append("images", document.getElementById("product-image").files[0]);
+    body.append("rsn", rsn);
+    body.append("material", material);
+    body.append("gender", gender);
   }
   try {
-    const e = await fetch(o, { method: a, headers: n, body: d });
-    if (!e.ok) {
-      const t = await e.json();
-      throw new Error(t.error || `Failed to ${t ? "update" : "add"} product`);
+    const resp = await fetch(url, { method, headers, body });
+    if (!resp.ok) {
+      const err = await resp.json();
+      throw new Error(err.error || `Failed to ${isEdit ? "update" : "add"} product`);
     }
     loadProductsIntoTable(),
       closeProductModal(),
-      alert(`Product ${t ? "updated" : "added"} successfully!`);
+      alert(`Product ${isEdit ? "updated" : "added"} successfully!`);
   } catch (e) {
     console.error("Error:", e), alert(`Failed to save product: ${e.message}`);
   }
