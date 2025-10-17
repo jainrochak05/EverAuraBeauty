@@ -129,5 +129,19 @@
     
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script src="assets/js/app.js"></script>
+    <script>
+        // Select all product cards
+        const productCards = document.querySelectorAll('.product-card');
+      
+        productCards.forEach(card => {
+          card.addEventListener('click', () => {
+            const inner = card.querySelector('.product-card-inner');
+            inner.classList.toggle('is-flipped');
+          });
+        });
+      </script>
+
+
 </body>
+
 </html>

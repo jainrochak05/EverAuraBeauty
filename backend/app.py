@@ -8,6 +8,9 @@ import cloudinary
 import cloudinary.uploader
 from datetime import datetime
 import logging
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
 # --- CONFIGURATION ---
 load_dotenv()
@@ -399,3 +402,39 @@ def delete_testimonial(testimonial_id):
 @app.route('/api/health', methods=['GET'])
 def health_check():
     return jsonify({"status": "ok"}), 200
+
+
+# --- Contact Form Email ---
+@app.route('/api/contact', methods=['POST'])
+def contact_form():
+    data = request.get_json()
+    name = data.get('name')
+    email = data.get('email')
+    subject = data.get('subject')
+    message = data.get('message')
+
+    if not name or not email or not message:
+        return jsonify({"error": "Name, email, and message are required"}), 400
+
+    try:
+        # Compose email
+        msg = MIMEMultipart()
+        msg['From'] = email
+        msg['To'] = os.getenv('CONTACT_EMAIL', 'EVERAURA.BEAUTYNSTYLE@GMAIL.COM')
+        msg['Subject'] = subject if subject else "New Contact Form Message"
+        body = f"Name: {name}\nEmail: {email}\n\nMessage:\n{message}"
+        msg.attach(MIMEText(body, 'plain'))
+
+        # Send email via SMTP (Gmail example)
+        smtp_server = smtplib.SMTP('smtp.gmail.com', 587)
+        smtp_server.starttls()
+        smtp_server.login(os.getenv('EMAIL_USER'), os.getenv('EMAIL_PASS'))
+        smtp_server.send_message(msg)
+        smtp_server.quit()
+
+        return jsonify({"success": True, "message": "Email sent successfully!"})
+    except Exception as e:
+        logger.error("Failed to send contact email", exc_info=True)
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
