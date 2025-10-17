@@ -2121,25 +2121,26 @@ h3 {
     order: 1; /* Icons on the right */
   }
 }
-/* --- NEW: Gender & Type Toggle Switches --- */
+/* --- NEW: STYLISH TOGGLE SWITCHES --- */
 .filter-toggles {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 2rem;
+    gap: 2.5rem;
     padding: 1rem 5% 2rem;
+    flex-wrap: wrap; /* Allow wrapping on small screens */
 }
 
 .toggle-switch-container {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
 }
 
 .toggle-switch {
     position: relative;
     display: inline-block;
-    width: 120px;
+    width: 60px;
     height: 34px;
 }
 
@@ -2156,7 +2157,7 @@ h3 {
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: #2a2a2a;
+    background-color: var(--border-color);
     transition: .4s;
     border-radius: 34px;
 }
@@ -2165,24 +2166,41 @@ h3 {
     position: absolute;
     content: "";
     height: 26px;
-    width: 50px;
+    width: 26px;
     left: 4px;
     bottom: 4px;
-    background-color: var(--accent-color);
-    transition: .4s;
-    border-radius: 34px;
+    background-color: #ccc;
+    transition: .4s cubic-bezier(.68,-0.55,.27,1.55); /* Bouncy effect */
+    border-radius: 50%;
 }
 
 input:checked + .slider {
-    background-color: var(--border-color);
+    background-color: var(--secondary-accent-color);
 }
 
 input:checked + .slider:before {
-    transform: translateX(62px);
+    transform: translateX(26px);
+    background-color: var(--background-color);
 }
 
 .toggle-label {
-    color: var(--text-color);
-    font-weight: bold;
+    font-family: var(--heading-font);
+    font-size: 1.2rem;
+    color: #888;
     user-select: none;
+    transition: color 0.4s ease;
+}
+
+/* Style the active label */
+.toggle-switch-container .toggle-label.active {
+    color: var(--text-color);
+}
+
+
+/* --- MOBILE VIEW FOR TOGGLES --- */
+@media (max-width: 768px) {
+    .filter-toggles {
+        flex-direction: column;
+        gap: 1.5rem;
+    }
 }

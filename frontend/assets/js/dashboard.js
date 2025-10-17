@@ -231,7 +231,7 @@ function logout() {
   window.location.replace("admin.html");
 }
 
-// === PRODUCT MANAGEMENT ===
+// === PRODUCT MANAGEMENT (MODIFIED) ===
 async function loadProductsIntoTable() {
   const tbody = document.getElementById("product-table-body");
   if (!tbody) return;
@@ -251,9 +251,15 @@ async function loadProductsIntoTable() {
         ? product.images[0]
         : "https://via.placeholder.com/50x50/1D1D1D/EAEAEA?text=No+Img";
       
-      const genderDisplay = product.gender === "0" ? "Her" : product.gender === "1" ? "Him" : "N/A";
-      const typeDisplay = product.type === 0 ? "Anti-Tarnish" : product.type === 1 ? "Jewelry" : "N/A";
+      const genderValue = product.gender;
+      const genderDisplay = genderValue === "0" ? "Her" : genderValue === "1" ? "Him" : "N/A";
+
+      const typeValue = product.type;
+      const typeDisplay = typeValue === 0 ? "Anti-Tarnish" : typeValue === 1 ? "Jewelry" : "N/A";
       
+      const description = product.description || "N/A";
+      const shortDescription = description.length > 50 ? description.substring(0, 50) + '...' : description;
+
       tbody.innerHTML += `
         <tr>
           <td data-label="Image"><img src="${imageUrl}" alt="${product.name}" class="table-product-image"></td>
@@ -263,7 +269,7 @@ async function loadProductsIntoTable() {
           <td data-label="Category">${product.category || "N/A"}</td>
           <td data-label="Gender">${genderDisplay}</td>
           <td data-label="Type">${typeDisplay}</td>
-          <td data-label="Description">${product.description ? product.description.substring(0, 50) + '...' : "N/A"}</td>
+          <td data-label="Description" title="${description}">${shortDescription}</td>
           <td data-label="Trending">${product.isTrending === "y" ? "Yes" : "No"}</td>
           <td data-label="Actions" class="action-buttons">
             <button class="edit-btn" onclick="showEditProductModal('${product._id}')" title="Edit">
@@ -280,6 +286,7 @@ async function loadProductsIntoTable() {
     tbody.innerHTML = '<tr><td colspan="10">Error loading products.</td></tr>';
   }
 }
+
 
 function createProductForm(product = {}) {
   const isEdit = !!product._id;
