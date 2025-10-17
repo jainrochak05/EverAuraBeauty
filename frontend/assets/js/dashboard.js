@@ -6,11 +6,9 @@ document.addEventListener("DOMContentLoaded", () => {
   } else if (document.getElementById("product-table-body")) {
     checkAuth();
     loadProductsIntoTable();
-    loadPendingTestimonials();
-    loadAllTestimonials();
+    loadAllTestimonials(); // This now handles both pending and approved
     loadCouponsIntoTable();
     
-    // Add event listener for coupon form
     const couponForm = document.getElementById("coupon-form");
     if (couponForm) {
       couponForm.addEventListener("submit", handleAddCoupon);
@@ -91,63 +89,41 @@ async function deleteCoupon(id) {
   }
 }
 
-// === TESTIMONIAL MANAGEMENT ===
-async function loadPendingTestimonials() {
-  const tableBody = document.getElementById("pending-testimonials-body");
-  if (!tableBody) return;
-
-  try {
-    const response = await fetch(`${API_URL}/testimonials/pending`);
-    const testimonials = await response.json();
-    tableBody.innerHTML = "";
-
-    if (testimonials.length === 0) {
-      tableBody.innerHTML = '<tr><td colspan="4">No pending testimonials.</td></tr>';
-      return;
-    }
-
-    testimonials.forEach((t) => {
-      const row = `
-        <tr>
-          <td data-label="Name">${t.name}</td>
-          <td data-label="Summary">${t.summary}</td>
-          <td data-label="Full Review">${t.full_review || "N/A"}</td>
-          <td data-label="Actions" class="action-buttons">
-            <button class="approve-btn" onclick="approveTestimonial('${t._id}')" title="Approve">
-              <i class="fa-solid fa-check"></i>
-            </button>
-            <button class="delete-btn" onclick="deleteTestimonial('${t._id}')" title="Delete">
-              <i class="fa-solid fa-trash"></i>
-            </button>
-          </td>
-        </tr>`;
-      tableBody.innerHTML += row;
-    });
-  } catch (error) {
-    console.error("Failed to load pending testimonials:", error);
-    tableBody.innerHTML = '<tr><td colspan="4">Error loading testimonials.</td></tr>';
-  }
-}
-
+// === TESTIMONIAL MANAGEMENT (MODIFIED) ===
 async function loadAllTestimonials() {
   const tableBody = document.getElementById("all-testimonials-body");
   if (!tableBody) return;
 
   try {
     const response = await fetch(`${API_URL}/testimonials`);
-    const testimonials = await response.json();
+    let testimonials = await response.json();
     tableBody.innerHTML = "";
 
     if (!Array.isArray(testimonials) || testimonials.length === 0) {
-      tableBody.innerHTML = '<tr><td colspan="4">No testimonials found.</td></tr>';
+      tableBody.innerHTML = '<tr><td colspan="5">No testimonials found.</td></tr>';
       return;
     }
+    
+    // Sort to show "pending" testimonials first
+    testimonials.sort((a, b) => (a.status === 'pending') ? -1 : (b.status === 'pending') ? 1 : 0);
 
     testimonials.forEach((t) => {
       const statusBadge = t.status === "approved" 
-        ? '<span style="color: #2ecc71;">✓ Approved</span>'
+        ? '<span style="color: var(--admin-green);">✓ Approved</span>'
         : '<span style="color: #f39c12;">⏳ Pending</span>';
-      
+
+      let actionButtons = '';
+      if (t.status === 'pending') {
+          actionButtons = `
+            <button class="approve-btn" onclick="approveTestimonial('${t._id}')" title="Approve">
+              <i class="fa-solid fa-check"></i>
+            </button>`;
+      }
+      actionButtons += `
+        <button class="delete-btn" onclick="deleteTestimonial('${t._id}')" title="Delete">
+          <i class="fa-solid fa-trash"></i>
+        </button>`;
+
       const row = `
         <tr>
           <td data-label="Name">${t.name}</td>
@@ -155,18 +131,17 @@ async function loadAllTestimonials() {
           <td data-label="Full Review">${t.full_review || "N/A"}</td>
           <td data-label="Status">${statusBadge}</td>
           <td data-label="Actions" class="action-buttons">
-            <button class="delete-btn" onclick="deleteTestimonial('${t._id}')" title="Delete">
-              <i class="fa-solid fa-trash"></i>
-            </button>
+            ${actionButtons}
           </td>
         </tr>`;
       tableBody.innerHTML += row;
     });
   } catch (error) {
     console.error("Failed to load all testimonials:", error);
-    tableBody.innerHTML = '<tr><td colspan="4">Error loading testimonials.</td></tr>';
+    tableBody.innerHTML = '<tr><td colspan="5">Error loading testimonials.</td></tr>';
   }
 }
+
 
 async function approveTestimonial(testimonialId) {
   if (!confirm("Approve this testimonial to make it public?")) return;
@@ -178,8 +153,7 @@ async function approveTestimonial(testimonialId) {
     
     if (!response.ok) throw new Error("Failed to approve.");
     
-    loadPendingTestimonials();
-    loadAllTestimonials();
+    loadAllTestimonials(); // Refresh the unified list
     alert("Testimonial approved!");
   } catch (error) {
     console.error("Error approving testimonial:", error);
@@ -197,14 +171,14 @@ async function deleteTestimonial(testimonialId) {
     
     if (!response.ok) throw new Error("Failed to delete.");
     
-    loadPendingTestimonials();
-    loadAllTestimonials();
+    loadAllTestimonials(); // Refresh the unified list
     alert("Testimonial deleted.");
   } catch (error) {
     console.error("Error deleting testimonial:", error);
     alert("Deletion failed. Please try again.");
   }
 }
+
 
 // === AUTHENTICATION ===
 function checkAuth() {
@@ -231,7 +205,7 @@ function logout() {
   window.location.replace("admin.html");
 }
 
-// === PRODUCT MANAGEMENT (MODIFIED) ===
+// === PRODUCT MANAGEMENT ===
 async function loadProductsIntoTable() {
   const tbody = document.getElementById("product-table-body");
   if (!tbody) return;

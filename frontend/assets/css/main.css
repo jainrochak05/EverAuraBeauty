@@ -2121,27 +2121,27 @@ h3 {
     order: 1; /* Icons on the right */
   }
 }
-/* --- NEW: STYLISH TOGGLE SWITCHES --- */
+/* --- REDESIGNED: AESTHETIC TOGGLE SWITCHES --- */
 .filter-toggles {
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 2.5rem;
     padding: 1rem 5% 2rem;
-    flex-wrap: wrap; /* Allow wrapping on small screens */
+    flex-wrap: wrap; 
 }
 
 .toggle-switch-container {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
 }
 
 .toggle-switch {
     position: relative;
     display: inline-block;
-    width: 60px;
-    height: 34px;
+    width: 50px;
+    height: 28px;
 }
 
 .toggle-switch input {
@@ -2158,34 +2158,37 @@ h3 {
     right: 0;
     bottom: 0;
     background-color: var(--border-color);
+    border: 1px solid #444;
     transition: .4s;
-    border-radius: 34px;
+    border-radius: 28px;
 }
 
 .slider:before {
     position: absolute;
     content: "";
-    height: 26px;
-    width: 26px;
-    left: 4px;
-    bottom: 4px;
-    background-color: #ccc;
-    transition: .4s cubic-bezier(.68,-0.55,.27,1.55); /* Bouncy effect */
+    height: 20px;
+    width: 20px;
+    left: 3px;
+    bottom: 3px;
+    background-color: #888;
+    transition: .4s cubic-bezier(.68,-0.55,.27,1.55);
     border-radius: 50%;
 }
 
 input:checked + .slider {
-    background-color: var(--secondary-accent-color);
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
 }
 
 input:checked + .slider:before {
-    transform: translateX(26px);
+    transform: translateX(22px);
     background-color: var(--background-color);
 }
 
 .toggle-label {
-    font-family: var(--heading-font);
-    font-size: 1.2rem;
+    font-family: var(--primary-font); /* Use primary font for labels */
+    font-size: 1rem;
+    font-weight: 400;
     color: #888;
     user-select: none;
     transition: color 0.4s ease;
