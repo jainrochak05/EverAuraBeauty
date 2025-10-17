@@ -43,8 +43,27 @@
         <section class="page-header">
             <h1 class="section-title">Our Collection</h1>
         </section>
-<br>
-<br>
+
+        <div class="filter-toggles">
+            <div class="toggle-switch-container">
+                <span class="toggle-label">For Her</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="gender-toggle-checkbox">
+                    <span class="slider"></span>
+                </label>
+                <span class="toggle-label">For Him</span>
+            </div>
+            <div class="toggle-switch-container">
+                <span class="toggle-label">Anti-Tarnish</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="type-toggle-checkbox">
+                    <span class="slider"></span>
+                </label>
+                <span class="toggle-label">Jewelry</span>
+            </div>
+        </div>
+
+
         <div class="filter-bar" id="category-filter-bar">
             <button class="filter-btn active" data-category="all">All</button>
             <button class="filter-btn" data-category="Necklaces">Necklaces</button>
@@ -84,22 +103,18 @@
             <h3>Your Cart</h3>
             
             <div id="cart-items">
-                <!-- JS will populate cart items here -->
-            </div>
+                </div>
     
-            <!-- Coupon Section -->
             <div class="coupon-area">
                 <input type="text" id="coupon-code-input" placeholder="Enter coupon code" />
                 <button class="apply-coupon-btn" onclick="applyCoupon()">Apply</button>
             </div>
     
-            <!-- Applied coupon display -->
             <div id="applied-coupon" class="coupon-applied" style="display: none;">
                 <span id="applied-coupon-code"></span>
                 <button class="remove-coupon-btn" onclick="removeCoupon()">Remove</button>
             </div>
     
-            <!-- Cart totals -->
             <div id="cart-totals">
                 <p>Subtotal: <span id="cart-subtotal">0</span></p>
                 <p>Total after coupon: <span id="cart-total">0</span></p>

@@ -18,7 +18,7 @@ app.secret_key = os.getenv("SECRET_KEY", "fallback-secret-key")
 FRONTEND_URL = os.getenv("FRONTEND_URL")
 CORS(
     app,
-    resources={r"/api/*": {"origins": os.getenv("FRONTEND_URL")}},
+    resources={r"/api/*": {"origins": "*"}}, # Allow all origins for simplicity
     supports_credentials=True,
     methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"]
 )
@@ -200,9 +200,18 @@ def apply_coupon():
 def get_products():
     try:
         category = request.args.get('category')
+        gender = request.args.get('gender')
+        product_type = request.args.get('type')
+
         query = {}
         if category and category != 'all':
             query['category'] = category
+        if gender:
+            query['gender'] = gender # '0' for Her, '1' for Him
+        if product_type:
+             # Convert to integer for querying
+            query['type'] = int(product_type) # 0 for Anti-Tarnish, 1 for Jewelry
+
         products = products_collection.find(query)
         return jsonify([serialize_doc(p) for p in products])
     except Exception as e:
@@ -390,7 +399,3 @@ def delete_testimonial(testimonial_id):
 @app.route('/api/health', methods=['GET'])
 def health_check():
     return jsonify({"status": "ok"}), 200
-
-
-# --- RUN APP ---
-# Use Gunicorn or uWSGI in production, not the built-in server

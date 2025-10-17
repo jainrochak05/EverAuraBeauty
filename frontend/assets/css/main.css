@@ -273,18 +273,60 @@ h3 {
 }
 
 /* UNIFIED CARD STYLING */
+/* --- MODIFIED: Product Card for Flipping & Uniform Size --- */
 .product-card {
-  background: var(--card-bg-color);
-  border: 1px solid var(--border-color);
-  overflow: hidden;
-  position: relative;
-  transition: box-shadow 0.3s ease;
-  display: flex;
-  flex-direction: column;
+    background: var(--card-bg-color);
+    border: 1px solid var(--border-color);
+    overflow: hidden;
+    position: relative;
+    transition: box-shadow 0.3s ease;
+    display: flex; /* Use flexbox to structure the card */
+    flex-direction: column; /* Stack children vertically */
+    height: 520px; /* FIXED HEIGHT FOR UNIFORMITY */
+    perspective: 1000px; /* For 3D flip effect */
 }
-.product-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+
+.product-card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
+}
+
+.product-card:hover .product-card-inner {
+    transform: rotateY(180deg);
+}
+
+.product-card-front, .product-card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.product-card-back {
+    background-color: var(--card-bg-color);
+    transform: rotateY(180deg);
+    padding: 1.5rem;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.product-card-back h4 {
+    font-family: var(--heading-font);
+    font-size: 1.5rem;
+    color: var(--accent-color);
+    margin-bottom: 1rem;
+}
+
+.product-card-back p {
+    font-size: 0.95rem;
+    color: #ccc;
+    line-height: 1.6;
 }
 
 /* FIXED IMAGE WINDOW */
@@ -2078,4 +2120,69 @@ h3 {
   .header-icons {
     order: 1; /* Icons on the right */
   }
+}
+/* --- NEW: Gender & Type Toggle Switches --- */
+.filter-toggles {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+    padding: 1rem 5% 2rem;
+}
+
+.toggle-switch-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 120px;
+    height: 34px;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #2a2a2a;
+    transition: .4s;
+    border-radius: 34px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 50px;
+    left: 4px;
+    bottom: 4px;
+    background-color: var(--accent-color);
+    transition: .4s;
+    border-radius: 34px;
+}
+
+input:checked + .slider {
+    background-color: var(--border-color);
+}
+
+input:checked + .slider:before {
+    transform: translateX(62px);
+}
+
+.toggle-label {
+    color: var(--text-color);
+    font-weight: bold;
+    user-select: none;
 }

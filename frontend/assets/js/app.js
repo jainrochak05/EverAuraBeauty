@@ -2,138 +2,206 @@ const API_URL = "https://everaurabeauty-backend.onrender.com/api";
 
 // --- DOM Initialization ---
 document.addEventListener("DOMContentLoaded", () => {
-  // --- Mobile Navigation Logic ---
-  const navToggle = document.querySelector(".mobile-nav-toggle");
-  const navLinks = document.querySelector(".nav-links");
-  if (navToggle && navLinks) {
-    navToggle.addEventListener("click", () => {
-      navToggle.classList.toggle("active");
-      navLinks.classList.toggle("active");
+    const navToggle = document.querySelector(".mobile-nav-toggle");
+    const navLinks = document.querySelector(".nav-links");
+    if (navToggle && navLinks) {
+        navToggle.addEventListener("click", () => {
+            navToggle.classList.toggle("active");
+            navLinks.classList.toggle("active");
+        });
+    }
+
+    // --- NEW: Initialize Toggles ---
+    initializeToggles();
+
+    // --- Page-Specific Content Loading ---
+    loadPageSpecificContent();
+
+    // Event listener for toggles
+    document.querySelectorAll('.toggle-switch input').forEach(toggle => {
+        toggle.addEventListener('change', loadPageSpecificContent);
     });
-  }
 
-  // --- Page-Specific Content Loading ---
-  if (document.getElementById("trending-product-list")) {
-    loadTrendingProducts();
-  }
-  if (document.getElementById("testimonial-list")) {
-    loadTestimonials();
-  }
-  if (document.getElementById("all-reviews-list")) {
-    loadAllReviews();
-  }
-  if (document.getElementById("shop-product-list")) {
-    const urlParams = new URLSearchParams(window.location.search);
-    const category = urlParams.get("category");
-    loadAllProducts(category || "all");
-    setupCategoryFilters();
-  }
-  if (document.getElementById("testimonial-form")) {
-    document
-      .getElementById("testimonial-form")
-      .addEventListener("submit", handleTestimonialSubmit);
-  }
+    if (document.getElementById("testimonial-form")) {
+        document
+            .getElementById("testimonial-form")
+            .addEventListener("submit", handleTestimonialSubmit);
+    }
 
-  updateCartCount();
+    updateCartCount();
 });
 
-// --- Data Fetching ---
-async function fetchProducts(category = null) {
-  let url = `${API_URL}/products`;
-  if (category && category !== "all") {
-    url += `?category=${category}`;
-  }
-  try {
-    const response = await fetch(url);
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-    return await response.json();
-  } catch (error) {
-    console.error("Could not fetch products:", error);
-    return [];
-  }
+function initializeToggles() {
+    const savedGender = localStorage.getItem('selectedGender') || '0'; // Default to 'Her'
+    const genderToggle = document.getElementById('gender-toggle-checkbox');
+    if (genderToggle) {
+        genderToggle.checked = savedGender === '1'; // '1' is 'Him'
+    }
 }
 
-// --- Product Loading Functions ---
-async function loadTrendingProducts() {
-  const container = document.getElementById("trending-product-list");
-  if (!container) return;
-  const allProducts = await fetchProducts();
-  const trendingProducts = allProducts
-    .filter((p) => p.isTrending === "y")
-    .slice(0, 8);
-  const wishlist = getWishlist();
-  container.innerHTML = "";
-  trendingProducts.forEach((product) => {
-    const isWishlisted = wishlist.some((item) => item._id === product._id);
-    const swiperSlide = document.createElement("div");
-    swiperSlide.className = "swiper-slide";
-    const firstImage =
-      product.images && product.images.length > 0
-        ? product.images[0]
-        : "https://via.placeholder.com/400x550?text=No+Image";
-    swiperSlide.innerHTML = `
+function loadPageSpecificContent() {
+    if (document.getElementById("trending-product-list")) {
+        loadTrendingProducts();
+    }
+    if (document.getElementById("testimonial-list")) {
+        loadTestimonials();
+    }
+    if (document.getElementById("all-reviews-list")) {
+        loadAllReviews();
+    }
+    if (document.getElementById("shop-product-list")) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const category = urlParams.get("category");
+        loadAllProducts(category || "all");
+        setupCategoryFilters();
+    }
+}
+
+
+// --- Data Fetching (MODIFIED) ---
+async function fetchProducts(category = 'all', gender = '0', type = null) {
+    let url = new URL(`${API_URL}/products`);
+    if (category && category !== 'all') {
+        url.searchParams.append('category', category);
+    }
+    if (gender) {
+        url.searchParams.append('gender', gender);
+    }
+    if (type !== null && type !== 'all') {
+        url.searchParams.append('type', type);
+    }
+
+    try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        return await response.json();
+    } catch (error) {
+        console.error("Could not fetch products:", error);
+        return [];
+    }
+}
+
+// --- Product Loading Functions (MODIFIED for new card structure and filtering) ---
+async function loadProducts(containerId, isTrending = false) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    // Get filter states
+    const genderToggle = document.getElementById('gender-toggle-checkbox');
+    const selectedGender = genderToggle && genderToggle.checked ? '1' : '0';
+    localStorage.setItem('selectedGender', selectedGender); // Save preference
+
+    const typeToggle = document.getElementById('type-toggle-checkbox');
+    // 'all' for trending, respect toggle on shop page
+    const selectedType = isTrending ? null : (typeToggle && typeToggle.checked ? '1' : '0');
+
+
+    const allProducts = await fetchProducts('all', selectedGender, selectedType);
+    let productsToDisplay = allProducts;
+
+    if(isTrending) {
+        productsToDisplay = allProducts.filter(p => p.isTrending === 'y').slice(0, 8);
+    }
+
+
+    const wishlist = getWishlist();
+    container.innerHTML = "";
+
+    productsToDisplay.forEach((product) => {
+        const isWishlisted = wishlist.some((item) => item._id === product._id);
+        const productElement = document.createElement(isTrending ? 'div' : 'div');
+        if(isTrending) productElement.className = "swiper-slide";
+
+
+        const firstImage = product.images && product.images.length > 0 ? product.images[0] : "https://via.placeholder.com/400x550?text=No+Image";
+
+        productElement.innerHTML = `
             <div class="product-card">
-                <div class="product-image">
-                    <img src="${firstImage}" alt="${product.name}">
-                    <button class="wishlist-btn ${
-                      isWishlisted ? "active" : ""
-                    }" onclick="toggleWishlist('${
-      product._id
-    }', this)"><i class="fa-solid fa-heart"></i></button>
-                </div>
-                <div class="product-info">
-                    <h3>${product.name}</h3>
-                    <p class="price">₹${product.price.toFixed(2)}</p>
-                    <button class="add-to-cart-btn" onclick="addToCart('${
-                      product._id
-                    }')">Add to Cart</button>
+                <div class="product-card-inner">
+                    <div class="product-card-front">
+                        <div class="product-image">
+                            <img src="${firstImage}" alt="${product.name}">
+                            <button class="wishlist-btn ${isWishlisted ? 'active' : ''}" onclick="toggleWishlist('${product._id}', this)"><i class="fa-solid fa-heart"></i></button>
+                        </div>
+                        <div class="product-info">
+                            <div>
+                                <h3>${product.name}</h3>
+                                <p class="price">₹${product.price.toFixed(2)}</p>
+                            </div>
+                            <button class="add-to-cart-btn" onclick="addToCart('${product._id}')">Add to Cart</button>
+                        </div>
+                    </div>
+                    <div class="product-card-back">
+                        <h4>Description</h4>
+                        <p>${product.description || 'No description available.'}</p>
+                    </div>
                 </div>
             </div>`;
-    container.appendChild(swiperSlide);
-  });
-  initializeFeaturedCarousel();
+        container.appendChild(productElement);
+    });
+
+    if (isTrending) {
+        initializeFeaturedCarousel();
+    }
 }
+
+
+async function loadTrendingProducts() {
+    await loadProducts('trending-product-list', true);
+}
+
 
 async function loadAllProducts(category = "all") {
-  const container = document.getElementById("shop-product-list");
-  if (!container) return;
-  const productsToDisplay = await fetchProducts(category);
-  const wishlist = getWishlist();
-  container.innerHTML = "";
-  productsToDisplay.forEach((product) => {
-    const isWishlisted = wishlist.some((item) => item._id === product._id);
-    const productCard = document.createElement("div");
-    productCard.className = "product-card";
-    let slides =
-      product.images && product.images.length > 0
-        ? product.images
-            .map((imgUrl) => {
-              const optimizedUrl = imgUrl.replace("/upload/", "/upload/q_auto,f_auto/");
-              return `<div class="swiper-slide"><img src="${optimizedUrl}" alt="${product.name}"></div>`;
-            })
-            .join("")
-        : `<div class="swiper-slide"><img src="https://via.placeholder.com/400x550?text=No+Image" alt="${product.name}"></div>`;
-    productCard.innerHTML = `
-            <div class="product-image">
-                <div class="swiper"><div class="swiper-wrapper">${slides}</div><div class="swiper-pagination"></div><div class="swiper-button-next"></div><div class="swiper-button-prev"></div></div>
-                <button class="wishlist-btn ${
-                  isWishlisted ? "active" : ""
-                }" onclick="toggleWishlist('${
-      product._id
-    }', this)"><i class="fa-solid fa-heart"></i></button>
+    const container = document.getElementById("shop-product-list");
+    if (!container) return;
+
+    const genderToggle = document.getElementById('gender-toggle-checkbox');
+    const selectedGender = genderToggle && genderToggle.checked ? '1' : '0';
+    localStorage.setItem('selectedGender', selectedGender);
+
+    const typeToggle = document.getElementById('type-toggle-checkbox');
+    const selectedType = typeToggle ? (typeToggle.checked ? '1' : '0') : null;
+
+
+    const productsToDisplay = await fetchProducts(category, selectedGender, selectedType);
+    const wishlist = getWishlist();
+    container.innerHTML = '';
+
+    productsToDisplay.forEach(product => {
+        const isWishlisted = wishlist.some(item => item._id === product._id);
+        const productCard = document.createElement('div');
+        // productCard.className = "product-card"; // The grid will handle the layout
+
+        const firstImage = (product.images && product.images.length > 0) ? product.images[0] : 'https://via.placeholder.com/400x550?text=No+Image';
+
+        productCard.innerHTML = `
+          <div class="product-card">
+            <div class="product-card-inner">
+                <div class="product-card-front">
+                    <div class="product-image">
+                         <img src="${firstImage}" alt="${product.name}">
+                        <button class="wishlist-btn ${isWishlisted ? 'active' : ''}" onclick="toggleWishlist('${product._id}', this)"><i class="fa-solid fa-heart"></i></button>
+                    </div>
+                    <div class="product-info">
+                        <div>
+                            <h3>${product.name}</h3>
+                            <p class="price">₹${product.price.toFixed(2)}</p>
+                        </div>
+                        <button class="add-to-cart-btn" onclick="addToCart('${product._id}')">Add to Cart</button>
+                    </div>
+                </div>
+                <div class="product-card-back">
+                    <h4>Description</h4>
+                    <p>${product.description || 'No description available.'}</p>
+                </div>
             </div>
-            <div class="product-info">
-                <h3>${product.name}</h3>
-                <p class="price">₹${product.price.toFixed(2)}</p>
-                <button class="add-to-cart-btn" onclick="addToCart('${
-                  product._id
-                }')">Add to Cart</button>
             </div>`;
-    container.appendChild(productCard);
-  });
-  initializeShopCarousels();
-  updateActiveFilterButton(category);
+        container.appendChild(productCard);
+    });
+
+    updateActiveFilterButton(category);
 }
+
 
 // --- Testimonial Functions ---
 async function loadTestimonials() {
@@ -272,8 +340,9 @@ function setupCategoryFilters() {
   const e = document.getElementById("category-filter-bar");
   e &&
     e.addEventListener("click", (e) => {
-      e.target.classList.contains("filter-btn") &&
-        loadAllProducts(e.target.dataset.category);
+      if (e.target.classList.contains("filter-btn")) {
+          loadAllProducts(e.target.dataset.category);
+      }
     });
 }
 function updateActiveFilterButton(e) {
