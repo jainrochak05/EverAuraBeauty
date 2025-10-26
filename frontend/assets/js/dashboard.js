@@ -314,6 +314,9 @@ function createProductForm(product = {}) {
               <option value="2" ${materialValue === "2" ? "selected" : ""}>Kundan</option>
               <option value="3" ${materialValue === "3" ? "selected" : ""}>American Diamond</option>
               <option value="4" ${materialValue === "4" ? "selected" : ""}>Resin</option>
+              <option value="5" ${materialValue === "5" ? "selected" : ""}>Chandbali</option>
+              <option value="6" ${materialValue === "6" ? "selected" : ""}>Chanderi</option>
+              <option value="7" ${materialValue === "7" ? "selected" : ""}>Pearl</option>
             </select>
           </div>
           <div class="form-group">
