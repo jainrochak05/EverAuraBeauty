@@ -18,9 +18,25 @@
         <div class="dashboard-header-title">Everaura Dashboard</div>
         <button class="admin-logout-btn" onclick="logout()">Logout <i class="fa-solid fa-right-from-bracket"></i></button>
     </header>
-
+    <!-- ======= Dashboard Navigation ======= -->
+        <!-- ======= Dashboard Navigation (Enhanced UI) ======= -->
+<nav class="dashboard-nav">
+    <div class="nav-container">
+      <div class="nav-left">
+        <div class="nav-toggle" onclick="toggleNavMenu()">
+          <i class="fa-solid fa-bars"></i>
+        </div>
+        <h2 class="nav-title"></h2>
+      </div>
+      <ul class="nav-links" id="navMenu">
+        <li><a href="#products-section"><i class="fa-solid fa-box"></i> Products</a></li>
+        <li><a href="#testimonials-section"><i class="fa-solid fa-comment-dots"></i> Testimonials</a></li>
+        <li><a href="#coupons-section"><i class="fa-solid fa-ticket"></i> Coupons</a></li>
+      </ul>
+    </div>
+  </nav>
     <main class="dashboard-main">
-        <section class="dashboard-section">
+        <section id="products-section" class="dashboard-section">
             <div class="dashboard-actions">
                 <h1>Product Management</h1>
                 <button class="admin-button" onclick="showAddProductModal()"><i class="fa-solid fa-plus"></i> Add New Product</button>
@@ -47,7 +63,7 @@
             </div>
         </section>
 
-        <section class="dashboard-section">
+        <section id="testimonials-section" class="dashboard-section">
             <div class="dashboard-actions">
                 <h1>Testimonial Management</h1>
             </div>
@@ -68,7 +84,7 @@
             </div>
         </section>
 
-        <section class="dashboard-section">
+        <section id="coupons-section" class="dashboard-section">
             <div class="dashboard-actions">
                 <h1>Coupon Management</h1>
             </div>
@@ -120,5 +136,11 @@
         </div>
     
     <script src="assets/js/dashboard.js"></script>
+
+    <script>
+        function toggleNavMenu() {
+          document.getElementById("navMenu").classList.toggle("active");
+        }
+        </script>
 </body>
 </html>
