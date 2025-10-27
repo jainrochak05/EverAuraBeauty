@@ -2734,3 +2734,153 @@ input:checked + .slider:before {
     transform: rotate(-45deg) translate(5px, -5px);
   }
 }
+
+
+.product-info h3 {
+  font-size: 1.2rem;
+  margin-bottom: 0.3rem;
+  min-height: 3.2em; /* ensures consistent card height */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  line-height: 1.4;
+  overflow: hidden;
+  word-break: keep-all;
+  white-space: normal;
+}
+.product-info h3 span.bracket {
+  display: block;
+}
+
+
+
+
+
+
+
+.product-info h3 {
+  font-size: 1.2rem;
+  text-align: center;
+  margin: 0.5rem 0;
+  line-height: 1.4;
+  min-height: 3.4em; /* reserve space for 2 lines */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: keep-all;
+}
+.product-info h3::first-line {
+  white-space-collapse: preserve;
+}
+
+.product-info h3 {
+  /* Add a line break before bracketed text automatically */
+}
+.product-info h3:has(bracket) {
+  display: block;
+}
+.product-info h3 {
+  text-wrap: balance; /* modern property to balance uneven lines */
+}
+
+@supports not (text-wrap: balance) {
+  .product-info h3 {
+    word-break: keep-all;
+  }
+}
+
+
+
+
+
+/* ============================= */
+/* 🔸 PRODUCT CARD – off-white aesthetic (unchanged look) */
+/* ============================= */
+
+.product-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 480px;
+  overflow: hidden;
+  background: #fafafa; /* off-white aesthetic */
+  border-radius: 12px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  color: #222;
+}
+
+/* 🔸 PRODUCT IMAGE – uniform size */
+.product-image {
+  width: 100%;
+  height: 320px;
+  object-fit: cover;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 🔸 PRODUCT INFO – balanced spacing */
+.product-info {
+  flex-grow: 1;
+  padding: 0 12px;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  color: #333;
+}
+
+/* 🔸 Product Title */
+.product-info h3 {
+  font-size: 1.2rem;
+  font-weight: 600;
+  text-align: center;
+  margin: 10px 0 6px;
+  line-height: 1.4;
+  min-height: 3.4em;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-wrap: balance;
+  color: #111;
+}
+
+/* 🔸 Product Price – slightly darker for readability */
+.product-info .price {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #222; /* deep gray for elegant contrast */
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+/* 🔸 Add to Cart Button – subtle hover fix */
+.add-to-cart {
+  margin-top: auto;
+  align-self: center;
+  background: #111;
+  color: #fff;
+  border: none;
+  padding: 10px 22px;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 0.25s ease, transform 0.25s ease;
+}
+
+.add-to-cart:hover {
+  background: #222; /* slightly lighter black for visible hover */
+  transform: translateY(-2px);
+}
+
+
+
+
+
+
