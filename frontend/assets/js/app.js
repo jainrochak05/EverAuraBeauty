@@ -438,18 +438,17 @@ function openCartModal() {
     cart.forEach((item) => {
       itemsHTML += `
                 <li class="cart-item">
-                    <img src="${item.image}" alt="${
-        item.name
-      }" class="cart-item-image">
+                    <img src="${item.image}" alt="${item.name}" class="cart-item-image">
                     <div class="cart-item-details">
                         <span class="cart-item-name">${item.name}</span>
-                        <span class="cart-item-price">Qty: ${
-                          item.quantity
-                        } × ₹${item.price.toFixed(2)}</span>
+                        <span class="cart-item-price">₹${item.price.toFixed(2)}</span>
+                        <div class="quantity-controls">
+                          <button onclick="decreaseQuantity('${item._id}')">−</button>
+                          <input type="number" value="${item.quantity}" min="1" readonly>
+                          <button onclick="increaseQuantity('${item._id}')">+</button>
+                        </div>
                     </div>
-                    <button onclick="removeFromCart('${
-                      item._id
-                    }')" class="cart-item-remove">&times;</button>
+                    <button onclick="removeFromCart('${item._id}')" class="cart-item-remove">&times;</button>
                 </li>`;
       subtotal += item.price * item.quantity;
     });
@@ -460,14 +459,43 @@ function openCartModal() {
   modal.style.display = "flex";
 }
 
+
 function removeFromCart(e) {
   let t = getCart();
   const o = t.findIndex((t) => t._id === e);
-  -1 !== o &&
-    (t[o].quantity > 1 ? t[o].quantity-- : t.splice(o, 1),
-    saveCart(t),
-    updateCartCount(),
-    openCartModal());
+  if (-1 !== o) {
+    t.splice(o, 1);
+    saveCart(t);
+    updateCartCount();
+    openCartModal();
+  }
+}
+
+function increaseQuantity(productId) {
+  let cart = getCart();
+  const index = cart.findIndex(item => item._id === productId);
+  if (index !== -1) {
+    cart[index].quantity++;
+    saveCart(cart);
+    updateCartCount();
+    openCartModal();
+  }
+}
+
+function decreaseQuantity(productId) {
+  let cart = getCart();
+  const index = cart.findIndex(item => item._id === productId);
+  if (index !== -1 && cart[index].quantity > 1) {
+    cart[index].quantity--;
+    saveCart(cart);
+    updateCartCount();
+    openCartModal();
+  } else if (index !== -1 && cart[index].quantity === 1) {
+    cart.splice(index, 1);
+    saveCart(cart);
+    updateCartCount();
+    openCartModal();
+  }
 }
 function clearCart() {
   saveCart([]),

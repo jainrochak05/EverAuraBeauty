@@ -2884,3 +2884,66 @@ input:checked + .slider:before {
 
 
 
+/* --- CART QUANTITY CONTROLS (Minimalist & Elegant) --- */
+.quantity-controls {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.05); /* subtle translucent base */
+  border-radius: 6px;
+  overflow: hidden;
+  height: 32px;
+}
+
+.quantity-controls button {
+  background: transparent;
+  color: #fff;
+  border: none;
+  width: 32px;
+  height: 32px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.2s ease, background 0.2s ease;
+}
+
+.quantity-controls button:hover {
+  color: #d8b44b; /* soft gold tone */
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.quantity-controls input {
+  width: 38px;
+  text-align: center;
+  border: none;
+  background: transparent;
+  color: #fff;
+  font-size: 0.95rem;
+  font-weight: 500;
+  pointer-events: none;
+}
+
+/* Hide spinner arrows */
+.quantity-controls input::-webkit-inner-spin-button,
+.quantity-controls input::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Responsive tweaks */
+@media (max-width: 768px) {
+  .quantity-controls {
+    height: 30px;
+  }
+
+  .quantity-controls button {
+    width: 30px;
+    height: 30px;
+    font-size: 0.95rem;
+  }
+
+  .quantity-controls input {
+    width: 34px;
+    font-size: 0.9rem;
+  }
+}
