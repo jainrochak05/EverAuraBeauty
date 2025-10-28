@@ -1,4 +1,4 @@
-const API_URL = "https://everaurabeauty-backend.onrender.com/api";
+const API_URL = "https://everaura-backend.vercel.app/api";
 
 // --- DOM Initialization ---
 document.addEventListener("DOMContentLoaded", () => {
