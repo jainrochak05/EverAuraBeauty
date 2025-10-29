@@ -369,26 +369,23 @@ function getCategoryCode(category) {
   }
 }
 
-async function getNextArticleNumber(categoryCode, typeCode) {
+// Updated RSN generation logic
+async function getNextArticleNumber(prefix) {
   try {
     const response = await fetch(`${API_URL}/products`);
     if (!response.ok) throw new Error("Failed to fetch products");
-    
     const products = await response.json();
-    const filtered = products.filter(p => {
-      const pCategoryCode = getCategoryCode(p.category);
-      const pTypeCode = p.isAntiTarnish === "y" ? "0" : "1";
-      return pCategoryCode === categoryCode && pTypeCode === typeCode;
-    });
-    
+
+    const filtered = products.filter(p => p.rsn && p.rsn.startsWith(prefix));
     let maxArticleNum = 0;
     filtered.forEach(p => {
-      if (p.rsn && p.rsn.length === 8) {
-        const artNum = parseInt(p.rsn.slice(4), 10);
-        if (artNum > maxArticleNum) maxArticleNum = artNum;
+      const rsnStr = p.rsn;
+      if (rsnStr && rsnStr.length >= 4) {
+        const artNum = parseInt(rsnStr.slice(-4), 10);
+        if (!isNaN(artNum) && artNum > maxArticleNum) maxArticleNum = artNum;
       }
     });
-    
+
     return (maxArticleNum + 1).toString().padStart(4, "0");
   } catch (error) {
     console.error("Error fetching products for article number:", error);
@@ -397,11 +394,27 @@ async function getNextArticleNumber(categoryCode, typeCode) {
 }
 
 async function generateRSN(category, gender, type, material) {
-  const categoryCode = getCategoryCode(category);
-  if (categoryCode === "0") return "";
-  
-  const articleNumber = await getNextArticleNumber(categoryCode, type);
-  return `${categoryCode}${gender}${type}${material}${articleNumber}`;
+  // Category code mapping
+  const categoryMap = {
+    "Earrings": "1",
+    "Bangles/Bracelets": "2",
+    "Necklaces": "3",
+    "Rings": "4",
+  };
+  const categoryCode = categoryMap[category] || "0";
+
+  // Gender code mapping
+  const genderCode = gender === "1" ? "1" : "0";
+
+  // Type and material codes as strings
+  const typeCode = (typeof type === "number" ? type.toString() : type) || "0";
+  const materialCode = (typeof material === "number" ? material.toString() : material) || "0";
+
+  // Construct prefix and find the next incremental number
+  const prefix = `${categoryCode}${genderCode}${typeCode}${materialCode}`;
+  const nextArticleNumber = await getNextArticleNumber(prefix);
+
+  return `${prefix}${nextArticleNumber}`;
 }
 
 async function updateRSNPreview() {
