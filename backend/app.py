@@ -85,8 +85,7 @@ def generate_rsn(category, gender, type_, material):
         "Her": "0",
         "Him": "1"
     }
-    # type_ and material are expected as integers (0 or 1 etc.)
-    # Material mapping for clarity (not needed for generation, but for validation)
+    # type_ and material are expected as small integers (0,1,2...)
     material_map = {
         0: "0",
         1: "1",
@@ -97,27 +96,31 @@ def generate_rsn(category, gender, type_, material):
 
     cat_digit = category_map.get(category, "0")
     gender_digit = gender_map.get(gender, "0")
-    type_digit = str(type_) if type_ in [0,1] else "0"
+    type_digit = str(type_) if isinstance(type_, int) or (isinstance(type_, str) and type_.isdigit()) else "0"
     material_digit = material_map.get(material, "0")
 
-    # Find last used article number for this combination (category + type)
-    prefix = cat_digit + type_digit
-    # Query for products with rsn starting with prefix
-    last_product = products_collection.find(
-        {"rsn": {"$regex": f"^{prefix}"}}
-    ).sort("rsn", -1).limit(1)
+    # Use full combination prefix (category + gender + type + material)
+    # so that numbering is scoped to that exact combination and increments correctly.
+    prefix = cat_digit + gender_digit + type_digit + material_digit
+
+    # Query for products with rsn starting with prefix, sorted descending to find highest existing number
+    last_product_cursor = products_collection.find({"rsn": {"$regex": f"^{prefix}"}}).sort("rsn", -1).limit(1)
+
     last_number = 0
-    for prod in last_product:
+    for prod in last_product_cursor:
         rsn_str = prod.get("rsn", "")
-        if len(rsn_str) == 6:
+        # Expected format: 8+ characters where last 4 are numeric counter, e.g. '10000001'
+        if len(rsn_str) >= 4:
             try:
+                # Safely parse last 4 characters as integer
                 last_number = int(rsn_str[-4:])
-            except:
+            except Exception:
                 last_number = 0
+
     next_number = last_number + 1
     next_number_str = str(next_number).zfill(4)
 
-    rsn = cat_digit + gender_digit + type_digit + material_digit + next_number_str
+    rsn = prefix + next_number_str
     return rsn
 
 
