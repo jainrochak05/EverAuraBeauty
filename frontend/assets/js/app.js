@@ -1,6 +1,6 @@
 // --- CONFIGURATION ---
 const API_URL = "https://everaura-backend.vercel.app/api"; // Ensure this matches your deployed backend
-const FRONTEND_URL = "http://127.0.0.1:5500"; // Change to your frontend URL
+const FRONTEND_URL = "https://everaurabeauty.com";
 
 // --- AUTH HELPERS ---
 function saveToken(token) {
@@ -1066,6 +1066,18 @@ async function loadMyOrders() {
     }
 }
 
+// --- ADMIN API HELPERS ---
+/**
+ * Helper for fetch calls to admin endpoints. Always adds the X-ADMIN-KEY header.
+ */
+async function adminFetch(url, options = {}) {
+    const adminKeyHeader = { "X-ADMIN-KEY": "admineveraura2025" };
+    options.headers = options.headers
+        ? { ...options.headers, ...adminKeyHeader }
+        : { ...adminKeyHeader };
+    return fetch(url, options);
+}
+
 // --- FORM UI HELPERS ---
 function setButtonLoading(button, isLoading, loadingText = "Loading...") {
     if (!button) return;
@@ -1090,4 +1102,37 @@ function setFormMessage(message, type = "success") {
     msgEl.textContent = message;
     msgEl.className = `form-message ${type === 'error' ? 'form-message-error' : 'form-message-success'}`;
     msgEl.style.display = message ? "block" : "none";
+}
+
+// --- ADMIN FUNCTIONS ---
+// Example: Fetch all orders for admin dashboard
+// Usage: Call this function where admin wants to view all orders
+async function loadAdminOrders() {
+    // Assumes there is a container with id "admin-orders-list"
+    const container = document.getElementById("admin-orders-list");
+    if (!container) return;
+    container.innerHTML = "<p>Loading all orders...</p>";
+    try {
+        const response = await adminFetch(`${API_URL}/admin/orders`);
+        if (!response.ok) throw new Error("Failed to fetch admin orders");
+        const orders = await response.json();
+        if (orders.length === 0) {
+            container.innerHTML = "<p>No orders found.</p>";
+            return;
+        }
+        container.innerHTML = "";
+        orders.forEach(order => {
+            const orderDiv = document.createElement("div");
+            orderDiv.className = "admin-order-card";
+            orderDiv.innerHTML = `
+                <h4>Order ID: ${order.order_id}</h4>
+                <p>Status: ${order.status}</p>
+                <p>Total: ₹${order.total_amount.toFixed(2)}</p>
+                <p>Placed on: ${new Date(order.created_at).toLocaleString()}</p>
+            `;
+            container.appendChild(orderDiv);
+        });
+    } catch (err) {
+        container.innerHTML = `<p class="form-message-error">Error: ${err.message}</p>`;
+    }
 }
