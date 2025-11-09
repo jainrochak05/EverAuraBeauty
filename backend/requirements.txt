@@ -5,4 +5,5 @@ python-dotenv
 cloudinary
 pymongo
 gunicorn
-
+Flask-JWT-Extended
+razorpay
