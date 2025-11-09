@@ -180,34 +180,35 @@ def verify_otp():
         return jsonify({"error": "Email and OTP are required"}), 400
 
     try:
-        if users_collection is None:
-            raise Exception("Users collection not connected")
-
         user = users_collection.find_one({"email": email})
         if not user:
             return jsonify({"error": "User not found"}), 404
 
-        # Validate OTP
         if user.get('otp') != otp_attempt:
             return jsonify({"error": "Invalid OTP"}), 400
 
-        # Handle expiry field safely
         expiry = user.get('otp_expiry')
         if not expiry:
             return jsonify({"error": "OTP not generated"}), 400
-        if isinstance(expiry, str):
-            expiry = datetime.fromisoformat(expiry.replace("Z", "+00:00"))
+
+        # ✅ Handle both naive and aware datetimes
+        if expiry.tzinfo is None:
+            expiry = expiry.replace(tzinfo=timezone.utc)
+
         if datetime.now(timezone.utc) > expiry:
             return jsonify({"error": "OTP has expired"}), 400
 
-        # Create JWT FIRST
+        # ✅ Create JWT token before modifying the DB
         access_token = create_access_token(
             identity=str(user['_id']), 
             additional_claims={"email": user['email']}
         )
 
-        # Then clear OTP fields
-        users_collection.update_one({"email": email}, {"$unset": {"otp": "", "otp_expiry": ""}})
+        # ✅ Clear OTP after successful verification
+        users_collection.update_one(
+            {"email": email},
+            {"$unset": {"otp": "", "otp_expiry": ""}}
+        )
 
         return jsonify({
             "success": True,
@@ -215,7 +216,7 @@ def verify_otp():
             "token": access_token,
             "user": {"email": user['email'], "id": str(user['_id'])}
         })
-        
+
     except Exception as e:
         import traceback
         logger.error(f"DB Error verify-otp: {e}")
