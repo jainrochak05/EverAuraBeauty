@@ -18,24 +18,46 @@
         <div class="dashboard-header-title">Everaura Dashboard</div>
         <button class="admin-logout-btn" onclick="logout()">Logout <i class="fa-solid fa-right-from-bracket"></i></button>
     </header>
-    <!-- ======= Dashboard Navigation ======= -->
-        <!-- ======= Dashboard Navigation (Enhanced UI) ======= -->
-<nav class="dashboard-nav">
-    <div class="nav-container">
-      <div class="nav-left">
-        <div class="nav-toggle" onclick="toggleNavMenu()">
-          <i class="fa-solid fa-bars"></i>
+    
+    <nav class="dashboard-nav">
+        <div class="nav-container">
+          <div class="nav-toggle" onclick="toggleNavMenu()">
+            <i class="fa-solid fa-bars"></i>
+          </div>
+          <ul class="nav-links" id="navMenu">
+            <li><a href="#orders-section"><i class="fa-solid fa-receipt"></i> Orders</a></li> <li><a href="#products-section"><i class="fa-solid fa-box"></i> Products</a></li>
+            <li><a href="#testimonials-section"><i class="fa-solid fa-comment-dots"></i> Testimonials</a></li>
+            <li><a href="#coupons-section"><i class="fa-solid fa-ticket"></i> Coupons</a></li>
+          </ul>
         </div>
-        <h2 class="nav-title"></h2>
-      </div>
-      <ul class="nav-links" id="navMenu">
-        <li><a href="#products-section"><i class="fa-solid fa-box"></i> Products</a></li>
-        <li><a href="#testimonials-section"><i class="fa-solid fa-comment-dots"></i> Testimonials</a></li>
-        <li><a href="#coupons-section"><i class="fa-solid fa-ticket"></i> Coupons</a></li>
-      </ul>
-    </div>
-  </nav>
+    </nav>
+    
     <main class="dashboard-main">
+
+        <section id="orders-section" class="dashboard-section">
+            <div class="dashboard-actions">
+                <h1>Order Management</h1>
+            </div>
+            <div class="management-table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Date</th>
+                            <th>Customer</th>
+                            <th>Items</th>
+                            <th>Total</th>
+                            <th>Payment</th>
+                            <th>Status</th>
+                            <th>Tracking</th>
+                        </tr>
+                    </thead>
+                    <tbody id="order-table-body">
+                        </tbody>
+                </table>
+            </div>
+        </section>
+
         <section id="products-section" class="dashboard-section">
             <div class="dashboard-actions">
                 <h1>Product Management</h1>

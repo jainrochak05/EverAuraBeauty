@@ -3,15 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contact Us - Everaura</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <title>My Orders - Everaura</title>
     <link rel="icon" type="image/png" href="assets/images/favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    
     <link rel="stylesheet" href="assets/css/main.css">
-    <link rel="stylesheet" href="assets/css/contact.css">
 </head>
 <body class="dark-theme">
 
@@ -39,54 +37,13 @@
     </header>
 
     <main>
-        <section class="page-header contact-header">
-            <div class="hero-content">
-                <h1 class="section-title">Get In Touch</h1>
-            </div>
+        <section class="page-header" style="height: 30vh; min-height: 200px;">
+            <h1 class="section-title">My Orders</h1>
         </section>
 
-        <section class="contact-section">
-            <div class="contact-info-container">
-                <h2>Contact Information</h2>
-                <p>Have a question or a special request? We'd love to hear from you. Reach out to us directly or through our social channels.</p>
-                <div class="contact-details">
-                    <div class="contact-item">
-                        <i class="fa-solid fa-envelope"></i>
-                        <a href="mailto:EVERAURA.BEAUTYNSTYLE@GMAIL.COM">EVERAURA.BEAUTYNSTYLE@GMAIL.COM</a>
-                    </div>
-                    <div class="contact-item">
-                        <i class="fa-solid fa-phone"></i>
-                        <a href="tel:+919425545594">+91 94255 45594</a>
-                    </div>
+        <section class="my-orders-section">
+            <div id="orders-list-container">
                 </div>
-                <div class="contact-social">
-                    <a href="https://www.instagram.com/_ever_aura_/" target="_blank" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
-                    <a href="https://www.facebook.com/profile.php?id=61577357500639" target="_blank" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
-                    <a href="https://chat.whatsapp.com/Lg0BfM6EaJf7FYlLS7le8r" target="_blank" aria-label="Whatsapp"><i class="fa-brands fa-whatsapp"></i></a>
-                </div>
-            </div>
-            <div class="contact-form-container">
-                <h2>Send Us a Message</h2>
-                <form id="contact-form">
-                    <div class="form-group">
-                        <label for="name">Your Name</label>
-                        <input type="text" id="name" name="name" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="email">Your Email</label>
-                        <input type="email" id="email" name="email" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="subject">Subject</label>
-                        <input type="text" id="subject" name="subject" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="message">Message</label>
-                        <textarea id="message" name="message" rows="6" required></textarea>
-                    </div>
-                    <button type="submit" class="cta-button">Send Message</button>
-                </form>
-            </div>
         </section>
     </main>
 
@@ -111,6 +68,8 @@
     <div id="cart-modal" class="modal-overlay"></div>
     <div id="wishlist-modal" class="modal-overlay"></div>
     <div id="toast-container"></div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script src="assets/js/app.js"></script>
 </body>
 </html>

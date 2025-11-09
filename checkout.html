@@ -3,15 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shop All - Everaura</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <title>Checkout - Everaura</title>
     <link rel="icon" type="image/png" href="assets/images/favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    
     <link rel="stylesheet" href="assets/css/main.css">
-     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
 </head>
 <body class="dark-theme">
 
@@ -39,41 +37,62 @@
     </header>
 
     <main>
-        <section class="page-header">
-            <h1 class="section-title">Our Collection</h1>
+        <section class="page-header" style="height: 30vh; min-height: 200px;">
+            <h1 class="section-title">Checkout</h1>
         </section>
 
-        <div class="filter-toggles">
-            <div class="toggle-switch-container">
-                <span class="toggle-label">For Her</span>
-                <label class="toggle-switch">
-                    <input type="checkbox" id="gender-toggle-checkbox">
-                    <span class="slider"></span>
-                </label>
-                <span class="toggle-label">For Him</span>
+        <section class="checkout-section">
+            <div class="checkout-form-container">
+                <h2>Shipping Address</h2>
+                <form id="checkout-form">
+                    <div class="form-group">
+                        <label for="checkout-name">Full Name</label>
+                        <input type="text" id="checkout-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="checkout-email">Email</label>
+                        <input type="email" id="checkout-email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="checkout-phone">Phone Number</label>
+                        <input type="tel" id="checkout-phone" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="checkout-address">Full Address</label>
+                        <input type="text" id="checkout-address" placeholder="House No, Street, Landmark" required>
+                    </div>
+                    <div class="form-grid-half">
+                        <div class="form-group">
+                            <label for="checkout-city">City</label>
+                            <input type="text" id="checkout-city" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="checkout-pincode">Pincode</label>
+                            <input type="text" id="checkout-pincode" required>
+                        </div>
+                    </div>
+                </form>
             </div>
-            <div class="toggle-switch-container">
-                <span class="toggle-label">Anti-Tarnish</span>
-                <label class="toggle-switch">
-                    <input type="checkbox" id="type-toggle-checkbox">
-                    <span class="slider"></span>
-                </label>
-                <span class="toggle-label">Jewelry</span>
-            </div>
-        </div>
 
-
-        <div class="filter-bar" id="category-filter-bar">
-            <button class="filter-btn active" data-category="all">All</button>
-            <button class="filter-btn" data-category="Necklaces">Necklaces</button>
-            <button class="filter-btn" data-category="Rings">Rings</button>
-            <button class="filter-btn" data-category="Bangles/Bracelets">Bangles/Bracelets</button>
-            <button class="filter-btn" data-category="Earrings">Earrings</button>
-        </div>
-
-        <section class="shop-products">
-            <div class="product-grid" id="shop-product-list">
+            <div class="checkout-summary-container">
+                <h2>Order Summary</h2>
+                <div id="checkout-cart-items">
+                    </div>
+                <div class="coupon-area">
+                    <input type="text" id="coupon-code-input" placeholder="Enter coupon code">
+                    <button class="apply-coupon-btn" onclick="applyCoupon()">Apply</button>
                 </div>
+                <div id="applied-coupon" class="coupon-applied" style="display: none;">
+                    <span id="applied-coupon-code"></span>
+                    <button class="remove-coupon-btn" onclick="removeCoupon()">Remove</button>
+                </div>
+                <div id="cart-totals">
+                    <p>Subtotal: <span id="cart-subtotal">₹0.00</span></p>
+                    <p>Total after coupon: <span id="cart-total">₹0.00</span></p>
+                </div>
+                <button class="cta-button" id="place-order-btn">Place Order & Pay</button>
+                <div id="form-message" class="form-message"></div>
+            </div>
         </section>
     </main>
 
@@ -98,48 +117,14 @@
     <div id="cart-modal" class="modal-overlay">
         <div class="cart-modal-content">
             <button class="cart-modal-close" onclick="closeModal('cart-modal')">&times;</button>
-            <h3>Your Cart</h3>
-            
-            <div id="cart-items">
-                </div>
-    
-            <div class="coupon-area">
-                <input type="text" id="coupon-code-input" placeholder="Enter coupon code" />
-                <button class="apply-coupon-btn" onclick="applyCoupon()">Apply</button>
+            <h3>Your Shopping Bag</h3>
+            <div id="cart-items"></div>
             </div>
-    
-            <div id="applied-coupon" class="coupon-applied" style="display: none;">
-                <span id="applied-coupon-code"></span>
-                <button class="remove-coupon-btn" onclick="removeCoupon()">Remove</button>
-            </div>
-    
-            <div id="cart-totals">
-                <p>Subtotal: <span id="cart-subtotal">0</span></p>
-                <p>Total after coupon: <span id="cart-total">0</span></p>
-            </div>
-    
-            <button class="checkout-btn" onclick="proceedToCheckout()">Proceed to Checkout</button>
-        </div>
     </div>
-  
     <div id="wishlist-modal" class="modal-overlay"></div>
     <div id="toast-container"></div>
     
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script src="assets/js/app.js"></script>
-    <script>
-        // Select all product cards
-        const productCards = document.querySelectorAll('.product-card');
-      
-        productCards.forEach(card => {
-          card.addEventListener('click', () => {
-            const inner = card.querySelector('.product-card-inner');
-            inner.classList.toggle('is-flipped');
-          });
-        });
-      </script>
-
-
 </body>
-
 </html>

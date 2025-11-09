@@ -1,3 +1,6 @@
+// !IMPORTANT: Set this key to match your backend .env ADMIN_KEY
+const ADMIN_KEY = "a_very_strong_random_string_for_admin_api"; // <-- SET THIS
+
 const API_URL = "https://everaura-backend.vercel.app/api";
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -5,8 +8,9 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("login-form").addEventListener("submit", handleLogin);
   } else if (document.getElementById("product-table-body")) {
     checkAuth();
+    loadAdminOrders(); // <-- ADDED
     loadProductsIntoTable();
-    loadAllTestimonials(); // This now handles both pending and approved
+    loadAllTestimonials();
     loadCouponsIntoTable();
     
     const couponForm = document.getElementById("coupon-form");
@@ -16,13 +20,30 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 });
 
-// === COUPON MANAGEMENT ===
+// --- ADMIN AUTH HEADERS ---
+function getAdminHeaders() {
+    return {
+        'Content-Type': 'application/json',
+        'X-ADMIN-KEY': ADMIN_KEY
+    };
+}
+function getAdminHeadersFormData() {
+    // For FormData, we don't set Content-Type
+    return {
+        'X-ADMIN-KEY': ADMIN_KEY
+    };
+}
+
+
+// === COUPON MANAGEMENT (MODIFIED) ===
 async function loadCouponsIntoTable() {
   const tbody = document.getElementById("coupon-table-body");
   if (!tbody) return;
   
   try {
-    const response = await fetch(`${API_URL}/coupons`);
+    const response = await fetch(`${API_URL}/coupons`, {
+        headers: getAdminHeaders() // <-- MODIFIED
+    });
     const coupons = await response.json();
     tbody.innerHTML = "";
     
@@ -54,7 +75,7 @@ async function handleAddCoupon(e) {
   try {
     const response = await fetch(`${API_URL}/coupons`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: getAdminHeaders(), // <-- MODIFIED
       body: JSON.stringify(data),
     });
     
@@ -76,7 +97,10 @@ async function deleteCoupon(id) {
   if (!confirm("Are you sure you want to delete this coupon?")) return;
   
   try {
-    const response = await fetch(`${API_URL}/coupons/${id}`, { method: "DELETE" });
+    const response = await fetch(`${API_URL}/coupons/${id}`, { 
+        method: "DELETE",
+        headers: getAdminHeaders() // <-- MODIFIED
+    });
     if (response.ok) {
       loadCouponsIntoTable();
       alert("Coupon deleted successfully!");
@@ -95,16 +119,16 @@ async function loadAllTestimonials() {
   if (!tableBody) return;
 
   try {
-    const response = await fetch(`${API_URL}/testimonials`);
+    const response = await fetch(`${API_URL}/testimonials`, {
+        headers: getAdminHeaders() // <-- MODIFIED
+    });
     let testimonials = await response.json();
     tableBody.innerHTML = "";
-
     if (!Array.isArray(testimonials) || testimonials.length === 0) {
       tableBody.innerHTML = '<tr><td colspan="5">No testimonials found.</td></tr>';
       return;
     }
     
-    // Sort to show "pending" testimonials first
     testimonials.sort((a, b) => (a.status === 'pending') ? -1 : (b.status === 'pending') ? 1 : 0);
 
     testimonials.forEach((t) => {
@@ -149,11 +173,12 @@ async function approveTestimonial(testimonialId) {
   try {
     const response = await fetch(`${API_URL}/testimonials/${testimonialId}/approve`, {
       method: "PUT",
+      headers: getAdminHeaders() // <-- MODIFIED
     });
     
     if (!response.ok) throw new Error("Failed to approve.");
     
-    loadAllTestimonials(); // Refresh the unified list
+    loadAllTestimonials();
     alert("Testimonial approved!");
   } catch (error) {
     console.error("Error approving testimonial:", error);
@@ -167,11 +192,12 @@ async function deleteTestimonial(testimonialId) {
   try {
     const response = await fetch(`${API_URL}/testimonials/${testimonialId}`, {
       method: "DELETE",
+      headers: getAdminHeaders() // <-- MODIFIED
     });
     
     if (!response.ok) throw new Error("Failed to delete.");
     
-    loadAllTestimonials(); // Refresh the unified list
+    loadAllTestimonials();
     alert("Testimonial deleted.");
   } catch (error) {
     console.error("Error deleting testimonial:", error);
@@ -192,6 +218,7 @@ function handleLogin(e) {
   const username = document.getElementById("username").value;
   const password = document.getElementById("password").value;
   
+  // This is a simple client-side gate. The *real* security is the ADMIN_KEY.
   if (username === "admin" && password === "password123") {
     sessionStorage.setItem("isAdminLoggedIn", "true");
     window.location.href = "dashboard.html";
@@ -205,13 +232,13 @@ function logout() {
   window.location.replace("admin.html");
 }
 
-// === PRODUCT MANAGEMENT ===
+// === PRODUCT MANAGEMENT (MODIFIED) ===
 async function loadProductsIntoTable() {
   const tbody = document.getElementById("product-table-body");
   if (!tbody) return;
   
   try {
-    const response = await fetch(`${API_URL}/products`);
+    const response = await fetch(`${API_URL}/products`); // Public GET
     if (!response.ok) throw new Error("Failed to fetch products");
     
     const products = await response.json();
@@ -266,8 +293,11 @@ function createProductForm(product = {}) {
   const isEdit = !!product._id;
   const title = isEdit ? `Edit Product (RSN: ${product.rsn || "N/A"})` : "Add New Product";
   const genderValue = typeof product.gender !== "undefined" ? product.gender : "0";
-  const materialValue = typeof product.material !== "undefined" ? product.material : "0";
-  const tarnishValue = product.isAntiTarnish || "y";
+  const typeValue = typeof product.type !== "undefined" ? product.type : 0;
+  const materialValue = typeof product.material !== "undefined" ? product.material : 0;
+  
+  // Determine tarnishValue from type
+  const tarnishValue = typeValue === 0 ? "y" : "n";
 
   return `
     <div class="modal-content">
@@ -285,7 +315,7 @@ function createProductForm(product = {}) {
           </div>
           <div class="form-group">
             <label for="product-category">Main Category</label>
-            <select id="product-category" required onchange="toggleMaterialDropdown(); updateRSNPreview();">
+            <select id="product-category" required onchange="updateRSNPreview();">
               <option value="Necklaces" ${product.category === "Necklaces" ? "selected" : ""}>Necklaces</option>
               <option value="Earrings" ${product.category === "Earrings" ? "selected" : ""}>Earrings</option>
               <option value="Rings" ${product.category === "Rings" ? "selected" : ""}>Rings</option>
@@ -309,19 +339,19 @@ function createProductForm(product = {}) {
           <div class="form-group" id="material-dropdown-container" style="display:none;">
             <label for="product-material">Material</label>
             <select id="product-material" onchange="updateRSNPreview();">
-              <option value="0" ${materialValue === "0" ? "selected" : ""}>Anti Tarnish</option>
-              <option value="1" ${materialValue === "1" ? "selected" : ""}>Meenakari</option>
-              <option value="2" ${materialValue === "2" ? "selected" : ""}>Kundan</option>
-              <option value="3" ${materialValue === "3" ? "selected" : ""}>American Diamond</option>
-              <option value="4" ${materialValue === "4" ? "selected" : ""}>Resin</option>
-              <option value="5" ${materialValue === "5" ? "selected" : ""}>Chandbali</option>
-              <option value="6" ${materialValue === "6" ? "selected" : ""}>Chanderi</option>
-              <option value="7" ${materialValue === "7" ? "selected" : ""}>Pearl</option>
+              <option value="0" ${materialValue === 0 ? "selected" : ""}>Anti Tarnish</option>
+              <option value="1" ${materialValue === 1 ? "selected" : ""}>Meenakari</option>
+              <option value="2" ${materialValue === 2 ? "selected" : ""}>Kundan</option>
+              <option value="3" ${materialValue === 3 ? "selected" : ""}>American Diamond</option>
+              <option value="4" ${materialValue === 4 ? "selected" : ""}>Resin</option>
+              <option value="5" ${materialValue === 5 ? "selected" : ""}>Chandbali</option>
+              <option value="6" ${materialValue === 6 ? "selected" : ""}>Chanderi</option>
+              <option value="7" ${materialValue === 7 ? "selected" : ""}>Pearl</option>
             </select>
           </div>
           <div class="form-group">
-            <label for="rsn-preview">RSN Preview</label>
-            <input type="text" id="rsn-preview" readonly style="background:#eee; border:1px solid #ccc; padding:5px; color:#333;">
+            <label for="rsn-preview">RSN Preview (Auto-generated)</label>
+            <input type="text" id="rsn-preview" readonly style="background:#2a2a2a; border:1px solid #444; color:#888;">
           </div>
           <div class="form-group form-group-checkbox">
             <input type="checkbox" id="product-trending" ${product.isTrending === "y" ? "checked" : ""}>
@@ -351,25 +381,19 @@ function toggleMaterialDropdown() {
   
   if (!materialContainer || !tarnish) return;
   
-  // Show material dropdown only for Jewelry (non-anti-tarnish)
-  if (tarnish.value === "n") {
-    materialContainer.style.display = "block";
-  } else {
-    materialContainer.style.display = "none";
-  }
+  materialContainer.style.display = (tarnish.value === "n") ? "block" : "none";
 }
 
 function getCategoryCode(category) {
-  switch (category) {
-    case "Earrings": return "1";
-    case "Bangles/Bracelets": return "2";
-    case "Necklaces": return "3";
-    case "Rings": return "4";
-    default: return "0";
-  }
+  const map = {
+    "Earrings": "1",
+    "Bangles/Bracelets": "2",
+    "Necklaces": "3",
+    "Rings": "4",
+  };
+  return map[category] || "0";
 }
 
-// Updated RSN generation logic
 async function getNextArticleNumber(prefix) {
   try {
     const response = await fetch(`${API_URL}/products`);
@@ -394,23 +418,11 @@ async function getNextArticleNumber(prefix) {
 }
 
 async function generateRSN(category, gender, type, material) {
-  // Category code mapping
-  const categoryMap = {
-    "Earrings": "1",
-    "Bangles/Bracelets": "2",
-    "Necklaces": "3",
-    "Rings": "4",
-  };
-  const categoryCode = categoryMap[category] || "0";
+  const categoryCode = getCategoryCode(category);
+  const genderCode = gender || "0";
+  const typeCode = type || "0";
+  const materialCode = (type === "1") ? (material || "0") : "0"; // Material is 0 if Anti-Tarnish
 
-  // Gender code mapping
-  const genderCode = gender === "1" ? "1" : "0";
-
-  // Type and material codes as strings
-  const typeCode = (typeof type === "number" ? type.toString() : type) || "0";
-  const materialCode = (typeof material === "number" ? material.toString() : material) || "0";
-
-  // Construct prefix and find the next incremental number
   const prefix = `${categoryCode}${genderCode}${typeCode}${materialCode}`;
   const nextArticleNumber = await getNextArticleNumber(prefix);
 
@@ -419,17 +431,13 @@ async function generateRSN(category, gender, type, material) {
 
 async function updateRSNPreview() {
   const category = document.getElementById("product-category")?.value;
-  const gender = document.getElementById("product-gender")?.value || "0";
+  const gender = document.getElementById("product-gender")?.value;
   const tarnishValue = document.getElementById("product-tarnish")?.value;
   const type = tarnishValue === "y" ? "0" : "1";
   
   let material = "0";
-  const materialContainer = document.getElementById("material-dropdown-container");
-  if (materialContainer && materialContainer.style.display !== "none") {
-    const materialSelect = document.getElementById("product-material");
-    if (materialSelect) {
-      material = materialSelect.value;
-    }
+  if (type === "1") {
+    material = document.getElementById("product-material")?.value || "0";
   }
   
   const rsn = await generateRSN(category, gender, type, material);
@@ -450,13 +458,13 @@ async function showEditProductModal(id) {
       return;
     }
     
-    if (!product.material) product.material = "0";
+    if (typeof product.material === 'undefined') product.material = 0;
+    if (typeof product.type === 'undefined') product.type = 0;
     
     const modal = document.getElementById("product-modal");
     modal.innerHTML = createProductForm(product);
     modal.style.display = "flex";
     
-    // Initialize after modal is rendered
     setTimeout(() => {
       toggleMaterialDropdown();
       updateRSNPreview();
@@ -488,31 +496,21 @@ async function handleFormSubmit(editId) {
   const method = isEdit ? "PUT" : "POST";
   
   const category = document.getElementById("product-category").value;
-  const gender = document.getElementById("product-gender")?.value || "0";
+  const gender = document.getElementById("product-gender").value;
   const tarnishValue = document.getElementById("product-tarnish").value;
-  const type = tarnishValue === "y" ? 0 : 1;
-  
-  let material = 0;
-  const materialContainer = document.getElementById("material-dropdown-container");
-  if (materialContainer && materialContainer.style.display !== "none") {
-    const materialSelect = document.getElementById("product-material");
-    if (materialSelect) {
-      material = parseInt(materialSelect.value);
-    }
-  }
-  
-  const rsn = await generateRSN(category, gender, type.toString(), material.toString());
-  const description = document.getElementById("product-description")?.value || "";
+  const type = (tarnishValue === "y") ? 0 : 1;
+  const material = (type === 1) ? parseInt(document.getElementById("product-material").value) : 0;
+  const rsn = document.getElementById("rsn-preview").value; // Get generated RSN
+  const description = document.getElementById("product-description").value || "";
   
   let body, headers;
   
   if (isEdit) {
-    headers = { "Content-Type": "application/json" };
+    headers = getAdminHeaders(); // <-- MODIFIED
     body = JSON.stringify({
       name: document.getElementById("product-name").value,
       price: parseFloat(document.getElementById("product-price").value),
       category: category,
-      isAntiTarnish: tarnishValue,
       isTrending: document.getElementById("product-trending").checked ? "y" : "n",
       rsn: rsn,
       material: material,
@@ -521,13 +519,12 @@ async function handleFormSubmit(editId) {
       description: description
     });
   } else {
-    headers = {};
+    headers = getAdminHeadersFormData(); // <-- MODIFIED
     body = new FormData();
-    body.append("id", Date.now()); // Temporary ID for backend
+    body.append("id", Date.now());
     body.append("name", document.getElementById("product-name").value);
     body.append("price", document.getElementById("product-price").value);
     body.append("category", category);
-    body.append("isAntiTarnish", tarnishValue);
     body.append("isTrending", document.getElementById("product-trending").checked ? "y" : "n");
     body.append("images", document.getElementById("product-image").files[0]);
     body.append("rsn", rsn);
@@ -558,7 +555,10 @@ async function deleteProduct(id) {
   if (!confirm("Are you sure you want to permanently delete this product?")) return;
   
   try {
-    const response = await fetch(`${API_URL}/products/${id}`, { method: "DELETE" });
+    const response = await fetch(`${API_URL}/products/${id}`, { 
+        method: "DELETE",
+        headers: getAdminHeaders() // <-- MODIFIED
+    });
     
     if (!response.ok) throw new Error("Failed to delete product");
     
@@ -568,4 +568,104 @@ async function deleteProduct(id) {
     console.error("Error:", error);
     alert("Failed to delete product. See console for details.");
   }
+}
+
+
+// === NEW: ORDER MANAGEMENT ===
+
+async function loadAdminOrders() {
+    const tbody = document.getElementById("order-table-body");
+    if (!tbody) return;
+    
+    tbody.innerHTML = '<tr><td colspan="8">Loading orders...</td></tr>';
+    try {
+        const response = await fetch(`${API_URL}/admin/orders`, {
+            headers: getAdminHeaders()
+        });
+        if (!response.ok) throw new Error("Failed to fetch orders");
+        
+        const orders = await response.json();
+        tbody.innerHTML = "";
+        
+        if (orders.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="8">No orders found.</td></tr>';
+            return;
+        }
+
+        orders.forEach(order => {
+            const itemsSummary = order.items.map(i => `${i.name} (x${i.quantity})`).join(', ');
+            const address = order.shipping_address;
+            const fullAddress = `${address.name}, ${address.phone}, ${address.address}, ${address.city}, ${address.pincode}`;
+
+            const statusOptions = ['Pending', 'Paid', 'Packaging', 'Shipped', 'Delivered', 'Cancelled']
+                .map(s => `<option value="${s}" ${order.status === s ? "selected" : ""}>${s}</option>`)
+                .join('');
+            
+            tbody.innerHTML += `
+                <tr>
+                    <td data-label="Order ID">${order.order_id}</td>
+                    <td data-label="Date">${new Date(order.created_at).toLocaleDateString()}</td>
+                    <td data-label="Customer" title="${fullAddress}">${address.name}</td>
+                    <td data-label="Items" title="${itemsSummary}">${itemsSummary.substring(0, 40)}...</td>
+                    <td data-label="Total">₹${order.total_amount.toFixed(2)}</td>
+                    <td data-label="Payment">${order.payment_status}</td>
+                    <td data-label="Status">
+                        <select class="admin-select" onchange="handleUpdateStatus('${order.order_id}', this.value)">
+                            ${statusOptions}
+                        </select>
+                    </td>
+                    <td data-label="Tracking">
+                        <input type="text" class="admin-input" id="tracking-${order.order_id}" value="${order.tracking_link || ''}" placeholder="Enter tracking link">
+                        <button class="admin-button-small" onclick="handleAddTracking('${order.order_id}')">Save</button>
+                    </td>
+                </tr>
+            `;
+        });
+    } catch (error) {
+        console.error("Failed to load orders:", error);
+        tbody.innerHTML = `<tr><td colspan="8">Error loading orders: ${error.message}</td></tr>`;
+    }
+}
+
+async function handleUpdateStatus(orderId, status) {
+    if (!confirm(`Are you sure you want to update order ${orderId} to "${status}"?`)) {
+        loadAdminOrders(); // Reset dropdown if cancelled
+        return;
+    }
+    
+    try {
+        const response = await fetch(`${API_URL}/admin/orders/${orderId}/update-status`, {
+            method: 'PUT',
+            headers: getAdminHeaders(),
+            body: JSON.stringify({ status: status })
+        });
+        if (!response.ok) throw new Error("Failed to update status");
+        alert("Status updated! The user will be notified.");
+        loadAdminOrders();
+    } catch (error) {
+        console.error("Error updating status:", error);
+        alert("Failed to update status.");
+    }
+}
+
+async function handleAddTracking(orderId) {
+    const trackingLink = document.getElementById(`tracking-${orderId}`).value;
+    if (!trackingLink) {
+        alert("Please enter a tracking link first.");
+        return;
+    }
+    
+    try {
+        const response = await fetch(`${API_URL}/admin/orders/${orderId}/add-tracking`, {
+            method: 'PUT',
+            headers: getAdminHeaders(),
+            body: JSON.stringify({ tracking_link: trackingLink })
+        });
+        if (!response.ok) throw new Error("Failed to add tracking");
+        alert("Tracking link saved! If the order is 'Shipped', the user will be notified.");
+        loadAdminOrders();
+    } catch (error) {
+        console.error("Error saving tracking link:", error);
+        alert("Failed to save tracking link.");
+    }
 }
