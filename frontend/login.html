@@ -43,8 +43,7 @@
 
         <section class="login-section">
             <div class="form-container" id="login-form-container">
-                <form id="send-otp-form">
-                    <h2>Enter Your Email</h2>
+                <form id="send-otp-form" novalidate> <h2>Enter Your Email</h2>
                     <p>We'll send a One-Time Password (OTP) to your email to log you in.</p>
                     <div class="form-group">
                         <label for="email">Email Address</label>
@@ -53,8 +52,7 @@
                     <button type="submit" class="cta-button" id="send-otp-btn">Send OTP</button>
                 </form>
 
-                <form id="verify-otp-form" style="display: none;">
-                    <h2>Verify OTP</h2>
+                <form id="verify-otp-form" style="display: none;" novalidate> <h2>Verify OTP</h2>
                     <p>An OTP has been sent to <strong id="user-email-display"></strong>.</p>
                     <div class="form-group">
                         <label for="otp">Enter 6-Digit OTP</label>

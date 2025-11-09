@@ -9,7 +9,7 @@ from datetime import datetime, timedelta, timezone
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from flask import Flask, jsonify, request
-from flask_pymongo import PyMongo
+from pymongo import MongoClient
 from flask_cors import CORS
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required, JWTManager
 from bson.objectid import ObjectId
@@ -35,7 +35,6 @@ ADMIN_KEY = os.getenv("ADMIN_KEY")
 
 # --- App Configuration ---
 app.config["JWT_SECRET_KEY"] = SECRET_KEY
-# Set JWT token expiry to 10 minutes as requested (original was 10, this is 10)
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(minutes=10)
 
 # --- Initialize Extensions ---
@@ -43,20 +42,22 @@ CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
 jwt = JWTManager(app)
 razorpay_client = razorpay.Client(auth=(RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET))
 
-# --- Database Setup ---
+# --- Logging ---
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# --- Database Setup (Robust Version) ---
 try:
-    mongo_main = PyMongo(app, uri=MONGO_URI_MAIN)
-    db_main = mongo_main.db
-
-    mongo_orders = PyMongo(app, uri=MONGO_URI_ORDERS)
-    db_orders = mongo_orders.db
-
-    # Main Collections
+    # Connect to Main DB (Products, Coupons, etc.)
+    client_main = MongoClient(MONGO_URI_MAIN)
+    db_main = client_main.get_default_database()
     products_collection = db_main.products
     testimonials_collection = db_main.testimonials
     coupons_collection = db_main.coupons
 
-    # Orders/Users Collections
+    # Connect to Orders DB (Users, Orders)
+    client_orders = MongoClient(MONGO_URI_ORDERS)
+    db_orders = client_orders.get_default_database()
     users_collection = db_orders.users
     orders_collection = db_orders.orders
 
@@ -67,16 +68,17 @@ try:
     products_collection.create_index("category")
     testimonials_collection.create_index("status")
     coupons_collection.create_index("code", unique=True)
-
+    
+    logger.info("Successfully connected to both MongoDB databases.")
 
 except Exception as e:
-    logging.error(f"Failed to connect to MongoDB: {e}")
-    db_main = None
-    db_orders = None
-
-# --- Logging ---
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+    logger.critical(f"CRITICAL: Failed to connect to MongoDB. App will not work. Error: {e}")
+    # Set to None so app can at least start, but routes will fail
+    products_collection = None 
+    testimonials_collection = None
+    coupons_collection = None
+    users_collection = None
+    orders_collection = None
 
 # --- HELPERS ---
 
@@ -94,22 +96,19 @@ def send_email(to_email, subject, html_body):
         logger.error("Email credentials (EMAIL_USER, EMAIL_PASS) not set.")
         return False
     
-    try:
-        msg = MIMEMultipart()
-        msg['From'] = f"Everaura Beauty <{EMAIL_USER}>"
-        msg['To'] = to_email
-        msg['Subject'] = subject
-        msg.attach(MIMEText(html_body, 'html'))
+    # This function will now raise exceptions on failure, to be caught by the route
+    msg = MIMEMultipart()
+    msg['From'] = f"Everaura Beauty <{EMAIL_USER}>"
+    msg['To'] = to_email
+    msg['Subject'] = subject
+    msg.attach(MIMEText(html_body, 'html'))
 
-        with smtplib.SMTP('smtp.gmail.com', 587) as server:
-            server.starttls()
-            server.login(EMAIL_USER, EMAIL_PASS)
-            server.send_message(msg)
-        logger.info(f"Email sent to {to_email} with subject: {subject}")
-        return True
-    except Exception as e:
-        logger.error(f"Failed to send email to {to_email}: {e}")
-        return False
+    with smtplib.SMTP('smtp.gmail.com', 587) as server:
+        server.starttls()
+        server.login(EMAIL_USER, EMAIL_PASS)
+        server.send_message(msg)
+    logger.info(f"Email sent to {to_email} with subject: {subject}")
+    return True
 
 def generate_otp():
     """Generates a 6-digit numeric OTP."""
@@ -135,11 +134,17 @@ def send_otp():
     otp = generate_otp()
     otp_expiry = datetime.now(timezone.utc) + timedelta(minutes=10)
 
-    users_collection.update_one(
-        {"email": email},
-        {"$set": {"otp": otp, "otp_expiry": otp_expiry, "email": email}},
-        upsert=True
-    )
+    try:
+        if users_collection is None:
+            raise Exception("Orders database is not connected.")
+        users_collection.update_one(
+            {"email": email},
+            {"$set": {"otp": otp, "otp_expiry": otp_expiry, "email": email}},
+            upsert=True
+        )
+    except Exception as e:
+        logger.critical(f"CRITICAL: MongoDB operation failed in send_otp. Check MONGO_URI_ORDERS. Error: {e}")
+        return jsonify({"error": "Database service is currently unavailable."}), 500
 
     subject = "Your Everaura Login OTP"
     html_body = f"""
@@ -154,10 +159,16 @@ def send_otp():
     </div>
     """
     
-    if send_email(email, subject, html_body):
-        return jsonify({"success": True, "message": "OTP sent to your email."})
-    else:
-        return jsonify({"error": "Failed to send OTP email"}), 500
+    try:
+        if send_email(email, subject, html_body):
+            return jsonify({"success": True, "message": "OTP sent to your email."})
+        else:
+            # This should not be reachable if EMAIL_USER/PASS are set, but as a fallback
+            return jsonify({"error": "Email service is not configured."}), 500
+    except Exception as e:
+        # This catches smtplib errors (e.g., wrong password, auth failure)
+        logger.critical(f"CRITICAL: SMTP operation failed in send_otp. Check EMAIL_USER/EMAIL_PASS. Error: {e}")
+        return jsonify({"error": "Failed to send OTP. Check email credentials."}), 500
 
 @app.route('/api/auth/verify-otp', methods=['POST'])
 def verify_otp():
@@ -168,19 +179,24 @@ def verify_otp():
     if not email or not otp_attempt:
         return jsonify({"error": "Email and OTP are required"}), 400
 
-    user = users_collection.find_one({"email": email})
+    try:
+        user = users_collection.find_one({"email": email})
 
-    if not user:
-        return jsonify({"error": "User not found"}), 404
-    
-    if user.get('otp') != otp_attempt:
-        return jsonify({"error": "Invalid OTP"}), 400
+        if not user:
+            return jsonify({"error": "User not found"}), 404
+        
+        if user.get('otp') != otp_attempt:
+            return jsonify({"error": "Invalid OTP"}), 400
 
-    if datetime.now(timezone.utc) > user.get('otp_expiry', datetime.min.replace(tzinfo=timezone.utc)):
-        return jsonify({"error": "OTP has expired"}), 400
+        if datetime.now(timezone.utc) > user.get('otp_expiry', datetime.min.replace(tzinfo=timezone.utc)):
+            return jsonify({"error": "OTP has expired"}), 400
 
-    # Clear OTP
-    users_collection.update_one({"email": email}, {"$unset": {"otp": "", "otp_expiry": ""}})
+        # Clear OTP
+        users_collection.update_one({"email": email}, {"$unset": {"otp": "", "otp_expiry": ""}})
+    except Exception as e:
+        logger.error(f"DB Error verify-otp: {e}")
+        return jsonify({"error": "Database operation failed"}), 500
+
 
     # Create JWT
     access_token = create_access_token(
@@ -193,6 +209,8 @@ def verify_otp():
         "token": access_token,
         "user": {"email": user['email'], "id": str(user['_id'])}
     })
+
+# ... (All other routes remain the same) ...
 
 @app.route('/api/auth/me', methods=['GET'])
 @jwt_required()
@@ -234,57 +252,57 @@ def create_order():
     if not all(k in shipping_address for k in ['name', 'phone', 'email', 'address', 'city', 'pincode']):
         return jsonify({"error": "Incomplete shipping address"}), 400
 
-    # 2. Update user's address info
-    users_collection.update_one(
-        {"_id": ObjectId(user_id)},
-        {"$set": {
-            "name": shipping_address['name'],
-            "phone": shipping_address['phone'],
-            "address": shipping_address['address'],
-            "city": shipping_address['city'],
-            "pincode": shipping_address['pincode']
-        }}
-    )
-
-    # 3. Calculate totals
-    subtotal = sum(item['price'] * item['quantity'] for item in items)
-    discount_percent = 0
-    discount_amount = 0
-
-    if coupon_code:
-        coupon = coupons_collection.find_one({"code": coupon_code.upper()})
-        if coupon:
-            discount_percent = coupon.get('discount', 0)
-            discount_amount = (subtotal * discount_percent) / 100
-
-    total = subtotal - discount_amount
-    
-    # 4. Create Order document
-    order_id_str = f"EA-{int(datetime.now().timestamp() * 1000)}"
-    order_doc = {
-        "order_id": order_id_str,
-        "user_id": ObjectId(user_id),
-        "items": items,
-        "shipping_address": shipping_address,
-        "status": "Pending", # Status: Pending -> Paid -> Packaging -> Shipped -> Delivered -> Cancelled
-        "created_at": datetime.now(timezone.utc),
-        "subtotal": subtotal,
-        "coupon_code": coupon_code,
-        "discount_percent": discount_percent,
-        "discount_amount": discount_amount,
-        "total_amount": total,
-        "payment_status": "Pending",
-        "payment_link_id": None,
-        "payment_id": None,
-        "tracking_link": None
-    }
-    
     try:
+        # 2. Update user's address info
+        users_collection.update_one(
+            {"_id": ObjectId(user_id)},
+            {"$set": {
+                "name": shipping_address['name'],
+                "phone": shipping_address['phone'],
+                "address": shipping_address['address'],
+                "city": shipping_address['city'],
+                "pincode": shipping_address['pincode']
+            }}
+        )
+
+        # 3. Calculate totals
+        subtotal = sum(item['price'] * item['quantity'] for item in items)
+        discount_percent = 0
+        discount_amount = 0
+
+        if coupon_code:
+            coupon = coupons_collection.find_one({"code": coupon_code.upper()})
+            if coupon:
+                discount_percent = coupon.get('discount', 0)
+                discount_amount = (subtotal * discount_percent) / 100
+
+        total = subtotal - discount_amount
+        
+        # 4. Create Order document
+        order_id_str = f"EA-{int(datetime.now().timestamp() * 1000)}"
+        order_doc = {
+            "order_id": order_id_str,
+            "user_id": ObjectId(user_id),
+            "items": items,
+            "shipping_address": shipping_address,
+            "status": "Pending", # Status: Pending -> Paid -> Packaging -> Shipped -> Delivered -> Cancelled
+            "created_at": datetime.now(timezone.utc),
+            "subtotal": subtotal,
+            "coupon_code": coupon_code,
+            "discount_percent": discount_percent,
+            "discount_amount": discount_amount,
+            "total_amount": total,
+            "payment_status": "Pending",
+            "payment_link_id": None,
+            "payment_id": None,
+            "tracking_link": None
+        }
+    
         result = orders_collection.insert_one(order_doc)
         order_mongo_id = result.inserted_id
     except Exception as e:
-        logger.error(f"Failed to insert order: {e}")
-        return jsonify({"error": "Failed to create order"}), 500
+        logger.error(f"Failed to insert order/update user: {e}")
+        return jsonify({"error": "Failed to create order in database"}), 500
 
     # 5. Generate Razorpay Payment Link
     try:
@@ -393,8 +411,11 @@ def payment_webhook():
                 <p>Thank you,<br>The Everaura Team</p>
             </div>
             """
-            send_email(order['shipping_address']['email'], subject, html_body)
-            logger.info(f"Order {order['order_id']} marked as Paid.")
+            try:
+                send_email(order['shipping_address']['email'], subject, html_body)
+                logger.info(f"Order {order['order_id']} marked as Paid. Confirmation email sent.")
+            except Exception as e:
+                logger.error(f"Order {order['order_id']} paid, but confirmation email failed: {e}")
         else:
             logger.warning(f"Paid payment_link_id {payment_link_id} received, but no matching order found.")
 
@@ -437,8 +458,9 @@ def update_order_status(order_id):
         # Send status update email
         subject = f"Your Everaura Order Status: {new_status} (ID: {order['order_id']})"
         body = f"""
-        <p>Hi {order['shipping_address']['name']},</p>
-        <p>The status of your order <strong>(ID: {order['order_id']})</strong> has been updated to: <strong>{new_status}</strong>.</p>
+        <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+            <p>Hi {order['shipping_address']['name']},</p>
+            <p>The status of your order <strong>(ID: {order['order_id']})</strong> has been updated to: <strong>{new_status}</strong>.</p>
         """
         
         if new_status == "Shipped" and order.get('tracking_link'):
@@ -449,10 +471,16 @@ def update_order_status(order_id):
                 body += f"<a href='{order['tracking_link']}' style='display: inline-block; padding: 10px 15px; background-color: #000; color: #fff; text-decoration: none; border-radius: 5px;'>Track Package</a>"
         
         body += f"""
-        <br><br>
-        <p>Thank you,<br>The Everaura Team</p>
+            <br><br>
+            <p>Thank you,<br>The Everaura Team</p>
+        </div>
         """
-        send_email(order['shipping_address']['email'], subject, body)
+        try:
+            send_email(order['shipping_address']['email'], subject, body)
+            logger.info(f"Status update email sent for order {order['order_id']}")
+        except Exception as e:
+            logger.error(f"Failed to send status update email for order {order['order_id']}: {e}")
+            
         return jsonify(serialize_doc(order))
     else:
         return jsonify({"error": "Order not found"}), 404
@@ -474,23 +502,29 @@ def add_tracking(order_id):
     )
 
     if order:
-        # If status is already "Shipped", resend notification with link
+        # If status is "Shipped", send notification with link
         if order['status'] == 'Shipped':
             subject = f"Your Everaura Order Has Shipped! (ID: {order['order_id']})"
             body = f"""
-            <p>Hi {order['shipping_address']['name']},</p>
-            <p>Good news! Your order <strong>(ID: {order['order_id']})</strong> has shipped.</p>
-            <p>You can track your package here:</p>
+            <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+                <p>Hi {order['shipping_address']['name']},</p>
+                <p>Good news! Your order <strong>(ID: {order['order_id']})</strong> has shipped.</p>
+                <p>You can track your package here:</p>
             """
             if "indiapost.gov.in" in tracking_link:
                 body += f"<a href='{tracking_link}' style='display: inline-block; padding: 10px 15px; background-color: #000; color: #fff; text-decoration: none; border-radius: 5px;'>Track with India Post</a>"
             else:
                  body += f"<a href='{tracking_link}' style='display: inline-block; padding: 10px 15px; background-color: #000; color: #fff; text-decoration: none; border-radius: 5px;'>Track Package</a>"
             body += f"""
-            <br><br>
-            <p>Thank you,<br>The Everaura Team</p>
+                <br><br>
+                <p>Thank you,<br>The Everaura Team</p>
+            </div>
             """
-            send_email(order['shipping_address']['email'], subject, body)
+            try:
+                send_email(order['shipping_address']['email'], subject, body)
+                logger.info(f"Tracking email sent for order {order['order_id']}")
+            except Exception as e:
+                logger.error(f"Failed to send tracking email for order {order['order_id']}: {e}")
             
         return jsonify(serialize_doc(order))
     else:
@@ -763,14 +797,21 @@ def contact_form():
         
         return jsonify({"success": True, "message": "Email sent successfully!"})
     except Exception as e:
-        logger.error(f"Failed to send contact email: {e}")
-        return jsonify({"success": False, "error": str(e)}), 500
+        logger.critical(f"CRITICAL: Contact form email failed. Check EMAIL_USER/EMAIL_PASS. Error: {e}")
+        return jsonify({"success": False, "error": "Could not send message due to a server error."}), 500
 
 
 # --- Health Check ---
 @app.route('/api/health', methods=['GET'])
 def health_check():
-    return jsonify({"status": "ok", "message": "Backend is running"}), 200
+    # Check DB connections
+    try:
+        client_main.admin.command('ping')
+        client_orders.admin.command('ping')
+        return jsonify({"status": "ok", "message": "Backend and Databases are running"}), 200
+    except Exception as e:
+        logger.error(f"Health check failed: DB connection error: {e}")
+        return jsonify({"status": "error", "message": "Backend is running, but database connection failed"}), 500
 
 # --- Main Runner ---
 if __name__ == '__main__':

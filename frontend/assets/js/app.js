@@ -606,8 +606,8 @@ function decreaseQuantity(productId) {
     saveCart(cart);
     updateCartCount();
     openCartModal();
-  } else if (index !== -1 && cart[index].quantity === 1) {
-    cart.splice(index, 1); // Remove item if quantity becomes 0
+  } else if (index !== -1 && cart[index].quantity === 1) { // Remove item if quantity becomes 0
+    cart.splice(index, 1);
     saveCart(cart);
     updateCartCount();
     openCartModal();
@@ -625,10 +625,10 @@ function updateCartCount() {
     o = document.getElementById("cart-count");
   o && (o.innerText = t);
 }
-function showToast(e) {
+function showToast(e, type = "success") { // Added type for error toasts
   const t = document.getElementById("toast-container"),
     o = document.createElement("div");
-  (o.className = "toast"),
+  (o.className = `toast ${type === 'error' ? 'toast-error' : ''}`), // Add error class
     (o.textContent = e),
     t.appendChild(o),
     setTimeout(() => {
@@ -773,18 +773,25 @@ async function handleContactFormSubmit(e) {
 
 // --- PAGE-SPECIFIC LOGIC ---
 
-// --- LOGIN PAGE ---
+// --- LOGIN PAGE (NEW: Improved Error Handling) ---
 async function handleSendOTP(event, isResend = false) {
     event.preventDefault();
+    setFormMessage("", "success"); // Clear previous messages
+
     const email = document.getElementById("email").value;
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Simple email regex
+    
     if (!email) {
         setFormMessage("Please enter an email address.", "error");
+        return;
+    }
+    if (!emailPattern.test(email)) {
+        setFormMessage("Please enter a valid email address.", "error");
         return;
     }
     
     const btn = document.getElementById(isResend ? "resend-otp-link" : "send-otp-btn");
     setButtonLoading(btn, true, isResend ? "Resending..." : "Sending...");
-    setFormMessage("", "success");
 
     try {
         const response = await fetch(`${API_URL}/auth/send-otp`, {
@@ -792,8 +799,22 @@ async function handleSendOTP(event, isResend = false) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email: email })
         });
-        const data = await response.json();
-        if (!response.ok) throw new Error(data.error || "Failed to send OTP");
+
+        // This is the new, more robust error handling
+        if (!response.ok) {
+            let errorMsg = "An unknown error occurred.";
+            try {
+                // Try to get the JSON error from the backend
+                const data = await response.json();
+                errorMsg = data.error || `Server error: ${response.status}`;
+            } catch (jsonError) {
+                // The response was not JSON (e.g., a 500 Vercel crash page)
+                errorMsg = `Server error: ${response.status} (${response.statusText}). Check backend logs.`;
+            }
+            throw new Error(errorMsg); // Throw to be caught below
+        }
+
+        const data = await response.json(); // This is now safe
 
         setFormMessage("OTP sent successfully! Check your email.", "success");
         document.getElementById("send-otp-form").style.display = "none";
@@ -808,12 +829,23 @@ async function handleSendOTP(event, isResend = false) {
 
 async function handleVerifyOTP(event) {
     event.preventDefault();
+    setFormMessage("", "success"); // Clear previous messages
+
     const email = document.getElementById("email").value;
     const otp = document.getElementById("otp").value;
+    const otpPattern = /^\d{6}$/; // 6 digits only
+
+    if (!otp) {
+        setFormMessage("Please enter your OTP.", "error");
+        return;
+    }
+    if (!otpPattern.test(otp)) {
+        setFormMessage("OTP must be 6 digits.", "error"); // This fixes the "pattern" error
+        return;
+    }
     
     const btn = document.getElementById("verify-otp-btn");
     setButtonLoading(btn, true, "Verifying...");
-    setFormMessage("", "success");
 
     try {
         const response = await fetch(`${API_URL}/auth/verify-otp`, {
@@ -935,9 +967,19 @@ async function handlePlaceOrder() {
             },
             body: JSON.stringify(orderData)
         });
-        const data = await response.json();
-        if (!response.ok) throw new Error(data.error || "Failed to create order");
+        
+        if (!response.ok) {
+            let errorMsg = "An unknown error occurred.";
+            try {
+                const data = await response.json();
+                errorMsg = data.error || `Server error: ${response.status}`;
+            } catch (jsonError) {
+                errorMsg = `Server error: ${response.status} (${response.statusText}). Check backend logs.`;
+            }
+            throw new Error(errorMsg);
+        }
 
+        const data = await response.json();
         clearCart();
         sessionStorage.removeItem("appliedCoupon");
         setFormMessage("Order created! Redirecting to payment...", "success");

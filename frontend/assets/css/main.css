@@ -3744,3 +3744,39 @@ input:checked + .slider:before {
         gap: 1.2rem; /* Adjust icon spacing */
     }
 }
+
+
+
+
+
+/* ... (at the end of main.css) ... */
+
+/* === TOAST NOTIFICATIONS (for error messages) === */
+#toast-container {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3000;
+  pointer-events: none;
+}
+.toast {
+  background-color: var(--accent-color);
+  color: var(--background-color);
+  padding: 12px 25px;
+  border-radius: 5px;
+  margin-top: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+  font-weight: bold;
+}
+.toast.toast-error {
+  background-color: #e74c3c; /* Red for errors */
+  color: #fff;
+}
+.toast.show {
+  opacity: 1;
+  transform: translateY(0);
+}
