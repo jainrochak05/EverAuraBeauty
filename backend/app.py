@@ -26,6 +26,8 @@ MONGO_URI_ORDERS = os.getenv("MONGO_URI_ORDERS")
 RAZORPAY_KEY_ID = os.getenv("RAZORPAY_KEY_ID")
 RAZORPAY_KEY_SECRET = os.getenv("RAZORPAY_KEY_SECRET")
 RAZORPAY_WEBHOOK_SECRET = os.getenv("RAZORPAY_WEBHOOK_SECRET")
+# When set to "true" (case-insensitive), the backend will bypass Razorpay and mark orders as paid for testing.
+SKIP_PAYMENT = os.getenv("SKIP_PAYMENT", "false").lower() == "true"
 EMAIL_USER = os.getenv("EMAIL_USER")
 EMAIL_PASS = os.getenv("EMAIL_PASS")
 CONTACT_EMAIL = os.getenv("CONTACT_EMAIL")
@@ -316,8 +318,49 @@ def create_order():
         logger.error(f"Failed to insert order/update user: {e}")
         return jsonify({"error": "Failed to create order in database"}), 500
 
-    # 5. Generate Razorpay Payment Link
+    # 5. Generate Payment (Razorpay or Skip for testing)
     try:
+        # If SKIP_PAYMENT flag is enabled or Razorpay keys are not configured, mark as paid (testing mode)
+        if SKIP_PAYMENT or not (RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET):
+            orders_collection.update_one(
+                {"_id": order_mongo_id},
+                {"$set": {
+                    "payment_status": "Paid",
+                    "status": "Paid",
+                    "payment_id": "TEST_PAYMENT_" + str(order_mongo_id),
+                    "paid_at": datetime.now(timezone.utc)
+                }}
+            )
+
+            # Optionally send confirmation email (same as webhook flow)
+            subject = f"Your Everaura Order is Confirmed! (ID: {order_id_str})"
+            html_body = f"""
+            <div style="font-family: Arial, sans-serif; line-height: 1.6;">
+                <h2>Thank you for your purchase, {shipping_address['name']}!</h2>
+                <p>Your order <strong>(ID: {order_id_str})</strong> has been created and marked as paid for testing purposes.</p>
+                <h3>Order Summary:</h3>
+                <ul>
+                    {"".join([f"<li>{item['name']} (x{item['quantity']}) - ₹{item['price'] * item['quantity']:.2f}</li>" for item in items])}
+                </ul>
+                <p><strong>Total Paid: ₹{total:.2f}</strong></p>
+                <a href="{FRONTEND_URL}/my-orders.html?order_id={order_id_str}" style="display: inline-block; padding: 10px 15px; background-color: #000; color: #fff; text-decoration: none; border-radius: 5px;">View My Orders</a>
+                <br><br>
+                <p>Thank you,<br>The Everaura Team</p>
+            </div>
+            """
+            try:
+                send_email(shipping_address['email'], subject, html_body)
+            except Exception as e:
+                logger.error(f"Test payment: confirmation email failed for order {order_id_str}: {e}")
+
+            return jsonify({
+                "success": True,
+                "message": "Order created and marked as paid (testing mode).",
+                "order_id": order_id_str,
+                "payment_url": f"{FRONTEND_URL}/my-orders.html?order_id={order_id_str}"
+            })
+
+        # Otherwise create a Razorpay payment link as normal
         link_data = {
             "amount": int(total * 100),  # Amount in paise
             "currency": "INR",
@@ -337,7 +380,7 @@ def create_order():
             "callback_method": "get"
         }
         payment_link = razorpay_client.payment_link.create(link_data)
-        
+
         # 6. Update order with payment link ID
         orders_collection.update_one(
             {"_id": order_mongo_id},
@@ -346,7 +389,7 @@ def create_order():
                 "razorpay_short_url": payment_link['short_url']
             }}
         )
-        
+
         return jsonify({
             "success": True,
             "message": "Order created, redirecting to payment.",

@@ -1,5 +1,5 @@
 // !IMPORTANT: Set this key to match your backend .env ADMIN_KEY
-const ADMIN_KEY = "a_very_strong_random_string_for_admin_api"; // <-- SET THIS
+const ADMIN_KEY = "admineveraura2025"; // <-- SET THIS
 
 const API_URL = "https://everaura-backend.vercel.app/api";
 
