@@ -3780,3 +3780,136 @@ input:checked + .slider:before {
   opacity: 1;
   transform: translateY(0);
 }
+
+
+
+/* =========================================
+   CLEAN PROFESSIONAL FOOTER
+   ========================================= */
+   .main-footer {
+    background-color: #050505; /* Deep black background */
+    border-top: 1px solid #222;
+    padding: 4rem 5% 1.5rem;
+    color: #888;
+    margin-top: auto; /* Pushes footer to bottom if page is short */
+}
+
+.footer-content {
+    display: grid;
+    /* 3 Columns: Wide Brand Col | Narrow Explore | Narrow Legal */
+    grid-template-columns: 2fr 1fr 1fr; 
+    gap: 4rem;
+    max-width: 1200px;
+    margin: 0 auto 3rem auto;
+    align-items: start;
+}
+
+/* --- Column 1: Brand & Social --- */
+.footer-column.brand-col {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding-right: 2rem;
+}
+
+.footer-column.brand-col .logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem;
+    font-weight: 700;
+    color: #d4af37; /* Gold */
+    text-decoration: none;
+    letter-spacing: 1px;
+    display: inline-block;
+    margin-bottom: 0.5rem;
+}
+
+.brand-desc {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: #666;
+    max-width: 300px;
+}
+
+.footer-social {
+    display: flex;
+    gap: 1rem;
+    margin-top: 0.5rem;
+}
+
+.footer-social a {
+    width: 38px;
+    height: 38px;
+    border: 1px solid #333;
+    border-radius: 50%; /* Circle icons */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #aaa;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+.footer-social a:hover {
+    border-color: #d4af37;
+    color: #d4af37;
+    background: rgba(212, 175, 55, 0.1);
+}
+
+/* --- Columns 2 & 3: Links --- */
+.footer-column h4 {
+    color: #fff;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.3rem;
+    margin-bottom: 1.5rem;
+    letter-spacing: 0.5px;
+}
+
+.footer-links-vertical {
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+}
+
+.footer-links-vertical a {
+    color: #888;
+    text-decoration: none;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+}
+
+.footer-links-vertical a:hover {
+    color: #d4af37; /* Gold hover */
+    padding-left: 5px; /* Subtle slide effect */
+}
+
+/* --- Copyright Bar --- */
+.footer-copyright {
+    text-align: center;
+    padding-top: 2rem;
+    border-top: 1px solid #1a1a1a;
+    font-size: 0.85rem;
+    color: #555;
+}
+
+/* --- Mobile Responsiveness --- */
+@media (max-width: 768px) {
+    .footer-content {
+        grid-template-columns: 1fr; /* Stack into 1 column */
+        text-align: center;
+        gap: 2.5rem;
+    }
+
+    .footer-column.brand-col {
+        padding-right: 0;
+        align-items: center;
+    }
+    
+    .brand-desc {
+        margin: 0 auto;
+    }
+
+    .footer-social {
+        justify-content: center;
+    }
+}
