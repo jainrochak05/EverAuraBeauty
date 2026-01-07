@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terms & Conditions | Everaura</title>
+    <link rel="icon" type="image/png" href="assets/images/favicon.png">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    
+    <link rel="stylesheet" href="assets/css/main.css">
+    
+    <style>
+        .legal-section {
+            padding: 4rem 5%;
+            max-width: 900px;
+            margin: 0 auto;
+            min-height: 50vh;
+        }
+        .legal-section h2 {
+            font-family: var(--heading-font);
+            color: var(--accent-color); /* Gold/Cream color */
+            margin-top: 2.5rem;
+            margin-bottom: 1rem;
+            font-size: 1.8rem;
+            border-bottom: 1px solid #333;
+            padding-bottom: 0.5rem;
+        }
+        .legal-section p, .legal-section li {
+            font-family: var(--primary-font);
+            color: #ccc;
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            line-height: 1.7;
+        }
+        .legal-section ul {
+            padding-left: 20px;
+            margin-bottom: 1.5rem;
+        }
+    </style>
+</head>
+<body class="dark-theme">
+
+    <header class="main-header">
+        <nav class="main-nav">
+            <button class="mobile-nav-toggle" aria-label="Open navigation">
+                <span></span>
+                <span></span>
+            </button>
+            <a href="index.html" class="logo"></a>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="shop.html">Shop</a></li>
+                <li><a href="about.html">Our Story</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+            <div class="header-icons">
+                <a href="#" aria-label="Wishlist" onclick="event.preventDefault(); openWishlistModal();"><i class="fa-solid fa-heart"></i></a>
+                <a href="#" aria-label="Shopping Cart" onclick="event.preventDefault(); openCartModal();">
+                    <i class="fa-solid fa-bag-shopping"></i>
+                    <span id="cart-count" class="cart-count-badge">0</span>
+                </a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="page-header">
+            <div class="hero-content">
+                <h1 class="section-title">Terms & Conditions</h1>
+            </div>
+        </section>
+
+        <section class="legal-section">
+            <p>Welcome to Everaura. By accessing our website and purchasing our jewelry, you agree to be bound by the following terms and conditions.</p>
+
+            <h2>1. General Conditions</h2>
+            <p>We reserve the right to refuse service to anyone for any reason at any time. You understand that your content (excluding credit card information) may be transferred unencrypted and involve transmissions over various networks.</p>
+
+            <h2>2. Products and Pricing</h2>
+            <p>All products listed on the website, their descriptions, and their prices are subject to change. We reserve the right to modify, suspend, or discontinue the sale of any product at any time without notice. We make every effort to display the colors and images of our products accurately.</p>
+
+            <h2>3. Accuracy of Billing and Account Information</h2>
+            <p>We reserve the right to refuse any order you place with us. In the event that we make a change to or cancel an order, we may attempt to notify you by contacting the e-mail and/or billing address/phone number provided at the time the order was made.</p>
+
+            <h2>4. Prohibited Uses</h2>
+            <p>In addition to other prohibitions as set forth in the Terms of Service, you are prohibited from using the site or its content for any unlawful purpose, to solicit others to perform or participate in any unlawful acts, or to violate any international, federal, provincial or state regulations.</p>
+
+            <h2>5. Changes to Terms</h2>
+            <p>You can review the most current version of the Terms of Service at any time at this page. We reserve the right, at our sole discretion, to update, change or replace any part of these Terms of Service by posting updates and changes to our website.</p>
+        </section>
+    </main>
+
+    <footer class="main-footer">
+        <div class="footer-content">
+            <div class="footer-column brand-col">
+                <a href="index.html" class="logo"></a>
+                <p class="brand-desc">
+                    Handcrafted elegance for the modern soul. Timeless jewelry designed to tell your story.
+                </p>
+                <div class="footer-social">
+                    <a href="https://www.instagram.com/_ever_aura_/" target="_blank" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="https://www.facebook.com/profile.php?id=61577357500639" target="_blank" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+                    <a href="https://chat.whatsapp.com/Lg0BfM6EaJf7FYlLS7le8r" target="_blank" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
+                </div>
+            </div>
+            <div class="footer-column">
+                <h4>Explore</h4>
+                <div class="footer-links-vertical">
+                    <a href="shop.html">Shop Collection</a>
+                    <a href="about.html">Our Story</a>
+                    <a href="contact.html">Contact Us</a>
+                    <a href="my-orders.html">Track Order</a>
+                </div>
+            </div>
+            <div class="footer-column">
+                <h4>Legal</h4>
+                <div class="footer-links-vertical">
+                    <a href="terms.html">Terms & Conditions</a>
+                    <a href="privacy.html">Privacy Policy</a>
+                    <a href="refund.html">Refund Policy</a>
+                    <a href="shipping.html">Shipping Policy</a>
+                </div>
+            </div>
+        </div>
+        <p class="footer-copyright">&copy; 2026 Everaura. All Rights Reserved.</p>
+    </footer>
+
+    <div id="cart-modal" class="modal-overlay">
+        <div class="cart-modal-content">
+            <button class="cart-modal-close" onclick="closeModal('cart-modal')">&times;</button>
+            <h3>Your Cart</h3>
+            <div id="cart-items"></div>
+            <div class="coupon-area">
+                <input type="text" id="coupon-code-input" placeholder="Enter coupon code" />
+                <button class="apply-coupon-btn" onclick="applyCoupon()">Apply</button>
+            </div>
+            <div id="applied-coupon" class="coupon-applied" style="display: none;">
+                <span id="applied-coupon-code"></span>
+                <button class="remove-coupon-btn" onclick="removeCoupon()">Remove</button>
+            </div>
+            <div id="cart-totals">
+                <p>Subtotal: <span id="cart-subtotal">0</span></p>
+                <p>Total after coupon: <span id="cart-total">0</span></p>
+            </div>
+            <button class="checkout-btn" onclick="proceedToCheckout()">Proceed to Checkout</button>
+        </div>
+    </div>
+    <div id="wishlist-modal" class="modal-overlay"></div>
+    <div id="toast-container"></div>
+
+    <script src="assets/js/app.js"></script>
+</body>
+</html>
