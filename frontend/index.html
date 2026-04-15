@@ -3,46 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Maintenance | Everaura Beauty</title>
+    <title>Curating Elegance | Everaura Beauty</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="assets/css/main.css">
     
     <style>
         body {
-            background-color: #050505; /* Deepening the black for maintenance feel */
+            background-color: #050505; /* Deep luxury black */
             margin: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            color: var(--text-color); /* */
+            font-family: var(--primary-font); /* */
+            overflow: hidden;
+        }
+
+        /* --- Main Content Section (Centered) --- */
+        .maintenance-container {
+            flex: 1;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            padding: 20px;
             text-align: center;
         }
 
-        .maintenance-wrap {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        /* 3D Rotating Circular Logo (Favicon) */
+        /* Enlarged 3D Rotating Logo */
         .logo-3d-container {
             perspective: 1200px;
-            margin-bottom: 3.5rem;
+            margin-bottom: 2rem;
         }
 
         .logo-coin {
-            width: 110px;
-            height: 110px;
-            margin: 0 auto;
+            width: 140px; /* Enlarged size as requested */
+            height: 140px;
             background: url("assets/images/favicon.png") no-repeat center center;
             background-size: contain;
             border-radius: 50%;
-            animation: rotateY3D 12s linear infinite;
-            filter: drop-shadow(0 0 20px rgba(243, 239, 224, 0.1));
+            animation: rotateY3D 10s linear infinite;
+            filter: drop-shadow(0 0 25px rgba(243, 239, 224, 0.15));
         }
 
         @keyframes rotateY3D {
@@ -50,94 +54,162 @@
             to { transform: rotateY(360deg); }
         }
 
+        /* Aesthetic Maintenance Text */
         h1 {
-            font-family: var(--heading-font);
-            font-size: 3.2rem;
-            font-style: italic;
-            letter-spacing: 5px;
-            color: var(--accent-color);
-            margin-bottom: 1.2rem;
+            font-family: var(--heading-font); /* */
+            font-size: 3.5rem;
+            font-weight: 700;
+            letter-spacing: 8px;
+            color: var(--accent-color); /* */
+            margin: 0 0 1rem 0;
             text-transform: uppercase;
+            font-style: italic;
         }
 
         .subtext {
-            font-family: var(--primary-font);
             font-size: 0.95rem;
             font-weight: 300;
-            color: #777;
-            letter-spacing: 1.5px;
-            max-width: 480px;
-            margin: 0 auto 4rem auto;
-            line-height: 2;
+            color: #666;
+            letter-spacing: 2px;
+            max-width: 550px;
+            line-height: 1.8;
+            margin-bottom: 4rem;
         }
 
-        /* Admin Entry */
-        .admin-entry {
-            margin-top: 2rem;
-            padding-top: 2rem;
+        /* Horizontal Contact Row */
+        .admin-contact-section {
+            width: 100%;
+            max-width: 850px;
+        }
+
+        .admin-contact-section h2 {
+            font-family: var(--heading-font);
+            font-size: 0.9rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: #444;
+            margin-bottom: 1.5rem;
+        }
+
+        .contact-row {
+            display: flex;
+            gap: 40px;
+            align-items: center;
+            justify-content: center;
+            padding-top: 20px;
             border-top: 1px solid #1a1a1a;
+        }
+
+        .contact-item {
+            color: #888;
+            text-decoration: none;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            transition: color 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .contact-item:hover {
+            color: var(--accent-color);
+        }
+
+        .contact-item i {
+            color: var(--accent-color);
+            font-size: 0.9rem;
+        }
+
+        /* --- Streamlined Footer --- */
+        .maint-footer {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px 5%;
+            background: #080808;
+            border-top: 1px solid #111;
+            font-size: 0.7rem;
+            color: #444;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .footer-venture a {
+            color: #666;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .footer-venture a:hover {
+            color: var(--accent-color);
         }
 
         .admin-login-btn {
             background: transparent;
-            color: #444;
-            border: 1px solid #333;
-            padding: 10px 20px;
+            color: #333;
+            border: 1px solid #222;
+            padding: 6px 14px;
             text-decoration: none;
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
+            font-size: 0.6rem;
+            letter-spacing: 1px;
             transition: all 0.4s ease;
+            border-radius: 2px;
         }
 
         .admin-login-btn:hover {
             color: var(--accent-color);
             border-color: var(--accent-color);
+            background: rgba(243, 239, 224, 0.02);
         }
 
-        /* Social Link */
-        .mediofusion-link {
-            display: block;
-            margin-top: 1.5rem;
-            color: #555;
-            font-size: 0.85rem;
-            text-decoration: none;
-        }
-
-        .mediofusion-link i { color: var(--accent-color); margin-right: 5px; }
-
-        .maint-footer {
-            padding-bottom: 3rem;
-            font-size: 0.7rem;
-            color: #333;
-            letter-spacing: 2px;
-            text-transform: uppercase;
+        @media (max-width: 768px) {
+            h1 { font-size: 2.2rem; }
+            .contact-row { flex-direction: column; gap: 15px; }
+            .maint-footer { flex-direction: column; gap: 20px; text-align: center; }
         }
     </style>
 </head>
 <body>
 
-    <div class="maintenance-wrap">
+    <div class="maintenance-container">
         <div class="logo-3d-container">
             <div class="logo-coin"></div>
         </div>
 
-        <h1>Evolving the Aura</h1>
+        <h1>Curating Elegance</h1>
         <p class="subtext">
-            We are currently refining our digital presence to better reflect the artistry of Everaura. 
-            Our collection remains timeless; our experience is simply being polished.
+            Our digital boutique is currently being refined to better reflect the artistry of Everaura. 
+            The wait for perfection is briefly upon us; we will return momentarily.
         </p>
 
-        <div class="admin-entry">
-            <a href="admin.html" class="admin-login-btn">Secure Admin Login</a>
-            <a href="https://instagram.com/mediofusion" class="mediofusion-link" target="_blank">
-                <i class="fa-brands fa-instagram"></i>Managed by @mediofusion
-            </a>
+        <div class="admin-contact-section">
+            <h2>Contact Site Admin</h2>
+            <div class="contact-row">
+                <a href="https://instagram.com/mediofusion" class="contact-item" target="_blank">
+                    <i class="fa-brands fa-instagram"></i> @mediofusion
+                </a>
+                <a href="mailto:contact@mediofusion.com" class="contact-item">
+                    <i class="fa-solid fa-envelope"></i> contact@mediofusion.com
+                </a>
+                <a href="tel:+910000000000" class="contact-item">
+                    <i class="fa-solid fa-phone"></i> +91 00000 00000
+                </a>
+            </div>
         </div>
     </div>
 
     <footer class="maint-footer">
-        &copy; 2026 Everaura Beauty. All Rights Reserved.
+        <div class="footer-copy">
+            &copy; 2026 Everaura Beauty. All Rights Reserved. |&nbsp 
+        </div>
+        
+        <div class="footer-venture">
+             A <a href="https://instagram.com/mediofusion" target="_blank">MedioFusion</a> Venture |&nbsp
+        </div>
+
+        <div class="footer-admin">
+            <a href="admin.html" class="admin-login-btn">Admin Login</a>
+        </div>
     </footer>
 
 </body>
