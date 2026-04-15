@@ -3,254 +3,142 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Everaura | Exquisite Designer Jewelry</title>
-    
-    <meta name="description" content="Discover EverAura – a timeless collection of handcrafted jewelry, earrings, and accessories that define elegance and grace. Shop our latest designs now.">
-    <meta name="keywords" content="ever aura, ever aura jewelry, handcrafted jewelry, designer earrings, necklaces, indian jewelry, bridal jewelry, luxury accessories , anti tarnish , EverAura , ever aura beauty , minakari , pearl , chanderi , chaandbali">
-    <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://www.everaurabeauty.com/"> <!-- replace with your actual domain -->
-
-
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="icon" type="image/png" href="assets/images/favicon.png">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <title>Maintenance | Everaura Beauty</title>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="assets/css/main.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"/>
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "Store",
-      "name": "Vibha Wadhwani",
-      "url": "https://www.everaurabeauty.com/",
-      "sameAs": [
-        "https://www.instagram.com/_ever_aura_/"
-      ],
-      "address": {
-        "@type": "PostalAddress",
-        "streetAddress": "L-3, 4/41, Front of Yamaha World, Beside Chocolate Kids School, Jagmal Chowk, Dayalband",
-        "addressLocality": "Bilaspur",
-        "addressRegion": "Chhattisgarh",
-        "postalCode": "495001",
-        "addressCountry": "India"
-      },
-      "telephone": "+91-9425545594"
-    }
-    </script>
+    
+    <style>
+        body {
+            background-color: #050505; /* Deepening the black for maintenance feel */
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            text-align: center;
+        }
+
+        .maintenance-wrap {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        /* 3D Rotating Circular Logo (Favicon) */
+        .logo-3d-container {
+            perspective: 1200px;
+            margin-bottom: 3.5rem;
+        }
+
+        .logo-coin {
+            width: 110px;
+            height: 110px;
+            margin: 0 auto;
+            background: url("assets/images/favicon.png") no-repeat center center;
+            background-size: contain;
+            border-radius: 50%;
+            animation: rotateY3D 12s linear infinite;
+            filter: drop-shadow(0 0 20px rgba(243, 239, 224, 0.1));
+        }
+
+        @keyframes rotateY3D {
+            from { transform: rotateY(0deg); }
+            to { transform: rotateY(360deg); }
+        }
+
+        h1 {
+            font-family: var(--heading-font);
+            font-size: 3.2rem;
+            font-style: italic;
+            letter-spacing: 5px;
+            color: var(--accent-color);
+            margin-bottom: 1.2rem;
+            text-transform: uppercase;
+        }
+
+        .subtext {
+            font-family: var(--primary-font);
+            font-size: 0.95rem;
+            font-weight: 300;
+            color: #777;
+            letter-spacing: 1.5px;
+            max-width: 480px;
+            margin: 0 auto 4rem auto;
+            line-height: 2;
+        }
+
+        /* Admin Entry */
+        .admin-entry {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid #1a1a1a;
+        }
+
+        .admin-login-btn {
+            background: transparent;
+            color: #444;
+            border: 1px solid #333;
+            padding: 10px 20px;
+            text-decoration: none;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: all 0.4s ease;
+        }
+
+        .admin-login-btn:hover {
+            color: var(--accent-color);
+            border-color: var(--accent-color);
+        }
+
+        /* Social Link */
+        .mediofusion-link {
+            display: block;
+            margin-top: 1.5rem;
+            color: #555;
+            font-size: 0.85rem;
+            text-decoration: none;
+        }
+
+        .mediofusion-link i { color: var(--accent-color); margin-right: 5px; }
+
+        .maint-footer {
+            padding-bottom: 3rem;
+            font-size: 0.7rem;
+            color: #333;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+    </style>
 </head>
-<body class="dark-theme">
+<body>
 
-    <header class="main-header">
-        <nav class="main-nav">
-            <button class="mobile-nav-toggle" aria-label="Open navigation">
-                <span></span>
-                <span></span>
-            </button>
-            <a href="index.html" class="logo"></a>
-            <ul class="nav-links">
-                <li><a href="index.html">Home</a></li>
-                <li><a href="shop.html">Shop</a></li>
-                <li><a href="about.html">Our Story</a></li>
-                <li><a href="contact.html">Contact</a></li>
-                </ul>
-            <div class="header-icons">
-                <a href="#" aria-label="Wishlist" onclick="event.preventDefault(); openWishlistModal();"><i class="fa-solid fa-heart"></i></a>
-                <a href="#" aria-label="Shopping Cart" onclick="event.preventDefault(); openCartModal();">
-                    <i class="fa-solid fa-bag-shopping"></i>
-                    <span id="cart-count" class="cart-count-badge">0</span>
-                </a>
-                </div>
-        </nav>
-    </header>
-
-    <main>
-        <section class="hero-section">
-            <div class="hero-content">
-                <span class="hero-subtitle">Define Your Grace</span>
-                <h1>Artistry in Every Detail</h1>
-                <p>Explore our curated collection of handcrafted jewelry, designed to endure.</p>
-                <a href="shop.html" class="cta-button">Discover The Collection</a>
-            </div>
-        </section>
-
-        <section class="category-section">
-            <h2 class="section-title">Shop by Category</h2>
-            <div class="category-grid">
-                <div class="category-grid">
-                    <a href="shop.html?category=Necklaces" class="category-card necklaces">
-                        <div class="category-card-overlay"><h3>Necklaces</h3></div>
-                    </a>
-                    <a href="shop.html?category=Rings" class="category-card rings">
-                        <div class="category-card-overlay"><h3>Rings</h3></div>
-                    </a>
-                    <a href="shop.html?category=Bangles/Bracelets" class="category-card bracelets">
-                        <div class="category-card-overlay"><h3>Bracelets</h3></div>
-                    </a>
-                    <a href="shop.html?category=Earrings" class="category-card earrings">
-                        <div class="category-card-overlay"><h3>Earrings</h3></div>
-                    </a>
-                </div>
-            </div>
-        </section>
-        
-        <section class="featured-products">
-             <div class="filter-toggles">
-                <div class="toggle-switch-container">
-                    <span class="toggle-label">For Her</span>
-                    <label class="toggle-switch">
-                        <input type="checkbox" id="gender-toggle-checkbox">
-                        <span class="slider"></span>
-                    </label>
-                    <span class="toggle-label">For Him</span>
-                </div>
-            </div>
-            <h2 class="section-title">Featured Collection</h2>
-            <div class="featured-carousel-container">
-                <div class="swiper featured-swiper">
-                    <div class="swiper-wrapper" id="trending-product-list">
-                        </div>
-                </div>
-                <div class="swiper-button-next"></div>
-                <div class="swiper-button-prev"></div>
-            </div>
-        </section>
-
-        <section class="manifesto-section">
-            <p>"Jewelry is a way of keeping memories alive."</p>
-            <h2>Timeless by Design</h2>
-        </section>
-        
-
-     <section class="testimonial-section">
-    <h2 class="section-title">Words from Our Community</h2>
-    <div class="swiper testimonial-swiper">
-        <div class="swiper-wrapper" id="testimonial-list">
-            </div>
-        <div class="swiper-pagination"></div>
-    </div>
-    <div class="testimonial-actions">
-        <button class="cta-button-outline" onclick="openTestimonialModal()">Leave a Review</button>
-        <button class="cta-button" onclick="window.location.href='reviews.html'">Read All Reviews</button>
-    </div>
-</section>
-<div id="testimonial-modal" class="modal-overlay">
-    <div class="cart-modal-content">
-        <button class="cart-modal-close" onclick="closeModal('testimonial-modal')">&times;</button>
-        <h3>Share Your Story</h3>
-        <form id="testimonial-form">
-            <div class="form-group">
-                <label for="testimonial-name">Your Name</label>
-                <input type="text" id="testimonial-name" required>
-            </div>
-            <div class="form-group">
-                <label for="testimonial-contact">Email or Phone (Optional)</label>
-                <input type="text" id="testimonial-contact">
-            </div>
-            <div class="form-group">
-                <label for="testimonial-summary">One-Liner Review</label>
-                <input type="text" id="testimonial-summary" maxlength="150" required>
-            </div>
-            <div class="form-group">
-                <label for="testimonial-full">Detailed Review (Optional)</label>
-                <textarea id="testimonial-full" rows="4"></textarea>
-            </div>
-            <button type="submit" class="cta-button">Submit Testimonial</button>
-        </form>
-    </div>
-</div>
-
-<section class="final-cta-section">
-    <div class="final-cta-content">
-        <h2>Find Your Signature Piece</h2>
-        <p>Our full collection awaits. Discover the quality and craftsmanship that defines Everaura.</p>
-        <a href="shop.html" class="cta-button">Shop All Jewelry</a>
-    </div>
-</section>
-    </main>
-
-    <footer class="main-footer">
-        <div class="footer-content">
-            
-            <div class="footer-column brand-col">
-                <a href="index.html" class="logo"></a>
-                <p class="brand-desc">
-                    Handcrafted elegance for the modern soul. Timeless jewelry designed to tell your story.
-                </p>
-                <div class="footer-social">
-                    <a href="https://www.instagram.com/_ever_aura_/" target="_blank" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
-                    <a href="https://www.facebook.com/profile.php?id=61577357500639" target="_blank" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
-                    <a href="https://chat.whatsapp.com/Lg0BfM6EaJf7FYlLS7le8r" target="_blank" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp"></i></a>
-                </div>
-            </div>
-    
-            <div class="footer-column">
-                <h4>Explore</h4>
-                <div class="footer-links-vertical">
-                    <a href="shop.html">Shop Collection</a>
-                    <a href="about.html">Our Story</a>
-                    <a href="contact.html">Contact Us</a>
-                    <a href="my-orders.html">Track Order</a>
-                </div>
-            </div>
-    
-            <div class="footer-column">
-                <h4>Legal</h4>
-                <div class="footer-links-vertical">
-                    <a href="terms.html">Terms & Conditions</a>
-                    <a href="privacy.html">Privacy Policy</a>
-                    <a href="refund.html">Refund Policy</a>
-                    <a href="shipping.html">Shipping Policy</a>
-                </div>
-            </div>
-    
+    <div class="maintenance-wrap">
+        <div class="logo-3d-container">
+            <div class="logo-coin"></div>
         </div>
-        
-        <p class="footer-copyright">&copy; 2026 Everaura. All Rights Reserved.</p>
+
+        <h1>Evolving the Aura</h1>
+        <p class="subtext">
+            We are currently refining our digital presence to better reflect the artistry of Everaura. 
+            Our collection remains timeless; our experience is simply being polished.
+        </p>
+
+        <div class="admin-entry">
+            <a href="admin.html" class="admin-login-btn">Secure Admin Login</a>
+            <a href="https://instagram.com/mediofusion" class="mediofusion-link" target="_blank">
+                <i class="fa-brands fa-instagram"></i>Managed by @mediofusion
+            </a>
+        </div>
+    </div>
+
+    <footer class="maint-footer">
+        &copy; 2026 Everaura Beauty. All Rights Reserved.
     </footer>
 
-    <div id="cart-modal" class="modal-overlay">
-        <div class="cart-modal-content">
-            <button class="cart-modal-close" onclick="closeModal('cart-modal')">&times;</button>
-            <h3>Your Cart</h3>
-            
-            <div id="cart-items">
-                </div>
-    
-            <div class="coupon-area">
-                <input type="text" id="coupon-code-input" placeholder="Enter coupon code" />
-                <button class="apply-coupon-btn" onclick="applyCoupon()">Apply</button>
-            </div>
-    
-            <div id="applied-coupon" class="coupon-applied" style="display: none;">
-                <span id="applied-coupon-code"></span>
-                <button class="remove-coupon-btn" onclick="removeCoupon()">Remove</button>
-            </div>
-    
-            <div id="cart-totals">
-                <p>Subtotal: <span id="cart-subtotal">0</span></p>
-                <p>Total after coupon: <span id="cart-total">0</span></p>
-            </div>
-    
-            <button class="checkout-btn" onclick="proceedToCheckout()">Proceed to Checkout</button>
-        </div>
-    </div>
-    <div id="wishlist-modal" class="modal-overlay"></div>
-    <div id="toast-container"></div>
-    
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-    <script src="assets/js/app.js"></script>
-    <script>
-        // Select all product cards
-        const productCards = document.querySelectorAll('.product-card');
-      
-        productCards.forEach(card => {
-          card.addEventListener('click', () => {
-            const inner = card.querySelector('.product-card-inner');
-            inner.classList.toggle('is-flipped');
-          });
-        });
-      </script>
 </body>
 </html>

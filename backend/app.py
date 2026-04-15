@@ -8,7 +8,7 @@ import razorpay
 from datetime import datetime, timedelta, timezone
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-from flask import Flask, jsonify, request, send_from_directory, redirect
+from flask import Flask, jsonify, request
 from pymongo import MongoClient
 from flask_cors import CORS
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required, JWTManager
@@ -19,22 +19,6 @@ import logging
 # --- CONFIGURATION ---
 load_dotenv()
 app = Flask(__name__)
-
-# --- MAINTENANCE MODE ---
-MAINTENANCE_MODE = True  # Set to False to disable maintenance mode
-
-@app.before_request
-def restrict_routes_during_maintenance():
-    # Allow admin/testing access to main site via /home
-    if not MAINTENANCE_MODE:
-        return None
-
-    allowed_paths = ['/maintenance', '/home', '/api/health']
-    if request.path.startswith('/static'):
-        return None
-
-    if request.path not in allowed_paths:
-        return redirect('/maintenance')
 
 # --- Load Environment Variables ---
 MONGO_URI_MAIN = os.getenv("MONGO_URI_MAIN")
@@ -883,19 +867,6 @@ def health_check():
     except Exception as e:
         logger.error(f"Health check failed: DB connection error: {e}")
         return jsonify({"status": "error", "message": "Backend is running, but database connection failed"}), 500
-
-
-# --- MAINTENANCE ROUTES ---
-
-@app.route('/maintenance')
-def maintenance_page():
-    return send_from_directory('static', 'maintenance.html')
-
-@app.route('/home')
-def actual_home():
-    # This will serve your actual frontend entry point (index.html)
-    return send_from_directory('static', 'index.html')
-
 
 # --- Main Runner ---
 if __name__ == '__main__':
