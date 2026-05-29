@@ -3,7 +3,7 @@
 [![Live Deployment](https://img.shields.io/badge/Live-Demo-brightgreen)](https://everaurabeauty.com)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**Live URL:** [https://everaurabeauty.com](https://everaura.rochakjain.dev/)
+**Live URL:** [https://everaura.rochakjain.dev/](https://everaura.rochakjain.dev/)
 
 Everaura Beauty is a full-stack e-commerce platform built for a bespoke jewelry business. It features a modern, customer-facing storefront with real-time payments and a secure admin dashboard for inventory management. 
 
