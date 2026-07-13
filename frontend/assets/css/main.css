@@ -5127,3 +5127,18 @@ body.admin-page .products-table-container {
     font-size: 0.68rem;
   }
 }
+
+
+
+.admin-footer-link {
+  color: inherit;
+  opacity: 0.45;
+  text-decoration: none;
+  font-size: 0.8rem;
+  margin-left: 0.25rem;
+  transition: opacity 0.3s ease;
+}
+
+.admin-footer-link:hover {
+  opacity: 1;
+}
