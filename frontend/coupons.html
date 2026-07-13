@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Coupons - Everaura Admin</title>
+
+    <link rel="stylesheet" href="assets/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/admin.css">
+
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+
+<body class="admin-body">
+
+    <header class="admin-header">
+        <img
+            src="assets/images/logo_oldfmy.png"
+            alt="Everaura"
+            class="admin-logo"
+        >
+
+        <button class="logout-btn" onclick="logout()">
+            Logout
+            <i class="fa-solid fa-right-from-bracket"></i>
+        </button>
+    </header>
+
+    <nav class="dashboard-nav">
+        <div class="nav-container">
+
+            <div class="nav-toggle" onclick="toggleNavMenu()">
+                <i class="fa-solid fa-bars"></i>
+            </div>
+
+            <ul class="nav-links" id="navMenu">
+
+                <li>
+                    <a href="dashboard.html">
+                        <i class="fa-solid fa-chart-line"></i>
+                        Dashboard
+                    </a>
+                </li>
+
+                <li>
+                    <a href="products.html">
+                        <i class="fa-solid fa-box"></i>
+                        Products & Inventory
+                    </a>
+                </li>
+
+                <li>
+                    <a href="orders.html">
+                        <i class="fa-solid fa-receipt"></i>
+                        Orders
+                    </a>
+                </li>
+
+                <li>
+                    <a href="testimonials.html">
+                        <i class="fa-solid fa-comment-dots"></i>
+                        Testimonials
+                    </a>
+                </li>
+
+                <li>
+                    <a href="coupons.html">
+                        <i class="fa-solid fa-ticket"></i>
+                        Coupons
+                    </a>
+                </li>
+
+            </ul>
+
+        </div>
+    </nav>
+
+    <main class="dashboard-main">
+
+        <section class="dashboard-section">
+
+            <div class="dashboard-actions">
+                <div>
+                    <h1>Coupon Management</h1>
+                    <p>Create and manage discount coupons.</p>
+                </div>
+            </div>
+
+            <div class="coupon-management-grid">
+
+                <div class="coupon-form-card">
+
+                    <h3>Create Coupon</h3>
+
+                    <form id="coupon-form">
+
+                        <div class="form-group">
+                            <label for="coupon-code">
+                                Coupon Code
+                            </label>
+
+                            <input
+                                type="text"
+                                id="coupon-code"
+                                placeholder="e.g. EVERAURA10"
+                                required
+                            >
+                        </div>
+
+                        <div class="form-group">
+                            <label for="coupon-discount">
+                                Discount Percentage
+                            </label>
+
+                            <input
+                                type="number"
+                                id="coupon-discount"
+                                placeholder="10"
+                                min="1"
+                                max="100"
+                                required
+                            >
+                        </div>
+
+                        <button
+                            type="submit"
+                            class="cta-button admin-button"
+                        >
+                            <i class="fa-solid fa-plus"></i>
+                            Create Coupon
+                        </button>
+
+                    </form>
+
+                </div>
+
+                <div class="coupon-table-card">
+
+                    <h3>Available Coupons</h3>
+
+                    <div class="table-container">
+
+                        <table class="admin-table">
+
+                            <thead>
+                                <tr>
+                                    <th>Code</th>
+                                    <th>Discount</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="coupon-table-body">
+
+                                <tr>
+                                    <td colspan="3">
+                                        Loading coupons...
+                                    </td>
+                                </tr>
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <footer class="admin-footer">
+        <p>&copy; 2026 Everaura Admin Panel</p>
+    </footer>
+
+    <script src="assets/js/coupons.js"></script>
+
+    <script>
+        function toggleNavMenu() {
+            document
+                .getElementById("navMenu")
+                .classList.toggle("active");
+        }
+    </script>
+
+</body>
+
+</html>

@@ -10,8 +10,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="assets/css/admin.css">
+    <link rel="stylesheet" href="assets/css/main.css">
 </head>
-<body class="admin-body">
+<body class="admin-body admin-page">
 
     <header class="dashboard-header">
         <a href="index.html" class="logo"></a>
@@ -25,124 +26,138 @@
             <i class="fa-solid fa-bars"></i>
           </div>
           <ul class="nav-links" id="navMenu">
-            <li><a href="#orders-section"><i class="fa-solid fa-receipt"></i> Orders</a></li> <li><a href="#products-section"><i class="fa-solid fa-box"></i> Products</a></li>
-            <li><a href="#testimonials-section"><i class="fa-solid fa-comment-dots"></i> Testimonials</a></li>
-            <li><a href="#coupons-section"><i class="fa-solid fa-ticket"></i> Coupons</a></li>
+            <li><a href="dashboard.html"><i class="fa-solid fa-chart-line"></i> Dashboard</a></li>
+            <li><a href="products.html"><i class="fa-solid fa-box"></i> Products & Inventory</a></li>
+            <li><a href="orders.html"><i class="fa-solid fa-receipt"></i> Orders</a></li>
+            <li><a href="testimonials.html"><i class="fa-solid fa-comment-dots"></i> Testimonials</a></li>
+            <li><a href="coupons.html"><i class="fa-solid fa-ticket"></i> Coupons</a></li>
           </ul>
         </div>
     </nav>
     
-    <main class="dashboard-main">
-
-        <section id="orders-section" class="dashboard-section">
-            <div class="dashboard-actions">
-                <h1>Order Management</h1>
-            </div>
-            <div class="management-table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Order ID</th>
-                            <th>Date</th>
-                            <th>Customer</th>
-                            <th>Items</th>
-                            <th>Total</th>
-                            <th>Payment</th>
-                            <th>Status</th>
-                            <th>Tracking</th>
-                        </tr>
-                    </thead>
-                    <tbody id="order-table-body">
-                        </tbody>
-                </table>
-            </div>
-        </section>
-
-        <section id="products-section" class="dashboard-section">
-            <div class="dashboard-actions">
-                <h1>Product Management</h1>
-                <button class="admin-button" onclick="showAddProductModal()"><i class="fa-solid fa-plus"></i> Add New Product</button>
-            </div>
-            <div class="management-table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Image</th>
-                            <th>RSN</th>
-                            <th>Name</th>
-                            <th>Price</th>
-                            <th>Category</th>
-                            <th>Gender</th>
-                            <th>Type</th>
-                            <th>Description</th>
-                            <th>Trending</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="product-table-body">
-                        </tbody>
-                </table>
-            </div>
-        </section>
-
-        <section id="testimonials-section" class="dashboard-section">
-            <div class="dashboard-actions">
-                <h1>Testimonial Management</h1>
-            </div>
-            <div class="management-table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Summary</th>
-                            <th>Full Review</th>
-                            <th>Status</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="all-testimonials-body">
-                        </tbody>
-                </table>
-            </div>
-        </section>
-
-        <section id="coupons-section" class="dashboard-section">
-            <div class="dashboard-actions">
-                <h1>Coupon Management</h1>
-            </div>
-            <div class="coupon-management-container">
-                <div class="coupon-form-box">
-                    <h3>Create New Coupon</h3>
-                    <form id="coupon-form">
-                        <div class="form-group">
-                            <label for="coupon-code">Coupon Code</label>
-                            <input type="text" id="coupon-code" placeholder="e.g., SAVE10" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="coupon-discount">Discount (%)</label>
-                            <input type="number" id="coupon-discount" placeholder="e.g., 10" min="1" max="100" required>
-                        </div>
-                        <button type="submit" class="admin-button">Create Coupon</button>
-                    </form>
-                </div>
-                <div class="coupon-list-box">
-                    <h3>Active Coupons</h3>
-                    <div class="management-table-container">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Code</th>
-                                    <th>Discount</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody id="coupon-table-body">
-                                </tbody>
-                        </table>
+    <main class="admin-main">
+        <div class="admin-dashboard">
+            <section class="dashboard-section">
+                <div class="admin-page-header">
+                    <div>
+                        <p class="admin-subtitle">EVERAURA ADMINISTRATION</p>
+                        <h1>Dashboard Overview</h1>
+                        <p>Monitor sales, revenue, orders and inventory performance at a glance.</p>
                     </div>
                 </div>
-            </div>
-        </section>
+
+                <div class="dashboard-stats">
+                    <div class="dashboard-card admin-stat-card">
+                        <div class="dashboard-stat-icon">
+                            <i class="fa-solid fa-bag-shopping"></i>
+                        </div>
+                        <div class="dashboard-stat-content">
+                            <span class="stat-label">Total Sales</span>
+                            <h2 id="total-sales" class="stat-value">—</h2>
+                            <p>Items sold</p>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card admin-stat-card">
+                        <div class="dashboard-stat-icon">
+                            <i class="fa-solid fa-indian-rupee-sign"></i>
+                        </div>
+                        <div class="dashboard-stat-content">
+                            <span class="stat-label">Total Revenue</span>
+                            <h2 id="total-revenue" class="stat-value">—</h2>
+                            <p>From paid orders</p>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card admin-stat-card">
+                        <div class="dashboard-stat-icon">
+                            <i class="fa-solid fa-receipt"></i>
+                        </div>
+                        <div class="dashboard-stat-content">
+                            <span class="stat-label">Total Orders</span>
+                            <h2 id="total-orders" class="stat-value">—</h2>
+                            <p>Orders received</p>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card admin-stat-card">
+                        <div class="dashboard-stat-icon">
+                            <i class="fa-solid fa-box"></i>
+                        </div>
+                        <div class="dashboard-stat-content">
+                            <span class="stat-label">Total Products</span>
+                            <h2 id="total-products" class="stat-value">—</h2>
+                            <p>Products listed</p>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card admin-stat-card">
+                        <div class="dashboard-stat-icon">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                        </div>
+                        <div class="dashboard-stat-content">
+                            <span class="stat-label">Low Stock</span>
+                            <h2 id="low-stock-products" class="stat-value">—</h2>
+                            <p>Products running low</p>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card admin-stat-card">
+                        <div class="dashboard-stat-icon">
+                            <i class="fa-solid fa-circle-xmark"></i>
+                        </div>
+                        <div class="dashboard-stat-content">
+                            <span class="stat-label">Out of Stock</span>
+                            <h2 id="out-of-stock-products" class="stat-value">—</h2>
+                            <p>Products unavailable</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-panel">
+                    <div class="panel-header">
+                        <div>
+                            <h2>Management</h2>
+                            <p>Jump directly to the area you want to manage.</p>
+                        </div>
+                    </div>
+
+                    <div class="quick-actions">
+                        <a href="products.html" class="quick-action">
+                            <i class="fa-solid fa-gem"></i>
+                            <div>
+                                <h3>Products & Inventory</h3>
+                                <p>Add products, update stock and manage availability.</p>
+                            </div>
+                        </a>
+
+                        <a href="orders.html" class="quick-action">
+                            <i class="fa-solid fa-receipt"></i>
+                            <div>
+                                <h3>Orders</h3>
+                                <p>Review orders, fulfilment status and tracking details.</p>
+                            </div>
+                        </a>
+
+                        <a href="testimonials.html" class="quick-action">
+                            <i class="fa-solid fa-comment-dots"></i>
+                            <div>
+                                <h3>Testimonials</h3>
+                                <p>Review and moderate customer testimonials.</p>
+                            </div>
+                        </a>
+
+                        <a href="coupons.html" class="quick-action">
+                            <i class="fa-solid fa-ticket"></i>
+                            <div>
+                                <h3>Coupons</h3>
+                                <p>Create and manage discount codes for the store.</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </section>
+        </div>
     </main>
 
     <footer class="admin-footer">
@@ -154,8 +169,6 @@
         </div>
     </footer>
 
-    <div id="product-modal" class="modal-overlay">
-        </div>
     
     <script src="assets/js/dashboard.js"></script>
 

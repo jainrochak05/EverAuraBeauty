@@ -3913,3 +3913,1217 @@ input:checked + .slider:before {
         justify-content: center;
     }
 }
+
+/* =========================================
+   ADMIN UI — PREMIUM EVERAURA REDESIGN
+   ========================================= */
+
+/* Keep admin styling isolated from the customer-facing site. */
+body:not(.admin-page) {
+  font-family: var(--primary-font);
+}
+
+body.admin-page,
+body.admin-page button,
+body.admin-page input,
+body.admin-page select,
+body.admin-page textarea,
+body.admin-page table {
+  font-family: var(--primary-font);
+}
+
+body.admin-page h1,
+body.admin-page h2,
+body.admin-page h3,
+body.admin-page h4,
+body.admin-page h5,
+body.admin-page h6 {
+  font-family: var(--heading-font);
+}
+
+:root {
+  --admin-bg: #0b0b0b;
+  --admin-surface: #131313;
+  --admin-surface-soft: #191919;
+  --admin-surface-hover: #202020;
+  --admin-gold: #d4af37;
+  --admin-gold-soft: #e2c16d;
+  --admin-text: #f4f1e8;
+  --admin-muted: #918f89;
+  --admin-border: rgba(255, 255, 255, 0.08);
+  --admin-success: #58b985;
+  --admin-danger: #e06c75;
+  --admin-warning: #d9a441;
+  --admin-info: #6ca0dc;
+}
+
+body.admin-page,
+body.admin-page .admin-dashboard,
+body.admin-page .admin-container,
+body.admin-page .admin-main {
+  background: var(--admin-bg);
+  color: var(--admin-text);
+}
+
+body.admin-page main,
+body.admin-page .admin-main {
+  min-height: 100vh;
+  padding-top: 88px;
+  background:
+    radial-gradient(circle at 90% 5%, rgba(212, 175, 55, 0.07), transparent 25rem),
+    radial-gradient(circle at 5% 90%, rgba(226, 193, 109, 0.04), transparent 28rem),
+    var(--admin-bg);
+}
+
+body.admin-page .admin-container,
+body.admin-page .admin-dashboard {
+  width: min(1400px, calc(100% - 3rem));
+  margin: 0 auto;
+  padding: 2.5rem 0 5rem;
+}
+
+.admin-header,
+.dashboard-header,
+.admin-page-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--admin-border);
+}
+
+body.admin-page .admin-header h1,
+body.admin-page .dashboard-header h1,
+body.admin-page .admin-page-header h1,
+body.admin-page .admin-dashboard h1 {
+  color: var(--admin-text);
+  font-family: var(--heading-font);
+  font-size: clamp(2.2rem, 4vw, 3.8rem);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+.admin-header p,
+.dashboard-header p,
+.admin-page-header p,
+.admin-subtitle {
+  color: var(--admin-muted);
+  margin-top: 0.65rem;
+  max-width: 650px;
+}
+
+/* Admin navigation */
+.admin-nav,
+.admin-sidebar {
+  background: rgba(13, 13, 13, 0.92);
+  border: 1px solid var(--admin-border);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.admin-nav a,
+.admin-sidebar a {
+  color: var(--admin-muted);
+  text-decoration: none;
+  border-radius: 8px;
+  transition: color 0.25s ease, background 0.25s ease, transform 0.25s ease;
+}
+
+.admin-nav a:hover,
+.admin-nav a.active,
+.admin-sidebar a:hover,
+.admin-sidebar a.active {
+  color: var(--admin-gold-soft);
+  background: rgba(212, 175, 55, 0.08);
+}
+
+.admin-sidebar a:hover {
+  transform: translateX(4px);
+}
+
+/* Dashboard statistics */
+.stats-grid,
+.dashboard-stats,
+.admin-stats,
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+.stat-card,
+.dashboard-card,
+.metric-card,
+.admin-stat-card {
+  position: relative;
+  overflow: hidden;
+  min-width: 0;
+  padding: 1.6rem;
+  background: linear-gradient(145deg, var(--admin-surface-soft), var(--admin-surface));
+  border: 1px solid var(--admin-border);
+  border-radius: 14px;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.22);
+  transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.stat-card::before,
+.metric-card::before,
+.admin-stat-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 1.5rem;
+  width: 42px;
+  height: 2px;
+  background: var(--admin-gold);
+}
+
+.stat-card:hover,
+.dashboard-card:hover,
+.metric-card:hover,
+.admin-stat-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(212, 175, 55, 0.28);
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.32);
+}
+
+.stat-card h3,
+.metric-card h3,
+.admin-stat-card h3,
+.stat-label {
+  font-family: var(--primary-font);
+  color: var(--admin-muted);
+  font-size: 0.76rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 0.8rem;
+}
+
+.stat-card .value,
+.stat-value,
+.metric-value,
+.admin-stat-card strong {
+  display: block;
+  color: var(--admin-text);
+  font-family: var(--heading-font);
+  font-size: clamp(2rem, 3vw, 3rem);
+  font-weight: 600;
+  line-height: 1;
+}
+
+/* Main admin panels and newly added feature sections */
+.admin-card,
+.admin-panel,
+.dashboard-section,
+.dashboard-panel,
+.feature-panel,
+.management-section,
+.orders-section,
+.products-section,
+.coupons-section {
+  background: rgba(19, 19, 19, 0.92);
+  border: 1px solid var(--admin-border);
+  border-radius: 14px;
+  padding: 1.75rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.2);
+}
+
+.admin-card h2,
+.admin-panel h2,
+.dashboard-section h2,
+.dashboard-panel h2,
+.feature-panel h2,
+.management-section h2 {
+  color: var(--admin-text);
+  font-size: 1.75rem;
+  margin-bottom: 0.35rem;
+}
+
+.admin-card-header,
+.panel-header,
+.section-header,
+.feature-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.admin-card-header p,
+.panel-header p,
+.section-header p,
+.feature-header p {
+  color: var(--admin-muted);
+}
+
+/* Admin tables */
+.admin-table-wrapper,
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--admin-border);
+  border-radius: 10px;
+}
+
+.admin-table,
+.admin-page table,
+.admin-dashboard table {
+  width: 100%;
+  border-collapse: collapse;
+  background: transparent;
+}
+
+.admin-table th,
+.admin-page table th,
+.admin-dashboard table th {
+  padding: 1rem 1.1rem;
+  background: rgba(255, 255, 255, 0.025);
+  color: var(--admin-muted);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-align: left;
+  border-bottom: 1px solid var(--admin-border);
+  white-space: nowrap;
+}
+
+.admin-table td,
+.admin-page table td,
+.admin-dashboard table td {
+  padding: 1rem 1.1rem;
+  color: #d8d5ce;
+  border-bottom: 1px solid var(--admin-border);
+  vertical-align: middle;
+}
+
+.admin-table tbody tr,
+.admin-page table tbody tr,
+.admin-dashboard table tbody tr {
+  transition: background 0.2s ease;
+}
+
+.admin-table tbody tr:hover,
+.admin-page table tbody tr:hover,
+.admin-dashboard table tbody tr:hover {
+  background: rgba(212, 175, 55, 0.035);
+}
+
+.admin-table tbody tr:last-child td,
+.admin-page table tbody tr:last-child td,
+.admin-dashboard table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Admin forms */
+.admin-page input:not([type="checkbox"]):not([type="radio"]),
+.admin-page select,
+.admin-page textarea,
+.admin-dashboard input:not([type="checkbox"]):not([type="radio"]),
+.admin-dashboard select,
+.admin-dashboard textarea,
+.admin-form input:not([type="checkbox"]):not([type="radio"]),
+.admin-form select,
+.admin-form textarea {
+  width: 100%;
+  padding: 0.85rem 1rem;
+  background: #0e0e0e;
+  color: var(--admin-text);
+  border: 1px solid var(--admin-border);
+  border-radius: 8px;
+  font-family: var(--primary-font);
+  font-size: 0.95rem;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+}
+
+.admin-page input:focus,
+.admin-page select:focus,
+.admin-page textarea:focus,
+.admin-dashboard input:focus,
+.admin-dashboard select:focus,
+.admin-dashboard textarea:focus,
+.admin-form input:focus,
+.admin-form select:focus,
+.admin-form textarea:focus {
+  outline: none;
+  border-color: rgba(212, 175, 55, 0.65);
+  background: #111;
+  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.08);
+}
+
+.admin-page label,
+.admin-dashboard label,
+.admin-form label {
+  display: block;
+  margin-bottom: 0.45rem;
+  color: #b9b5aa;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.admin-form-group,
+.admin-page .form-group,
+.admin-dashboard .form-group {
+  margin-bottom: 1.25rem;
+}
+
+/* Admin actions */
+.admin-btn,
+.btn-admin,
+.admin-page button[type="submit"],
+.admin-dashboard button[type="submit"] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 42px;
+  padding: 0.7rem 1.15rem;
+  border: 1px solid var(--admin-gold);
+  border-radius: 8px;
+  background: var(--admin-gold);
+  color: #111;
+  font-family: var(--primary-font);
+  font-size: 0.86rem;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform 0.25s ease, background 0.25s ease, color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.admin-btn:hover,
+.btn-admin:hover,
+.admin-page button[type="submit"]:hover,
+.admin-dashboard button[type="submit"]:hover {
+  transform: translateY(-2px);
+  background: var(--admin-gold-soft);
+  box-shadow: 0 8px 22px rgba(212, 175, 55, 0.16);
+}
+
+.admin-btn.secondary,
+.btn-admin.secondary,
+.admin-btn-outline {
+  background: transparent;
+  color: var(--admin-gold-soft);
+  border-color: rgba(212, 175, 55, 0.38);
+}
+
+.admin-btn.secondary:hover,
+.btn-admin.secondary:hover,
+.admin-btn-outline:hover {
+  background: rgba(212, 175, 55, 0.08);
+}
+
+.admin-btn.danger,
+.btn-danger {
+  background: rgba(224, 108, 117, 0.08);
+  color: var(--admin-danger);
+  border-color: rgba(224, 108, 117, 0.35);
+}
+
+.admin-btn.danger:hover,
+.btn-danger:hover {
+  background: var(--admin-danger);
+  color: #fff;
+}
+
+/* Status pills used across orders, products and feature management */
+.admin-badge,
+.status-badge,
+.feature-status,
+.product-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.38rem 0.7rem;
+  border: 1px solid var(--admin-border);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.035);
+  color: #c9c5bb;
+  font-size: 0.74rem;
+  font-weight: 600;
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+
+.admin-badge.active,
+.status-badge.active,
+.status-badge.delivered,
+.feature-status.active {
+  color: #7bd6a3;
+  border-color: rgba(88, 185, 133, 0.28);
+  background: rgba(88, 185, 133, 0.08);
+}
+
+.admin-badge.pending,
+.status-badge.pending,
+.status-badge.packaging {
+  color: #e4b85f;
+  border-color: rgba(217, 164, 65, 0.28);
+  background: rgba(217, 164, 65, 0.08);
+}
+
+.admin-badge.inactive,
+.status-badge.cancelled,
+.feature-status.inactive {
+  color: #ed858d;
+  border-color: rgba(224, 108, 117, 0.28);
+  background: rgba(224, 108, 117, 0.08);
+}
+
+/* Dashboard quick actions and feature cards */
+.quick-actions,
+.admin-actions-grid,
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.quick-action,
+.admin-action-card,
+.feature-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 150px;
+  padding: 1.4rem;
+  background: var(--admin-surface-soft);
+  border: 1px solid var(--admin-border);
+  border-radius: 12px;
+  color: var(--admin-text);
+  text-decoration: none;
+  transition: transform 0.25s ease, background 0.25s ease, border-color 0.25s ease;
+}
+
+.quick-action:hover,
+.admin-action-card:hover,
+.feature-card:hover {
+  transform: translateY(-3px);
+  background: var(--admin-surface-hover);
+  border-color: rgba(212, 175, 55, 0.25);
+}
+
+.quick-action i,
+.admin-action-card i,
+.feature-card i {
+  color: var(--admin-gold);
+  font-size: 1.35rem;
+  margin-bottom: 1rem;
+}
+
+.quick-action h3,
+.admin-action-card h3,
+.feature-card h3 {
+  color: var(--admin-text);
+  font-size: 1.25rem;
+}
+
+.quick-action p,
+.admin-action-card p,
+.feature-card p {
+  color: var(--admin-muted);
+  font-size: 0.88rem;
+  margin-top: 0.4rem;
+}
+
+/* Empty and loading states */
+.admin-empty-state,
+.empty-state,
+.admin-loading {
+  padding: 4rem 2rem;
+  text-align: center;
+  color: var(--admin-muted);
+  border: 1px dashed rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.015);
+}
+
+.admin-empty-state i,
+.empty-state i {
+  display: block;
+  color: var(--admin-gold);
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  opacity: 0.75;
+}
+
+/* Admin modal polish */
+.admin-page .modal-content,
+.admin-page .cart-modal-content,
+.admin-dashboard .modal-content,
+.admin-modal-content {
+  background: #151515;
+  color: var(--admin-text);
+  border: 1px solid rgba(212, 175, 55, 0.16);
+  border-radius: 14px;
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.55);
+}
+
+/* Responsive admin layout */
+@media (max-width: 1100px) {
+  .stats-grid,
+  .dashboard-stats,
+  .admin-stats,
+  .metrics-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .quick-actions,
+  .admin-actions-grid,
+  .feature-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .admin-page main,
+  .admin-main {
+    padding-top: 72px;
+  }
+
+  .admin-container,
+  .admin-dashboard {
+    width: 92%;
+    padding-top: 1.75rem;
+  }
+
+  .admin-header,
+  .dashboard-header,
+  .admin-page-header,
+  .admin-card-header,
+  .panel-header,
+  .section-header,
+  .feature-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .stats-grid,
+  .dashboard-stats,
+  .admin-stats,
+  .metrics-grid,
+  .quick-actions,
+  .admin-actions-grid,
+  .feature-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-card,
+  .admin-panel,
+  .dashboard-section,
+  .dashboard-panel,
+  .feature-panel,
+  .management-section,
+  .orders-section,
+  .products-section,
+  .coupons-section {
+    padding: 1.2rem;
+    border-radius: 10px;
+  }
+
+  .admin-table th,
+  .admin-page table th,
+  .admin-dashboard table th,
+  .admin-table td,
+  .admin-page table td,
+  .admin-dashboard table td {
+    padding: 0.85rem;
+    font-size: 0.82rem;
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* =========================================
+   ADMIN RESPONSIVE OVERRIDES
+   ========================================= */
+body.admin-page {
+  overflow-x: hidden;
+}
+
+body.admin-page .admin-dashboard,
+body.admin-page .admin-container,
+body.admin-page .admin-main,
+body.admin-page .dashboard-shell,
+body.admin-page .dashboard-content {
+  min-width: 0;
+}
+
+body.admin-page .stats-grid,
+body.admin-page .dashboard-stats,
+body.admin-page .admin-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+
+body.admin-page .management-grid,
+body.admin-page .quick-actions-grid,
+body.admin-page .admin-actions-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+
+body.admin-page .stat-card,
+body.admin-page .admin-stat-card,
+body.admin-page .management-card,
+body.admin-page .quick-action-card {
+  min-width: 0;
+}
+
+body.admin-page .stat-value,
+body.admin-page .admin-stat-card .stat-value,
+body.admin-page .stat-number {
+  font-family: var(--primary-font);
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+body.admin-page .admin-table-wrapper,
+body.admin-page .table-responsive,
+body.admin-page .orders-table-container,
+body.admin-page .products-table-container {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 1100px) {
+  body.admin-page .stats-grid,
+  body.admin-page .dashboard-stats,
+  body.admin-page .admin-stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  body.admin-page .management-grid,
+  body.admin-page .quick-actions-grid,
+  body.admin-page .admin-actions-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  body.admin-page main,
+  body.admin-page .admin-main {
+    padding-top: 72px;
+  }
+
+  body.admin-page .admin-container,
+  body.admin-page .admin-dashboard {
+    width: min(100% - 2rem, 1400px);
+    padding: 1.5rem 0 3rem;
+  }
+
+  body.admin-page .admin-header,
+  body.admin-page .dashboard-header,
+  body.admin-page .admin-page-header {
+    align-items: flex-start;
+    flex-direction: column;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.25rem;
+  }
+
+  body.admin-page .admin-header h1,
+  body.admin-page .dashboard-header h1,
+  body.admin-page .admin-page-header h1,
+  body.admin-page .admin-dashboard h1 {
+    font-size: clamp(2rem, 10vw, 3rem);
+    line-height: 1.05;
+  }
+
+  body.admin-page .stats-grid,
+  body.admin-page .dashboard-stats,
+  body.admin-page .admin-stats-grid,
+  body.admin-page .management-grid,
+  body.admin-page .quick-actions-grid,
+  body.admin-page .admin-actions-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  body.admin-page .stat-card,
+  body.admin-page .admin-stat-card,
+  body.admin-page .management-card,
+  body.admin-page .quick-action-card {
+    padding: 1.25rem;
+  }
+
+  body.admin-page .admin-nav,
+  body.admin-page .admin-sidebar {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  body.admin-page .admin-container,
+  body.admin-page .admin-dashboard {
+    width: calc(100% - 1.25rem);
+  }
+
+  body.admin-page .admin-header h1,
+  body.admin-page .dashboard-header h1,
+  body.admin-page .admin-page-header h1,
+  body.admin-page .admin-dashboard h1 {
+    font-size: 2.15rem;
+  }
+
+  body.admin-page .stat-card,
+  body.admin-page .admin-stat-card,
+  body.admin-page .management-card,
+  body.admin-page .quick-action-card {
+    border-radius: 12px;
+    padding: 1rem;
+  }
+}
+
+/* =========================================
+   PRODUCT STOCK STATUS BADGES — COMPACT OVERLAY
+   ========================================= */
+.product-card [class*="stock"],
+.product-card [class*="status-badge"] {
+  position: absolute !important;
+  top: 14px !important;
+  left: 14px !important;
+  right: auto !important;
+  bottom: auto !important;
+  width: auto !important;
+  max-width: calc(100% - 82px) !important;
+  height: auto !important;
+  min-height: 0 !important;
+  padding: 7px 11px !important;
+  margin: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 5px !important;
+  border-radius: 999px !important;
+  background: rgba(18, 18, 18, 0.82) !important;
+  border: 1px solid rgba(255, 255, 255, 0.16) !important;
+  color: #fff !important;
+  font-family: var(--primary-font) !important;
+  font-size: 0.68rem !important;
+  font-weight: 600 !important;
+  line-height: 1 !important;
+  letter-spacing: 0.06em !important;
+  text-transform: uppercase !important;
+  text-align: center !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  z-index: 8 !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2) !important;
+}
+
+.product-card [class*="stock"] br,
+.product-card [class*="status-badge"] br {
+  display: none !important;
+}
+
+@media (max-width: 768px) {
+  .product-card [class*="stock"],
+  .product-card [class*="status-badge"] {
+    top: 10px !important;
+    left: 10px !important;
+    max-width: calc(100% - 64px) !important;
+    padding: 6px 9px !important;
+    font-size: 0.58rem !important;
+  }
+}
+
+/* =========================================
+   SHOP STOCK BADGE — FINAL DISPLAY FIX
+   ========================================= */
+
+/* Keep stock badges on the visible front face only so they never mirror
+   or appear backwards when the product card is flipped. */
+.product-card-inner.is-flipped .product-card-front .stock-badge,
+.product-card-inner.is-flipped .product-card-front .stock-status-badge,
+.product-card-inner.is-flipped .product-card-front .product-badge {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+.product-card-front .stock-badge,
+.product-card-front .stock-status-badge,
+.product-card-front .product-badge {
+  transition: opacity 0.15s ease, visibility 0.15s ease;
+}
+
+/* Out-of-stock cards get a footer badge in the same visual position as
+   the Add to Cart button. */
+.product-card:has(.stock-badge.sold-out) .product-info .add-to-cart-btn,
+.product-card:has(.stock-badge.out-of-stock) .product-info .add-to-cart-btn,
+.product-card:has(.stock-status-badge.sold-out) .product-info .add-to-cart-btn,
+.product-card:has(.stock-status-badge.out-of-stock) .product-info .add-to-cart-btn,
+.product-card:has(.product-badge.sold-out) .product-info .add-to-cart-btn,
+.product-card:has(.product-badge.out-of-stock) .product-info .add-to-cart-btn {
+  display: none !important;
+}
+
+.product-card:has(.stock-badge.sold-out) .product-info::after,
+.product-card:has(.stock-badge.out-of-stock) .product-info::after,
+.product-card:has(.stock-status-badge.sold-out) .product-info::after,
+.product-card:has(.stock-status-badge.out-of-stock) .product-info::after,
+.product-card:has(.product-badge.sold-out) .product-info::after,
+.product-card:has(.product-badge.out-of-stock) .product-info::after {
+  content: "OUT OF STOCK";
+  display: flex;
+  width: 100%;
+  min-height: 40px;
+  margin-top: auto;
+  align-items: center;
+  justify-content: center;
+  background: #ece8dc;
+  border: 1px solid #ded8c8;
+  color: #77736b;
+  font-family: var(--primary-font);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .product-card:has(.stock-badge.sold-out) .product-info::after,
+  .product-card:has(.stock-badge.out-of-stock) .product-info::after,
+  .product-card:has(.stock-status-badge.sold-out) .product-info::after,
+  .product-card:has(.stock-status-badge.out-of-stock) .product-info::after,
+  .product-card:has(.product-badge.sold-out) .product-info::after,
+  .product-card:has(.product-badge.out-of-stock) .product-info::after {
+    min-height: 36px;
+    font-size: 0.7rem;
+  }
+}
+
+/* === SHOP STOCK UI FINAL OVERRIDE === */
+/* Keep stock badges on the image/front face only so they never appear mirrored on the flipped description face. */
+.product-card-back .stock-badge,
+.product-card-back .stock-status-badge,
+.product-card-back .product-stock-badge,
+.product-card-back .inventory-badge,
+.product-card-back .status-badge {
+  display: none !important;
+  visibility: hidden !important;
+}
+
+.product-card-front .stock-badge,
+.product-card-front .stock-status-badge,
+.product-card-front .product-stock-badge,
+.product-card-front .inventory-badge,
+.product-card-front .status-badge {
+  transform: none !important;
+  backface-visibility: hidden !important;
+  -webkit-backface-visibility: hidden !important;
+}
+
+/* Sold-out cards get a bottom replacement for Add to Cart without changing the HTML. */
+.product-card:has(.sold-out) .product-info::after,
+.product-card:has(.soldout) .product-info::after,
+.product-card:has(.out-of-stock) .product-info::after,
+.product-card:has([data-status="sold-out"]) .product-info::after,
+.product-card:has([data-status="out-of-stock"]) .product-info::after {
+  content: "OUT OF STOCK";
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: calc(100% + 24px);
+  min-height: 40px;
+  margin: auto -12px 0;
+  padding: 10px 16px;
+  background: #ece8d8;
+  color: #555;
+  border: 0;
+  font-family: var(--primary-font);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  text-align: center;
+  cursor: not-allowed;
+}
+
+.product-card:has(.sold-out) .add-to-cart-btn,
+.product-card:has(.soldout) .add-to-cart-btn,
+.product-card:has(.out-of-stock) .add-to-cart-btn,
+.product-card:has([data-status="sold-out"]) .add-to-cart-btn,
+.product-card:has([data-status="out-of-stock"]) .add-to-cart-btn,
+.product-card:has(.sold-out) .add-to-cart,
+.product-card:has(.soldout) .add-to-cart,
+.product-card:has(.out-of-stock) .add-to-cart,
+.product-card:has([data-status="sold-out"]) .add-to-cart,
+.product-card:has([data-status="out-of-stock"]) .add-to-cart {
+  display: none !important;
+}
+
+@media (max-width: 768px) {
+  .product-card:has(.sold-out) .product-info::after,
+  .product-card:has(.soldout) .product-info::after,
+  .product-card:has(.out-of-stock) .product-info::after,
+  .product-card:has([data-status="sold-out"]) .product-info::after,
+  .product-card:has([data-status="out-of-stock"]) .product-info::after {
+    min-height: 36px;
+    padding: 8px 10px;
+    font-size: 0.68rem;
+  }
+}

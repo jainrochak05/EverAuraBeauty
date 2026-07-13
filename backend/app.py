@@ -35,6 +35,7 @@ FRONTEND_URL = os.getenv("FRONTEND_URL")
 SECRET_KEY = os.getenv("SECRET_KEY")
 ADMIN_KEY = os.getenv("ADMIN_KEY")
 
+
 # --- App Configuration ---
 app.config["JWT_SECRET_KEY"] = SECRET_KEY
 app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(minutes=10)
@@ -91,6 +92,69 @@ def serialize_doc(doc):
     if doc and "user_id" in doc:
         doc["user_id"] = str(doc["user_id"])
     return doc
+
+def serialize_product(doc):
+    """Adds inventory status fields without changing the stored product structure."""
+    doc = serialize_doc(doc)
+    if doc:
+        quantity = max(int(doc.get("quantity", 0)), 0)
+        doc["quantity"] = quantity
+        doc["in_stock"] = quantity > 0
+        doc["stock_status"] = "In Stock" if quantity > 0 else "Out of Stock"
+    return doc
+
+
+def deduct_order_inventory(order_id, items):
+    """Deducts inventory once for a paid order."""
+    claim = orders_collection.update_one(
+        {"_id": order_id, "inventory_deducted": {"$ne": True}},
+        {"$set": {"inventory_deducted": True}}
+    )
+    if claim.modified_count != 1:
+        return True, None
+
+    deducted = []
+    try:
+        for item in items:
+            quantity = int(item.get("quantity", 0))
+            if quantity <= 0:
+                raise ValueError(f"Invalid quantity for {item.get('name', 'product')}")
+
+            product_filter = None
+            product_id = item.get("_id") or item.get("product_id")
+            if product_id:
+                try:
+                    product_filter = {"_id": ObjectId(product_id)}
+                except Exception:
+                    product_filter = None
+
+            if product_filter is None and item.get("id") is not None:
+                product_filter = {"id": int(item["id"])}
+
+            if product_filter is None:
+                raise ValueError(f"Product ID missing for {item.get('name', 'product')}")
+
+            result = products_collection.update_one(
+                {**product_filter, "quantity": {"$gte": quantity}},
+                {"$inc": {"quantity": -quantity}}
+            )
+            if result.modified_count != 1:
+                raise ValueError(f"Insufficient stock for {item.get('name', 'product')}")
+
+            deducted.append((product_filter, quantity))
+
+        return True, None
+    except Exception as e:
+        for product_filter, quantity in deducted:
+            products_collection.update_one(
+                product_filter,
+                {"$inc": {"quantity": quantity}}
+            )
+        orders_collection.update_one(
+            {"_id": order_id},
+            {"$unset": {"inventory_deducted": ""}}
+        )
+        return False, str(e)
 
 def send_email(to_email, subject, html_body):
     """Sends an email using Gmail SMTP."""
@@ -309,7 +373,8 @@ def create_order():
             "payment_status": "Pending",
             "payment_link_id": None,
             "payment_id": None,
-            "tracking_link": None
+            "tracking_link": None,
+            "inventory_deducted": False
         }
     
         result = orders_collection.insert_one(order_doc)
@@ -322,6 +387,11 @@ def create_order():
     try:
         # If SKIP_PAYMENT flag is enabled or Razorpay keys are not configured, mark as paid (testing mode)
         if SKIP_PAYMENT or not (RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET):
+            inventory_updated, inventory_error = deduct_order_inventory(order_mongo_id, items)
+            if not inventory_updated:
+                orders_collection.delete_one({"_id": order_mongo_id})
+                return jsonify({"error": inventory_error}), 409
+
             orders_collection.update_one(
                 {"_id": order_mongo_id},
                 {"$set": {
@@ -448,6 +518,10 @@ def payment_webhook():
         )
 
         if order:
+            inventory_updated, inventory_error = deduct_order_inventory(order['_id'], order['items'])
+            if not inventory_updated:
+                logger.error(f"Inventory deduction failed for paid order {order['order_id']}: {inventory_error}")
+
             # 4. Send confirmation email
             subject = f"Your Everaura Order is Confirmed! (ID: {order['order_id']})"
             html_body = f"""
@@ -603,7 +677,7 @@ def get_products():
             query['type'] = int(product_type) # 0 for Anti-Tarnish, 1 for Jewelry
 
         products = products_collection.find(query)
-        return jsonify([serialize_doc(p) for p in products])
+        return jsonify([serialize_product(p) for p in products])
     except Exception as e:
         logger.error(f"Failed to fetch products: {e}")
         return jsonify({"error": "Internal server error"}), 500
@@ -630,16 +704,20 @@ def add_product():
         rsn = request.form.get('rsn')
         description = request.form.get('description')
         isTrending = request.form.get('isTrending')
+        quantity = int(request.form.get('quantity', 0))
+        if quantity < 0:
+            return jsonify({"error": "Quantity cannot be negative"}), 400
         
         new_product = {
             "id": id_val, "name": name, "price": price, "category": category,
             "gender": gender, "type": type_int, "material": material_int,
             "rsn": rsn, "description": description, "isTrending": isTrending,
+            "quantity": quantity,
             "images": [image_url]
         }
         result = products_collection.insert_one(new_product)
         created_product = products_collection.find_one({"_id": result.inserted_id})
-        return jsonify(serialize_doc(created_product)), 201
+        return jsonify(serialize_product(created_product)), 201
     except Exception as e:
         logger.error(f"Failed to add product: {e}")
         return jsonify({"error": "Internal server error"}), 500
@@ -653,11 +731,15 @@ def update_product(product_id):
         update_data = request.get_json()
         if '_id' in update_data:
             del update_data['_id']
+        if 'quantity' in update_data:
+            update_data['quantity'] = int(update_data['quantity'])
+            if update_data['quantity'] < 0:
+                return jsonify({"error": "Quantity cannot be negative"}), 400
         result = products_collection.update_one({"_id": ObjectId(product_id)}, {"$set": update_data})
         if result.matched_count == 0:
             return jsonify({"error": "Product not found"}), 404
         updated_product = products_collection.find_one({"_id": ObjectId(product_id)})
-        return jsonify(serialize_doc(updated_product))
+        return jsonify(serialize_product(updated_product))
     except Exception as e:
         logger.error(f"Failed to update product: {e}")
         return jsonify({"error": "Internal server error"}), 500
