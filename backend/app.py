@@ -15,6 +15,9 @@ from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_requir
 from bson.objectid import ObjectId
 from dotenv import load_dotenv
 import logging
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
 
 # --- CONFIGURATION ---
 load_dotenv()
@@ -34,6 +37,9 @@ CONTACT_EMAIL = os.getenv("CONTACT_EMAIL")
 FRONTEND_URL = os.getenv("FRONTEND_URL")
 SECRET_KEY = os.getenv("SECRET_KEY")
 ADMIN_KEY = os.getenv("ADMIN_KEY")
+CLOUDINARY_CLOUD_NAME = os.getenv("CLOUDINARY_CLOUD_NAME")
+CLOUDINARY_API_KEY = os.getenv("CLOUDINARY_API_KEY")
+CLOUDINARY_API_SECRET = os.getenv("CLOUDINARY_API_SECRET")
 
 
 # --- App Configuration ---
@@ -44,6 +50,16 @@ app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(minutes=10)
 CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
 jwt = JWTManager(app)
 razorpay_client = razorpay.Client(auth=(RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET))
+
+# -- Cloudinary --
+cloudinary.config(
+    cloud_name=CLOUDINARY_CLOUD_NAME,
+    api_key=CLOUDINARY_API_KEY,
+    api_secret=CLOUDINARY_API_SECRET,
+    secure=True,
+)
+
+
 
 # --- Logging ---
 logging.basicConfig(level=logging.INFO)
