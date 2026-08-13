@@ -1,6 +1,8 @@
 // --- CONFIGURATION ---
 const API_URL = "https://everaura-backend.vercel.app/api"; // Ensure this matches your deployed backend
 const FRONTEND_URL = "https://everaurabeauty.com";
+const SHIPPING_FEE_BASE = 60;
+const SHIPPING_FEE_APPLIED = 0;
 
 // --- AUTH HELPERS ---
 function saveToken(token) {
@@ -29,6 +31,15 @@ function getUser() {
   try {
       return JSON.parse(localStorage.getItem('everauraUser'));
   } catch (e) {
+      return null;
+  }
+}
+
+function getAppliedCoupon() {
+  try {
+      return JSON.parse(sessionStorage.getItem("appliedCoupon"));
+  } catch (e) {
+      sessionStorage.removeItem("appliedCoupon");
       return null;
   }
 }
@@ -671,6 +682,7 @@ if (cart.length === 0) {
   cartItemsContainer.innerHTML = itemsHTML;
 }
 updateCartTotals();
+updateCouponUI(getAppliedCoupon());
 modal.style.display = "flex";
 }
 
@@ -770,8 +782,14 @@ const t = document.getElementById("toast-container"),
 
 // --- Coupon and Checkout Logic ---
 async function applyCoupon() {
-const codeInput = document.getElementById("coupon-code-input").value.trim();
+const couponInputEl = document.getElementById("coupon-code-input");
+const codeInput = (couponInputEl?.value || "").trim();
 if (!codeInput) return alert("Please enter a coupon code.");
+const existingCoupon = getAppliedCoupon();
+if (existingCoupon && existingCoupon.code === codeInput.toUpperCase()) {
+  showToast(`Coupon "${existingCoupon.code}" is already applied.`);
+  return;
+}
 try {
   const res = await fetch(`${API_URL}/coupons/apply`, {
     method: "POST",
@@ -802,6 +820,7 @@ showToast("Coupon removed.");
 function updateCouponUI(coupon) {
 const couponDisplay = document.getElementById("applied-coupon");
 const couponInput = document.getElementById("coupon-code-input");
+if (!couponDisplay) return;
 if (coupon) {
   couponDisplay.style.display = "flex";
   document.getElementById(
@@ -819,14 +838,20 @@ let subtotal = 0;
 cart.forEach((item) => {
   subtotal += item.price * item.quantity;
 });
-const appliedCoupon = JSON.parse(sessionStorage.getItem("appliedCoupon"));
+const appliedCoupon = getAppliedCoupon();
 const discountPercent = appliedCoupon ? appliedCoupon.discount : 0;
 const discountAmount = (subtotal * discountPercent) / 100;
-const total = subtotal - discountAmount;
+const total = subtotal - discountAmount + SHIPPING_FEE_APPLIED;
 const subtotalElem = document.getElementById("cart-subtotal");
+const discountElem = document.getElementById("cart-discount");
 const totalElem = document.getElementById("cart-total");
+const shippingBaseElem = document.getElementById("shipping-base-display");
+const shippingEffectiveElem = document.getElementById("shipping-effective-display");
 if (subtotalElem) subtotalElem.textContent = `₹${subtotal.toFixed(2)}`;
+if (discountElem) discountElem.textContent = `-₹${discountAmount.toFixed(2)}`;
 if (totalElem) totalElem.textContent = `₹${total.toFixed(2)}`;
+if (shippingBaseElem) shippingBaseElem.innerHTML = `<s>₹${SHIPPING_FEE_BASE.toFixed(2)}</s>`;
+if (shippingEffectiveElem) shippingEffectiveElem.textContent = SHIPPING_FEE_APPLIED === 0 ? "Free" : `₹${SHIPPING_FEE_APPLIED.toFixed(2)}`;
 }
 
 function proceedToCheckout() {
@@ -1025,6 +1050,7 @@ async function loadCheckoutPage() {
               </div>
           </div>`;
   });
+  updateCouponUI(getAppliedCoupon());
   updateCartTotals();
 
   try {
@@ -1074,7 +1100,7 @@ async function handlePlaceOrder() {
   }
 
   const cart = getCart();
-  const appliedCoupon = JSON.parse(sessionStorage.getItem("appliedCoupon"));
+  const appliedCoupon = getAppliedCoupon();
   const coupon_code = appliedCoupon ? appliedCoupon.code : null;
 
   const orderData = {
@@ -1144,31 +1170,42 @@ async function loadMyOrders() {
       orders.forEach(order => {
           const orderCard = document.createElement("div");
           orderCard.className = "order-card";
+          const safeItems = Array.isArray(order.items) ? order.items : [];
+          const shippingAddress = order.shipping_address || {};
+          const orderStatus = order.status || "Pending";
+          const paymentStatus = order.payment_status || "Pending";
+          const numericTotal = Number(order.total_amount || 0);
+          const normalizedStatus = String(orderStatus).toLowerCase();
           
-          const itemsHtml = order.items.map(item => `
+          const itemsHtml = safeItems.map(item => `
               <div class="order-item">
-                  <img src="${item.image}" alt="${item.name}">
-                  <span>${item.name} (x${item.quantity})</span>
-                  <span>₹${(item.price * item.quantity).toFixed(2)}</span>
+                  <img src="${item.image || 'https://via.placeholder.com/60x60?text=No+Img'}" alt="${item.name || 'Product'}">
+                  <span>${item.name || "Product"} (x${item.quantity || 0})</span>
+                  <span>₹${(Number(item.price || 0) * Number(item.quantity || 0)).toFixed(2)}</span>
               </div>
           `).join("");
 
           let trackingHtml = '';
-          if (order.status === "Shipped" && order.tracking_link) {
+          if (orderStatus === "Shipped" && order.tracking_link) {
               trackingHtml = `<a href="${order.tracking_link}" class="cta-button" target="_blank">Track Package</a>`;
-          } else if (order.status === "Delivered") {
+          } else if (orderStatus === "Delivered") {
               trackingHtml = `<p class="order-status-delivered">Delivered</p>`;
           }
+
+          const showEtaMessage = ["pending", "paid", "packaging", "processing"].includes(normalizedStatus);
+          const etaHtml = showEtaMessage ? `<p><strong>Usually ships in 1–2 business days</strong></p>` : "";
+          const placedOn = order.created_at ? new Date(order.created_at).toLocaleDateString() : "N/A";
 
           orderCard.innerHTML = `
               <div class="order-card-header">
                   <div>
-                      <h3>Order ID: ${order.order_id}</h3>
-                      <p>Placed on: ${new Date(order.created_at).toLocaleDateString()}</p>
+                      <h3>Order ID: ${order.order_id || "N/A"}</h3>
+                      <p>Placed on: ${placedOn}</p>
                   </div>
                   <div>
-                      <span class="order-status ${order.status.toLowerCase()}">${order.status}</span>
-                      <span class="order-total">Total: ₹${order.total_amount.toFixed(2)}</span>
+                      <span class="order-status ${normalizedStatus}">${orderStatus}</span>
+                      <span class="order-total">Payment: ${paymentStatus}</span>
+                      <span class="order-total">Total: ₹${numericTotal.toFixed(2)}</span>
                   </div>
               </div>
               <div class="order-card-body">
@@ -1176,8 +1213,9 @@ async function loadMyOrders() {
               </div>
               <div class="order-card-footer">
                   <div>
-                      <strong>Shipping To:</strong> ${order.shipping_address.name}<br>
-                      ${order.shipping_address.address}, ${order.shipping_address.city} - ${order.shipping_address.pincode}
+                      <strong>Shipping To:</strong> ${shippingAddress.name || "N/A"}<br>
+                      ${(shippingAddress.address || "N/A")}, ${(shippingAddress.city || "N/A")} - ${(shippingAddress.pincode || "N/A")}<br>
+                      ${etaHtml}
                   </div>
                   <div class="order-tracking">
                       ${trackingHtml}

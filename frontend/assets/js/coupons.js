@@ -68,7 +68,7 @@ async function loadCouponsIntoTable() {
 
   tbody.innerHTML = `
     <tr>
-      <td colspan="3">
+      <td colspan="6">
         Loading coupons...
       </td>
     </tr>
@@ -108,7 +108,7 @@ async function loadCouponsIntoTable() {
 
       tbody.innerHTML = `
         <tr>
-          <td colspan="3">
+          <td colspan="6">
             No coupons found.
           </td>
         </tr>
@@ -120,6 +120,16 @@ async function loadCouponsIntoTable() {
 
 
     coupons.forEach((coupon) => {
+      const usageText =
+        coupon.max_uses_total === null ||
+        coupon.max_uses_total === undefined
+          ? `${coupon.used_count || 0} / Unlimited`
+          : `${coupon.used_count || 0} / ${coupon.max_uses_total}`;
+      const windowText =
+        [coupon.start_at, coupon.end_at]
+          .filter(Boolean)
+          .map((value) => new Date(value).toLocaleString("en-IN"))
+          .join(" → ") || "Always";
 
       tbody.innerHTML += `
         <tr>
@@ -133,6 +143,18 @@ async function loadCouponsIntoTable() {
 
           <td data-label="Discount">
             ${coupon.discount}%
+          </td>
+
+          <td data-label="Window">
+            ${windowText}
+          </td>
+
+          <td data-label="Usage">
+            ${usageText}
+          </td>
+
+          <td data-label="Active">
+            ${coupon.active === false ? "No" : "Yes"}
           </td>
 
 
@@ -171,7 +193,7 @@ async function loadCouponsIntoTable() {
 
     tbody.innerHTML = `
       <tr>
-        <td colspan="3">
+        <td colspan="6">
           Error loading coupons: ${error.message}
         </td>
       </tr>
@@ -224,6 +246,16 @@ async function handleAddCoupon(event) {
   const data = {
     code: couponCode,
     discount: discount,
+    start_at: document.getElementById("coupon-start-at").value
+      ? new Date(document.getElementById("coupon-start-at").value).toISOString()
+      : null,
+    end_at: document.getElementById("coupon-end-at").value
+      ? new Date(document.getElementById("coupon-end-at").value).toISOString()
+      : null,
+    max_uses_total: document.getElementById("coupon-max-uses").value
+      ? Number(document.getElementById("coupon-max-uses").value)
+      : null,
+    active: document.getElementById("coupon-active").checked,
   };
 
 

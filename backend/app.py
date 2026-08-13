@@ -44,7 +44,7 @@ CLOUDINARY_API_SECRET = os.getenv("CLOUDINARY_API_SECRET")
 
 # --- App Configuration ---
 app.config["JWT_SECRET_KEY"] = SECRET_KEY
-app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(minutes=10)
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = timedelta(hours=12)
 
 # --- Initialize Extensions ---
 CORS(app, resources={r"/api/*": {"origins": "*"}}, supports_credentials=True)
@@ -64,6 +64,9 @@ cloudinary.config(
 # --- Logging ---
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+SHIPPING_FEE_BASE = 60.0
+SHIPPING_FEE_APPLIED = 0.0
 
 # --- Database Setup (Robust Version) ---
 try:
@@ -118,6 +121,61 @@ def serialize_product(doc):
         doc["in_stock"] = quantity > 0
         doc["stock_status"] = "In Stock" if quantity > 0 else "Out of Stock"
     return doc
+
+def parse_optional_datetime(value):
+    """Parses optional datetime strings while keeping backward compatibility."""
+    if value in (None, ""):
+        return None
+    if isinstance(value, datetime):
+        parsed = value
+    elif isinstance(value, str):
+        normalized = value.strip()
+        if normalized.endswith("Z"):
+            normalized = normalized[:-1] + "+00:00"
+        parsed = datetime.fromisoformat(normalized)
+    else:
+        raise ValueError("Invalid datetime value")
+
+    if parsed.tzinfo is None:
+        parsed = parsed.replace(tzinfo=timezone.utc)
+    return parsed.astimezone(timezone.utc)
+
+def validate_coupon_constraints(coupon):
+    """
+    Validates coupon runtime constraints.
+    Backward compatible defaults:
+    - active defaults to True
+    - used_count defaults to 0
+    """
+    if not coupon:
+        return False, "Invalid coupon code", 404
+
+    now = datetime.now(timezone.utc)
+    if coupon.get("active", True) is False:
+        return False, "This coupon is inactive", 400
+
+    try:
+        start_at = parse_optional_datetime(coupon.get("start_at"))
+        end_at = parse_optional_datetime(coupon.get("end_at"))
+    except ValueError:
+        return False, "Coupon timing configuration is invalid", 400
+
+    if start_at and now < start_at:
+        return False, "This coupon is not active yet", 400
+    if end_at and now > end_at:
+        return False, "This coupon has expired", 400
+
+    used_count = int(coupon.get("used_count", 0) or 0)
+    max_uses_total = coupon.get("max_uses_total")
+    if max_uses_total is not None:
+        try:
+            max_uses_total = int(max_uses_total)
+        except (TypeError, ValueError):
+            return False, "Coupon usage configuration is invalid", 400
+        if max_uses_total >= 0 and used_count >= max_uses_total:
+            return False, "This coupon has reached its usage limit", 400
+
+    return True, None, None
 
 
 def deduct_order_inventory(order_id, items):
@@ -339,7 +397,7 @@ def create_order():
     
     items = data['items']
     shipping_address = data['shipping_address']
-    coupon_code = data.get('coupon_code')
+    coupon_code = (data.get('coupon_code') or '').strip().upper()
     
     if not items:
         return jsonify({"error": "Cart cannot be empty"}), 400
@@ -359,30 +417,81 @@ def create_order():
             }}
         )
 
-        # 3. Calculate totals
-        subtotal = sum(item['price'] * item['quantity'] for item in items)
+        # 3. Rebuild items and totals from server-side product data only.
+        validated_items = []
+        product_object_ids = []
+        for item in items:
+            quantity = int(item.get('quantity', 0))
+            if quantity <= 0:
+                return jsonify({"error": "Invalid item quantity in cart"}), 400
+
+            product_id = item.get('_id') or item.get('product_id')
+            if not product_id:
+                return jsonify({"error": "Product ID missing in cart item"}), 400
+
+            try:
+                product_object_ids.append(ObjectId(product_id))
+            except Exception:
+                return jsonify({"error": "Invalid product ID in cart item"}), 400
+
+            validated_items.append({
+                "_id": str(product_id),
+                "quantity": quantity
+            })
+
+        products = list(products_collection.find({"_id": {"$in": product_object_ids}}))
+        product_map = {str(product["_id"]): product for product in products}
+        if len(product_map) != len({item["_id"] for item in validated_items}):
+            return jsonify({"error": "One or more products are unavailable"}), 409
+
+        rebuilt_items = []
+        subtotal = 0.0
+        for item in validated_items:
+            product = product_map.get(item["_id"])
+            if not product:
+                return jsonify({"error": "One or more products are unavailable"}), 409
+
+            quantity = item["quantity"]
+            unit_price = float(product.get("price", 0) or 0)
+            line_total = unit_price * quantity
+            subtotal += line_total
+            product_images = product.get("images") or []
+            rebuilt_items.append({
+                "_id": str(product["_id"]),
+                "name": product.get("name", "Product"),
+                "price": unit_price,
+                "quantity": quantity,
+                "image": product_images[0] if product_images else item.get("image")
+            })
+
         discount_percent = 0
         discount_amount = 0
 
         if coupon_code:
-            coupon = coupons_collection.find_one({"code": coupon_code.upper()})
-            if coupon:
-                discount_percent = coupon.get('discount', 0)
-                discount_amount = (subtotal * discount_percent) / 100
+            coupon = coupons_collection.find_one({"code": coupon_code})
+            is_valid, error_message, error_status = validate_coupon_constraints(coupon)
+            if not is_valid:
+                return jsonify({"error": error_message}), error_status
+            discount_percent = float(coupon.get('discount', 0) or 0)
+            discount_amount = (subtotal * discount_percent) / 100
 
-        total = subtotal - discount_amount
+        shipping_fee_base = SHIPPING_FEE_BASE
+        shipping_fee_applied = SHIPPING_FEE_APPLIED
+        total = max(subtotal - discount_amount + shipping_fee_applied, 0)
         
         # 4. Create Order document
         order_id_str = f"EA-{int(datetime.now().timestamp() * 1000)}"
         order_doc = {
             "order_id": order_id_str,
             "user_id": ObjectId(user_id),
-            "items": items,
+            "items": rebuilt_items,
             "shipping_address": shipping_address,
             "status": "Pending", # Status: Pending -> Paid -> Packaging -> Shipped -> Delivered -> Cancelled
             "created_at": datetime.now(timezone.utc),
             "subtotal": subtotal,
-            "coupon_code": coupon_code,
+            "shipping_fee_base": shipping_fee_base,
+            "shipping_fee_applied": shipping_fee_applied,
+            "coupon_code": coupon_code or None,
             "discount_percent": discount_percent,
             "discount_amount": discount_amount,
             "total_amount": total,
@@ -403,7 +512,7 @@ def create_order():
     try:
         # If SKIP_PAYMENT flag is enabled or Razorpay keys are not configured, mark as paid (testing mode)
         if SKIP_PAYMENT or not (RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET):
-            inventory_updated, inventory_error = deduct_order_inventory(order_mongo_id, items)
+            inventory_updated, inventory_error = deduct_order_inventory(order_mongo_id, rebuilt_items)
             if not inventory_updated:
                 orders_collection.delete_one({"_id": order_mongo_id})
                 return jsonify({"error": inventory_error}), 409
@@ -443,6 +552,11 @@ def create_order():
                 "success": True,
                 "message": "Order created and marked as paid (testing mode).",
                 "order_id": order_id_str,
+                "subtotal": subtotal,
+                "shipping_fee_base": shipping_fee_base,
+                "shipping_fee_applied": shipping_fee_applied,
+                "discount_amount": discount_amount,
+                "total_amount": total,
                 "payment_url": f"{FRONTEND_URL}/my-orders.html?order_id={order_id_str}"
             })
 
@@ -480,6 +594,11 @@ def create_order():
             "success": True,
             "message": "Order created, redirecting to payment.",
             "order_id": order_id_str,
+            "subtotal": subtotal,
+            "shipping_fee_base": shipping_fee_base,
+            "shipping_fee_applied": shipping_fee_applied,
+            "discount_amount": discount_amount,
+            "total_amount": total,
             "payment_url": payment_link['short_url']
         })
  
@@ -491,24 +610,28 @@ def create_order():
 
 @app.route('/api/payment/webhook', methods=['POST'])
 def payment_webhook():
-    data = request.get_json()
+    data = request.get_json(silent=True) or {}
     signature = request.headers.get('X-Razorpay-Signature')
     
     if not signature:
         return jsonify({"error": "No signature"}), 400
         
     # 1. Verify webhook signature
+    if not RAZORPAY_WEBHOOK_SECRET:
+        logger.error("Webhook secret is not configured on the server.")
+        return jsonify({"error": "Webhook secret not configured"}), 500
+
     try:
-        hmac.compare_digest(
-            hmac.new(
-                RAZORPAY_WEBHOOK_SECRET.encode('utf-8'),
-                request.data,
-                hashlib.sha256
-            ).hexdigest(),
-            signature
-        )
+        expected_signature = hmac.new(
+            RAZORPAY_WEBHOOK_SECRET.encode('utf-8'),
+            request.data,
+            hashlib.sha256
+        ).hexdigest()
     except Exception as e:
         logger.error(f"Webhook signature verification failed: {e}")
+        return jsonify({"error": "Invalid signature"}), 400
+    if not hmac.compare_digest(expected_signature, signature):
+        logger.warning("Rejected webhook request due to invalid signature.")
         return jsonify({"error": "Invalid signature"}), 400
 
     # 2. Process the event
@@ -522,8 +645,9 @@ def payment_webhook():
             return jsonify({"status": "ok", "message": "No payment_link_id in payload"}), 200
 
         # 3. Find and update the order
+        # Idempotency guard: only the first paid event can flip Pending -> Paid.
         order = orders_collection.find_one_and_update(
-            {"payment_link_id": payment_link_id},
+            {"payment_link_id": payment_link_id, "payment_status": {"$ne": "Paid"}},
             {"$set": {
                 "payment_status": "Paid",
                 "status": "Paid", # Set initial status to "Paid"
@@ -537,6 +661,17 @@ def payment_webhook():
             inventory_updated, inventory_error = deduct_order_inventory(order['_id'], order['items'])
             if not inventory_updated:
                 logger.error(f"Inventory deduction failed for paid order {order['order_id']}: {inventory_error}")
+
+            coupon_code = (order.get("coupon_code") or "").strip().upper()
+            if coupon_code:
+                coupon_increment = coupons_collection.update_one(
+                    {"code": coupon_code},
+                    {"$inc": {"used_count": 1}}
+                )
+                if coupon_increment.modified_count != 1:
+                    logger.warning(
+                        f"Order {order['order_id']} used coupon {coupon_code}, but coupon usage increment failed."
+                    )
 
             # 4. Send confirmation email
             subject = f"Your Everaura Order is Confirmed! (ID: {order['order_id']})"
@@ -562,7 +697,13 @@ def payment_webhook():
             except Exception as e:
                 logger.error(f"Order {order['order_id']} paid, but confirmation email failed: {e}")
         else:
-            logger.warning(f"Paid payment_link_id {payment_link_id} received, but no matching order found.")
+            existing_order = orders_collection.find_one({"payment_link_id": payment_link_id})
+            if existing_order and existing_order.get("payment_status") == "Paid":
+                logger.info(
+                    f"Duplicate paid webhook ignored for order {existing_order.get('order_id')} ({payment_link_id})."
+                )
+            else:
+                logger.warning(f"Paid payment_link_id {payment_link_id} received, but no matching order found.")
 
     return jsonify({"status": "ok"}), 200
 
@@ -850,12 +991,42 @@ def add_coupon():
     auth_error = check_admin_key()
     if auth_error: return auth_error
     data = request.get_json()
-    if not data or not data.get('code') or not data.get('discount'):
+    if not data or not data.get('code') or data.get('discount') is None:
         return jsonify({"error": "Missing required fields"}), 400
     try:
+        start_at = parse_optional_datetime(data.get('start_at'))
+        end_at = parse_optional_datetime(data.get('end_at'))
+        if start_at and end_at and start_at > end_at:
+            return jsonify({"error": "Coupon start_at must be before end_at"}), 400
+
+        max_uses_total = data.get('max_uses_total')
+        if max_uses_total in ("", None):
+            max_uses_total = None
+        else:
+            max_uses_total = int(max_uses_total)
+            if max_uses_total < 0:
+                return jsonify({"error": "max_uses_total must be 0 or greater"}), 400
+
+        used_count = int(data.get('used_count', 0) or 0)
+        if used_count < 0:
+            return jsonify({"error": "used_count must be 0 or greater"}), 400
+        if max_uses_total is not None and used_count > max_uses_total:
+            return jsonify({"error": "used_count cannot exceed max_uses_total"}), 400
+
+        active_raw = data.get('active', True)
+        if isinstance(active_raw, str):
+            active = active_raw.strip().lower() in ("true", "1", "yes")
+        else:
+            active = bool(active_raw)
+
         coupon = {
             "code": data.get('code').upper(),
             "discount": float(data.get('discount')),
+            "active": active,
+            "start_at": start_at,
+            "end_at": end_at,
+            "max_uses_total": max_uses_total,
+            "used_count": used_count,
             "created_at": datetime.now(timezone.utc)
         }
         if coupons_collection.find_one({"code": coupon["code"]}):
@@ -863,6 +1034,9 @@ def add_coupon():
         result = coupons_collection.insert_one(coupon)
         new_coupon = coupons_collection.find_one({"_id": result.inserted_id})
         return jsonify(serialize_doc(new_coupon)), 201
+    except ValueError as e:
+        logger.error(f"Invalid coupon input: {e}")
+        return jsonify({"error": "Invalid coupon date or usage fields"}), 400
     except Exception as e:
         logger.error(f"Failed to add coupon: {e}")
         return jsonify({"error": "Internal server error"}), 500
@@ -895,14 +1069,15 @@ def delete_coupon(coupon_id):
 @app.route('/api/coupons/apply', methods=['POST'])
 def apply_coupon():
     # Public route for checkout
-    data = request.get_json()
+    data = request.get_json() or {}
     code = data.get('code', '').upper()
     if not code:
         return jsonify({"error": "Coupon code is required"}), 400
     try:
         coupon = coupons_collection.find_one({"code": code})
-        if not coupon:
-            return jsonify({"error": "Invalid coupon code"}), 404
+        is_valid, error_message, error_status = validate_coupon_constraints(coupon)
+        if not is_valid:
+            return jsonify({"error": error_message}), error_status
         return jsonify(serialize_doc(coupon))
     except Exception as e:
         logger.error(f"Failed to apply coupon: {e}")

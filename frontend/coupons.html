@@ -125,6 +125,28 @@
                             >
                         </div>
 
+                        <div class="form-group">
+                            <label for="coupon-start-at">Start At (optional)</label>
+                            <input type="datetime-local" id="coupon-start-at">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="coupon-end-at">End At (optional)</label>
+                            <input type="datetime-local" id="coupon-end-at">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="coupon-max-uses">Max Uses Total (optional)</label>
+                            <input type="number" id="coupon-max-uses" min="1" placeholder="e.g. 50">
+                        </div>
+
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="coupon-active" checked>
+                                Active
+                            </label>
+                        </div>
+
                         <button
                             type="submit"
                             class="cta-button admin-button"
@@ -149,6 +171,9 @@
                                 <tr>
                                     <th>Code</th>
                                     <th>Discount</th>
+                                    <th>Window</th>
+                                    <th>Usage</th>
+                                    <th>Active</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -156,7 +181,7 @@
                             <tbody id="coupon-table-body">
 
                                 <tr>
-                                    <td colspan="3">
+                                    <td colspan="6">
                                         Loading coupons...
                                     </td>
                                 </tr>
