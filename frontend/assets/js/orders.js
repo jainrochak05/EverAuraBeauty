@@ -117,14 +117,16 @@ async function loadAdminOrders() {
 
 
       const fullAddress = [
-        address.name,
-        address.phone,
         address.address,
         address.city,
         address.pincode,
       ]
         .filter(Boolean)
         .join(", ");
+
+      const customerName = address.name || "N/A";
+      const customerEmail = address.email || "N/A";
+      const customerPhone = address.phone || "N/A";
 
 
       const statusOptions = [
@@ -156,7 +158,7 @@ async function loadAdminOrders() {
         order.created_at
           ? new Date(
               order.created_at
-            ).toLocaleDateString("en-IN")
+            ).toLocaleString("en-IN")
           : "N/A";
 
 
@@ -175,9 +177,12 @@ async function loadAdminOrders() {
 
           <td
             data-label="Customer"
-            title="${fullAddress}"
+            title="${customerName}"
           >
-            ${address.name || "N/A"}
+            <strong>${customerName}</strong><br>
+            ${customerEmail}<br>
+            ${customerPhone}<br>
+            ${fullAddress || "Address not available"}
           </td>
 
 
@@ -201,7 +206,7 @@ async function loadAdminOrders() {
 
 
           <td data-label="Payment">
-            ${order.payment_status || "N/A"}
+            ${order.payment_status || "N/A"} / ${order.status || "N/A"}
           </td>
 
 
